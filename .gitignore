@@ -1,44 +1,119 @@
-# The directory Mix will write compiled artifacts to.
-/_build/
+# =============================================================================
+# NETIA PAPERCUPS - GIT IGNORE
+# =============================================================================
 
-# If you run "mix test --cover", coverage assets end up here.
-/cover/
-
-# The directory Mix downloads your dependencies sources to.
-/deps/
-
-# Where 3rd-party dependencies like ExDoc output generated docs.
-/doc/
-
-# Ignore .fetch files in case you like to edit your project deps locally.
-/.fetch
-
-# Sandbox for running ad hoc scripts in development
-/lib/mix/tasks/sandbox.ex
-
-# If the VM crashes, it generates a dump, let's ignore it too.
-erl_crash.dump
-
-# Also ignore archive artifacts (built via "mix archive.build").
-*.ez
-
-# Ignore package tarball (built via "mix hex.build").
-chat_api-*.tar
-
-# Since we are building assets from assets/,
-# we ignore priv/static. You may want to comment
-# this depending on your deployment strategy.
-/priv/static/
-
-# Environment variable file
+# Environment files with secrets
 .env
+.env.local
+.env.production
 .env.staging
+.env.development
+*.env
 
-# Jetbrain IDE files
-.idea/
+# Railway specific
+railway-variables.txt
+railway.json
 
+# Generated secrets
+secrets.txt
+*.secret
+*.key
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+log/
+
+# Dependencies
+node_modules/
+deps/
+_build/
+.elixir_ls/
+
+# Compiled files
+dist/
+*.beam
+*.o
+*.so
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-fly.toml
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-**/node_modules
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Coverage reports
+cover/
+*.cover
+*.coverdata
+
+# Documentation build
+doc/
+docs/_build/
+
+# Mix artifacts
+.mix/
+.mix.lock
+
+# Phoenix artifacts
+priv/static/
+priv/static/assets/
+
+# Elixir artifacts
+.elixir_ls/
+.erlang.mk/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Railway
+.railway/
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Local configuration
+config/local.exs
+config/prod.secret.exs
+config/dev.secret.exs
+config/test.secret.exs
+
+# SSL certificates
+*.pem
+*.crt
+*.key
+*.p12
+*.pfx
+
+# API keys and tokens
+api_keys.txt
+tokens.txt
+credentials.txt
+
+# Deployment scripts with secrets
+deploy-*.sh
+setup-*.sh

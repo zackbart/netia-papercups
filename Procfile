@@ -1,2 +1,2 @@
-release: POOL_SIZE=2 mix ecto.migrate
-web: NODE=$(mix phx.gen.secret) mix phx.server
+web: /entrypoint.sh run
+release: /entrypoint.sh db migrate
