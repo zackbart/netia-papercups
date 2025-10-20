@@ -75,4 +75,4 @@ USER papercupsuser
 
 WORKDIR /app
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["run"]
+CMD ["sh", "-c", "/entrypoint.sh db migrate && /entrypoint.sh run"]
