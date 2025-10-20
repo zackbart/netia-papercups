@@ -25,18 +25,18 @@ ENV PAPERCUPS_STRIPE_SECRET=$PAPERCUPS_STRIPE_SECRET
 RUN mkdir /app
 WORKDIR /app
 
-RUN apk add --no-cache git nodejs yarn python3 ca-certificates wget gnupg make erlang gcc libc-dev
+RUN apk add --no-cache git nodejs=18.20.4-r0 npm=9.10.0-r0 python3 ca-certificates wget gnupg make erlang gcc libc-dev
 
 # Client side
-COPY assets/package.json assets/yarn.lock ./assets/
-RUN yarn install --cwd assets
+COPY assets/package.json assets/package-lock.json ./assets/
+RUN npm install --prefix=assets
 
 # fix because of https://github.com/facebook/create-react-app/issues/8413
 ENV GENERATE_SOURCEMAP=false
 
 COPY priv priv
 COPY assets assets
-RUN yarn build --cwd assets
+RUN npm run build --prefix=assets
 
 COPY mix.exs mix.lock ./
 COPY config config
