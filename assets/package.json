@@ -48,8 +48,8 @@
     "react-emoji-render": "^1.2.4",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^5.2.0",
-    "react-markdown": "^4.2.2",
-    "sanitize-html": "^2.3.3",
+    "react-markdown": "4.0.8",
+    "sanitize-html": "2.0.2",
     "react-scripts": "3.4.1",
     "react-syntax-highlighter": "^12.2.1",
     "recharts": "^1.8.5",
@@ -101,11 +101,6 @@
   },
   "proxy": "http://localhost:4000",
   "overrides": {
-    "htmlparser2": "4.1.0",
-    "domelementtype": "1.3.1",
-    "domutils": "2.8.0"
-  },
-  "resolutions": {
     "htmlparser2": "4.1.0",
     "domelementtype": "1.3.1",
     "domutils": "2.8.0"
