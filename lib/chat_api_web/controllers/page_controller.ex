@@ -25,7 +25,7 @@ defmodule ChatApiWeb.PageController do
         System.get_env("REACT_APP_POSTHOG_API_HOST", "https://app.posthog.com"),
       REACT_APP_DEBUG_MODE_ENABLED: System.get_env("REACT_APP_DEBUG_MODE_ENABLED"),
       REACT_APP_EU_EDITION: System.get_env("REACT_APP_EU_EDITION"),
-      REACT_APP_URL: System.get_env("REACT_APP_URL", "app.papercups.io"),
+      REACT_APP_URL: System.get_env("REACT_APP_URL", "app.netia.ai"),
       REACT_APP_SLACK_CLIENT_ID:
         System.get_env("REACT_APP_SLACK_CLIENT_ID", "1192316529232.1250363411891"),
       REACT_APP_STRIPE_PUBLIC_KEY: System.get_env("REACT_APP_STRIPE_PUBLIC_KEY"),

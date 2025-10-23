@@ -31,7 +31,7 @@ export const isUserInvitationEmailEnabled =
   env.REACT_APP_USER_INVITATION_EMAIL_ENABLED === 'true' ||
   env.REACT_APP_USER_INVITATION_EMAIL_ENABLED === '1';
 
-export const REACT_URL = env.REACT_APP_URL || 'app.papercups.io';
+export const REACT_URL = env.REACT_APP_URL || 'app.netia.ai';
 
 export const BASE_URL = isDev
   ? 'http://localhost:4000'

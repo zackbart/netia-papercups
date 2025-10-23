@@ -98,15 +98,18 @@ defmodule ChatApiWeb.ConversationChannel do
         Task.start(fn ->
           case ResponseHandler.handle_customer_message(conversation_id, account_id) do
             {:ok, llm_message} ->
+              # Reload message with associations to avoid NotLoaded errors
+              llm_message_loaded = Messages.get_message!(llm_message.id)
+              
               # Broadcast the LLM response to the conversation
               ChatApiWeb.Endpoint.broadcast!(
                 "conversation:#{conversation_id}",
                 "shout",
-                Messages.Helpers.format(llm_message)
+                Messages.Helpers.format(llm_message_loaded)
               )
               
               # Also broadcast to admin notifications
-              llm_message
+              llm_message_loaded
               |> Messages.Notification.broadcast_to_admin!()
               |> Messages.Notification.notify(:new_message_email)
               |> Messages.Notification.notify(:webhooks)

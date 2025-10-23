@@ -260,10 +260,14 @@ defmodule ChatApiWeb.ConversationController do
     end
   end
 
-  def create(conn, %{"conversation" => conversation_params}) do
-    # TODO: add support for creating a conversation with an initial message here as well?
+  def create(conn, %{"conversation" => conversation_params} = params) do
+    require Logger
+    Logger.info("Creating conversation with params: #{inspect(Map.keys(conversation_params))}")
+    Logger.info("Full params keys: #{inspect(Map.keys(params))}")
+    
     with {:ok, %Conversation{} = conversation} <-
-           conversation_params |> maybe_set_default_inbox() |> Conversations.create_conversation() do
+           conversation_params |> maybe_set_default_inbox() |> Conversations.create_conversation(),
+         :ok <- maybe_create_customer_message(conn, conversation, params) do
       conversation
       |> Conversations.Notification.broadcast_new_conversation_to_admin!()
       |> Conversations.Notification.broadcast_new_conversation_to_customer!()
@@ -273,6 +277,14 @@ defmodule ChatApiWeb.ConversationController do
       |> put_status(:created)
       |> put_resp_header("location", Routes.conversation_path(conn, :show, conversation))
       |> render("create.json", conversation: conversation)
+    else
+      {:error, %Ecto.Changeset{} = changeset} ->
+        require Logger
+        Logger.error("Conversation creation failed: #{inspect(changeset.errors)}")
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_view(ChatApiWeb.ChangesetView)
+        |> render("error.json", changeset: changeset)
     end
   end
 
@@ -427,6 +439,64 @@ defmodule ChatApiWeb.ConversationController do
   end
 
   defp maybe_create_message(_conn, _conversation, _), do: :ok
+
+  # Create customer messages without authentication (for public API)
+  defp maybe_create_customer_message(
+         _conn,
+         %Conversation{id: conversation_id, account_id: account_id, customer_id: customer_id},
+         %{"message" => %{"body" => _body} = message_params}
+       ) do
+    require Logger
+    Logger.info("Creating customer message for conversation #{conversation_id}")
+    
+    with {:ok, %Messages.Message{} = msg} <-
+           message_params
+           |> Map.merge(%{
+             "account_id" => account_id,
+             "conversation_id" => conversation_id,
+             "customer_id" => customer_id,
+             "source" => "chat"
+           })
+           |> Messages.create_message() do
+      Logger.info("Customer message created successfully: #{msg.id}")
+      
+      message = Messages.get_message!(msg.id)
+      |> Messages.Notification.broadcast_to_customer!()
+      |> Messages.Notification.broadcast_to_admin!()
+      |> Messages.Notification.notify(:webhooks)
+      |> Messages.Helpers.handle_post_creation_hooks()
+
+      # Trigger AI response for customer messages
+      Task.start(fn ->
+        case ChatApi.LLM.ResponseHandler.handle_customer_message(conversation_id, account_id) do
+          {:ok, llm_message} ->
+            Logger.info("AI response generated successfully: #{llm_message.id}")
+            
+            # Reload message with associations to avoid NotLoaded errors
+            llm_message_loaded = Messages.get_message!(llm_message.id)
+            
+            # Broadcast the AI response to the customer
+            llm_message_loaded
+            |> Messages.Notification.broadcast_to_customer!()
+            |> Messages.Notification.broadcast_to_admin!()
+            |> Messages.Notification.notify(:webhooks)
+            |> Messages.Helpers.handle_post_creation_hooks()
+
+          {:error, reason} ->
+            Logger.error("Failed to generate AI response: #{inspect(reason)}")
+        end
+      end)
+
+      :ok
+    else
+      {:error, changeset} ->
+        require Logger
+        Logger.error("Failed to create customer message: #{inspect(changeset.errors)}")
+        :ok  # Return :ok to not break the conversation creation
+    end
+  end
+
+  defp maybe_create_customer_message(_conn, _conversation, _), do: :ok
 
   defp format_filter_options(params, current_user) do
     Enum.reduce(

@@ -9,6 +9,13 @@ defmodule ChatApiWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :widget do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    # No X-Frame-Options header for widget iframe
+  end
+
   pipeline :api do
     plug(ChatApiWeb.IPAddressPlug)
     plug(:accepts, ["json"])
@@ -233,6 +240,13 @@ defmodule ChatApiWeb.Router do
 
       forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
+  end
+
+  # Widget chat interface (no X-Frame-Options)
+  scope "/", ChatApiWeb do
+    pipe_through(:widget)
+
+    get("/chat", WidgetController, :chat)
   end
 
   scope "/", ChatApiWeb do
