@@ -21,6 +21,7 @@ import {
   SlackAuthorization,
   UserSettings,
   ForwardingAddress,
+  BusinessContext,
 } from './types';
 
 // TODO: handle this on the server instead
@@ -2306,5 +2307,47 @@ export const deleteInbox = async (id: string, token = getAccessToken()) => {
   return request
     .delete(`/api/inboxes/${id}`)
     .set('Authorization', token)
+    .then((res) => res.body);
+};
+
+// Business Context API functions
+export const fetchBusinessContext = async (token = getAccessToken()) => {
+  if (!token) {
+    throw new Error('Invalid token!');
+  }
+
+  return request
+    .get('/api/business_context')
+    .set('Authorization', token)
+    .then((res) => res.body);
+};
+
+export const createBusinessContext = async (
+  businessContext: Partial<BusinessContext>,
+  token = getAccessToken()
+) => {
+  if (!token) {
+    throw new Error('Invalid token!');
+  }
+
+  return request
+    .post('/api/business_context')
+    .set('Authorization', token)
+    .send({business_context: businessContext})
+    .then((res) => res.body);
+};
+
+export const updateBusinessContext = async (
+  businessContext: Partial<BusinessContext>,
+  token = getAccessToken()
+) => {
+  if (!token) {
+    throw new Error('Invalid token!');
+  }
+
+  return request
+    .put('/api/business_context')
+    .set('Authorization', token)
+    .send({business_context: businessContext})
     .then((res) => res.body);
 };

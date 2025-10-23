@@ -347,29 +347,37 @@ class InboxIntegrations extends React.Component<Props, State> {
   };
 
   getInboxSourceChannels = () => {
-    return this.getIntegrationsByKeys([
-      'chat',
-      'ses',
-      'gmail',
-      'twilio',
-      'slack:sync',
-    ]);
+    // Only show LLM/OpenAI integration for simplified LLM-only setup
+    return [
+      {
+        key: 'chat' as const,
+        integration: 'AI Assistant',
+        status: 'connected' as const,
+        createdAt: new Date().toISOString(),
+        authorizationId: null,
+        icon: '/logo.svg',
+        description:
+          'AI-powered customer service assistant powered by OpenAI GPT.',
+        configurationUrl: undefined,
+        isPopular: true,
+      },
+    ];
   };
 
   getInboxReplyChannels = () => {
-    return this.getIntegrationsByKeys(['slack', 'mattermost']);
+    // No reply channels needed for LLM-only setup
+    return [];
   };
 
   render() {
     const {id: inboxId} = this.props.inbox;
     const {loading, refreshing} = this.state;
     const sources = this.getInboxSourceChannels();
-    const replies = this.getInboxReplyChannels();
 
     return (
       <Box>
         <Box px={3} mb={3}>
-          <Title level={4}>Source channels</Title>
+          <Title level={4}>AI Assistant</Title>
         </Box>
         <Box mb={4}>
           <InboxIntegrationsTable
@@ -379,17 +387,12 @@ class InboxIntegrations extends React.Component<Props, State> {
           />
         </Box>
 
-        <Divider />
-
         <Box px={3} mb={3}>
-          <Title level={4}>Reply channels</Title>
-        </Box>
-        <Box mb={4}>
-          <InboxIntegrationsTable
-            loading={loading || refreshing}
-            inboxId={inboxId}
-            integrations={replies}
-          />
+          <Text type="secondary">
+            Your AI assistant is automatically connected and ready to help
+            customers. Configure your business context in Settings to customize
+            responses.
+          </Text>
         </Box>
       </Box>
     );

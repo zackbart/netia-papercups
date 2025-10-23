@@ -372,3 +372,26 @@ export type OnboardingStatus = {
   has_invited_teammates?: boolean;
   has_upgraded_subscription?: boolean;
 };
+
+export type BusinessContext = {
+  id: string;
+  business_name: string;
+  business_description?: string;
+  services: {
+    [key: string]: {
+      name: string;
+      description: string;
+      price?: string;
+    };
+  };
+  scheduling_link?: string;
+  faqs: {
+    [key: string]: {
+      question: string;
+      answer: string;
+    };
+  };
+  additional_context?: string;
+  inserted_at: string;
+  updated_at: string;
+};

@@ -49,6 +49,7 @@ import AccountOverview from './settings/AccountOverview';
 import TeamOverview from './settings/TeamOverview';
 import UserProfile from './settings/UserProfile';
 import ChatWidgetSettings from './settings/ChatWidgetSettings';
+import BusinessContextSettings from './settings/BusinessContext';
 import {
   ConversationsContext,
   ConversationsProvider,
@@ -312,18 +313,20 @@ const Dashboard = (props: RouteComponentProps) => {
                 danger={shouldHighlightInbox}
                 key="conversations"
                 icon={<MailOutlined />}
-                title={`Inbox (${totalNumUnread})`}
+                title="Configure AI Assistant"
               >
-                <Link to="/conversations/all">Inbox ({totalNumUnread})</Link>
+                <Link to="/inboxes">Configure AI Assistant</Link>
               </Menu.Item>
+
+              {/* Integrations menu item removed for LLM-only setup */}
 
               {isAdminUser && (
                 <Menu.Item
-                  title="Integrations"
-                  icon={<ApiOutlined />}
-                  key="integrations"
+                  title="Business Context"
+                  icon={<SmileOutlined />}
+                  key="business-context"
                 >
-                  <Link to="/integrations">Integrations</Link>
+                  <Link to="/settings/business-context">Business Context</Link>
                 </Menu.Item>
               )}
 
@@ -377,20 +380,7 @@ const Dashboard = (props: RouteComponentProps) => {
                 </Menu.SubMenu>
               )}
 
-              {isAdminUser && (
-                <Menu.SubMenu
-                  key="sessions"
-                  icon={<VideoCameraOutlined />}
-                  title="Sessions"
-                >
-                  <Menu.Item key="list">
-                    <Link to="/sessions/list">Live sessions</Link>
-                  </Menu.Item>
-                  <Menu.Item key="setup">
-                    <Link to="/sessions/setup">Set up Storytime</Link>
-                  </Menu.Item>
-                </Menu.SubMenu>
-              )}
+              {/* Sessions menu item removed for LLM-only setup */}
 
               {isAdminUser ? (
                 <Menu.SubMenu
@@ -494,6 +484,10 @@ const Dashboard = (props: RouteComponentProps) => {
             component={ForwardingAddressSettings}
           />
           <Route path="/settings/chat-widget" component={ChatWidgetSettings} />
+          <Route
+            path="/settings/business-context"
+            component={BusinessContextSettings}
+          />
           {shouldDisplayBilling && (
             <Route path="/settings/billing" component={BillingOverview} />
           )}
