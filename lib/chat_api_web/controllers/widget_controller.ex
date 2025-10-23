@@ -22,6 +22,17 @@ defmodule ChatApiWeb.WidgetController do
                 height: 100vh;
                 overflow: hidden;
             }
+            
+            /* Mobile responsiveness */
+            @media (max-width: 480px) {
+                #message-input {
+                    font-size: 16px !important; /* Prevents zoom on iOS */
+                }
+                button {
+                    min-height: 44px; /* Touch-friendly size */
+                    min-width: 60px;
+                }
+            }
         </style>
     </head>
     <body>
@@ -78,7 +89,14 @@ defmodule ChatApiWeb.WidgetController do
                         'background: #f0f0f0; color: #333; margin-right: auto;');
                 msgDiv.textContent = text;
                 messagesEl.appendChild(msgDiv);
-                messagesEl.scrollTop = messagesEl.scrollHeight;
+                
+                // Smooth scroll to bottom
+                setTimeout(function() {
+                    messagesEl.scrollTo({
+                        top: messagesEl.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             }
 
             async function sendMessage() {

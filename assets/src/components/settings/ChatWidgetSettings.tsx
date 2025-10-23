@@ -26,6 +26,8 @@ import {BASE_URL, FRONTEND_BASE_URL} from '../../config';
 import logger from '../../logger';
 import {formatUserExternalId} from '../../utils';
 import {Link} from 'react-router-dom';
+import UniversalEmbedCode from './UniversalEmbedCode';
+import PlatformInstructions from './PlatformInstructions';
 
 type Props = RouteComponentProps<{inbox_id?: string}> & {};
 type State = {
@@ -44,6 +46,7 @@ type State = {
   agentUnavailableText?: string;
   requireEmailUpfront: boolean;
   iconVariant: WidgetIconVariant;
+  isBrandingHidden: boolean;
 };
 
 class ChatWidgetSettings extends React.Component<Props, State> {
@@ -63,6 +66,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     agentUnavailableText: `We're away at the moment.`,
     requireEmailUpfront: false,
     iconVariant: 'outlined',
+    isBrandingHidden: false,
   };
 
   async componentDidMount() {
@@ -94,6 +98,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
         require_email_upfront: requireEmailUpfront,
         icon_variant: iconVariant,
         away_message: awayMessage,
+        is_branding_hidden: isBrandingHidden,
       } = widgetSettings;
 
       this.setState({
@@ -114,6 +119,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
         requireEmailUpfront:
           requireEmailUpfront || this.state.requireEmailUpfront,
         iconVariant: iconVariant || this.state.iconVariant,
+        isBrandingHidden: isBrandingHidden || this.state.isBrandingHidden,
       });
     } else {
       this.setState({
@@ -205,6 +211,13 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     this.setState({color: color.hex}, this.debouncedUpdateWidgetSettings);
   };
 
+  handleChangeBrandingVisibility = (isChecked: boolean) => {
+    this.setState(
+      {isBrandingHidden: isChecked},
+      this.debouncedUpdateWidgetSettings
+    );
+  };
+
   updateWidgetSettings = async () => {
     const {inbox_id: inboxId} = this.props.match.params;
     const {
@@ -219,6 +232,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
       agentUnavailableText,
       requireEmailUpfront,
       iconVariant,
+      isBrandingHidden,
     } = this.state;
 
     return API.updateWidgetSettings({
@@ -233,6 +247,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
       agent_unavailable_text: agentUnavailableText,
       require_email_upfront: requireEmailUpfront,
       icon_variant: iconVariant,
+      is_branding_hidden: isBrandingHidden,
       inbox_id: inboxId,
     })
       .then((res) => logger.debug('Updated widget settings:', res))
@@ -274,6 +289,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
       agentUnavailableText,
       requireEmailUpfront,
       iconVariant,
+      isBrandingHidden,
     } = this.state;
 
     if (!accountId) {
@@ -476,6 +492,18 @@ class ChatWidgetSettings extends React.Component<Props, State> {
             />
           </Box>
 
+          <Box mb={1}>
+            <label htmlFor="hide_branding">
+              Hide "Powered by Netia" branding
+            </label>
+          </Box>
+          <Box mb={3}>
+            <Switch
+              checked={isBrandingHidden}
+              onChange={this.handleChangeBrandingVisibility}
+            />
+          </Box>
+
           <ChatWidget
             accountId={accountId}
             token={accountId}
@@ -498,14 +526,41 @@ class ChatWidgetSettings extends React.Component<Props, State> {
         </Box>
 
         <Box mb={4}>
-          <Title level={4}>Installing the widget</Title>
+          <Title level={4}>Universal Embed Code</Title>
           <Paragraph>
             <Text>
-              Before you can start receiving messages here in your dashboard,
-              you'll need to install the chat widget into your website.{' '}
-              <span role="img" aria-label=":)">
-                😊
-              </span>
+              Copy and paste this code into your website to add the chat widget.
+              It works on any platform!
+            </Text>
+          </Paragraph>
+
+          <UniversalEmbedCode
+            accountId={accountId}
+            inboxId={inboxId}
+            title={title}
+            subtitle={subtitle}
+            color={color}
+            greeting={greeting}
+            awayMessage={awayMessage}
+            newMessagePlaceholder={newMessagePlaceholder}
+            showAgentAvailability={showAgentAvailability}
+            agentAvailableText={agentAvailableText}
+            agentUnavailableText={agentUnavailableText}
+            requireEmailUpfront={requireEmailUpfront}
+            iconVariant={iconVariant}
+            isBrandingHidden={isBrandingHidden}
+          />
+        </Box>
+
+        <PlatformInstructions />
+
+        <Box mb={4}>
+          <Title level={4}>Legacy Installation (React Component)</Title>
+          <Paragraph>
+            <Text type="secondary">
+              If you're using React and prefer the NPM package approach, use the
+              legacy installation method below. For all other use cases, we
+              recommend the Universal Embed Code above.
             </Text>
           </Paragraph>
         </Box>
