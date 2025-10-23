@@ -28,7 +28,9 @@ WORKDIR /app
 RUN apk add --no-cache git nodejs npm python3 ca-certificates wget gnupg make erlang gcc libc-dev
 
 # Client side
-COPY assets/package.json assets/package-lock.json ./assets/
+# Copy only files that exist to avoid build failures when package-lock.json is absent
+COPY assets/package.json ./assets/package.json
+COPY assets/.npmrc ./assets/.npmrc
 RUN npm install --prefix=assets
 
 # fix because of https://github.com/facebook/create-react-app/issues/8413
