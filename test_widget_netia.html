@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netia AI Widget Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .config {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .instructions {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        /* Force widget visibility */
+        [id*="Papercups"], [class*="Papercups"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 999999 !important;
+        }
+        
+        /* Make sure iframes are visible */
+        iframe[src*="papercups"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Netia AI Widget Test</h1>
+        
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Make sure your Railway app is running at <code>https://app.netia.ai</code></li>
+                <li>Check the status below to see if the widget loads</li>
+                <li>Look for the chat widget in the bottom-right corner</li>
+                <li>If it doesn't appear, check the browser console for errors</li>
+            </ol>
+        </div>
+
+        <div id="status" class="status info">
+            <strong>Status:</strong> Loading widget...
+        </div>
+        
+        <div class="status info">
+            <strong>Manual Controls:</strong>
+            <button onclick="forceShowWidget()" style="margin: 5px;">Force Show Widget</button>
+            <button onclick="checkWidgetElements()" style="margin: 5px;">Check DOM Elements</button>
+            <button onclick="toggleWidgetVisibility()" style="margin: 5px;">Toggle Visibility</button>
+        </div>
+
+        <h3>Widget Configuration:</h3>
+        <div class="config">
+window.Papercups = {
+  config: {
+    token: "YOUR_TOKEN_HERE",
+    inbox: "YOUR_INBOX_ID_HERE", 
+    title: "Welcome to Netia AI",
+    subtitle: "Ask us anything about our AI services! 😊",
+    primaryColor: "#1890ff",
+    newMessagePlaceholder: "Start typing...",
+    showAgentAvailability: false,
+    agentAvailableText: "We're online right now!",
+    agentUnavailableText: "We're away at the moment.",
+    requireEmailUpfront: false,
+    iconVariant: "outlined",
+    baseUrl: "https://app.netia.ai"
+  }
+};
+        </div>
+
+        <h3>Test Content</h3>
+        <p>This is a test page to verify that the Netia AI chat widget loads correctly.</p>
+        <p>If the widget is working, you should see a chat icon in the bottom-right corner of this page.</p>
+        <p>Click on it to start a conversation with the AI assistant.</p>
+        
+        <h3>Troubleshooting:</h3>
+        <ul>
+            <li><strong>Widget not showing?</strong> Check browser console for errors</li>
+            <li><strong>404 errors?</strong> Make sure the Railway deployment completed successfully</li>
+            <li><strong>CORS errors?</strong> The widget should work from any domain</li>
+            <li><strong>Authentication errors?</strong> Check your token and inbox ID</li>
+        </ul>
+    </div>
+
+    <script>
+        // Configure the widget
+        window.Papercups = {
+            config: {
+                token: "77f2c279-9451-4403-9960-ff0445f45870", // Replace with your actual token
+                inbox: "d790d8f5-92b9-4db8-bea2-644c6f587f49", // Replace with your actual inbox ID
+                title: "Welcome to Netia AI",
+                subtitle: "Ask us anything about our AI services! 😊",
+                primaryColor: "#1890ff",
+                newMessagePlaceholder: "Start typing...",
+                showAgentAvailability: false,
+                agentAvailableText: "We're online right now!",
+                agentUnavailableText: "We're away at the moment.",
+                requireEmailUpfront: false,
+                iconVariant: "outlined",
+                baseUrl: "https://app.netia.ai"
+            }
+        };
+        
+        console.log('Widget config set:', window.Papercups.config);
+
+        // Load the widget script
+        console.log('Loading widget from: https://app.netia.ai/widget.js');
+        
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.defer = true;
+        script.src = 'https://app.netia.ai/widget.js';
+        
+        script.onload = function() {
+            console.log('✅ Widget script loaded successfully');
+            document.getElementById('status').innerHTML = '<strong>Status:</strong> ✅ Widget script loaded! Check for the chat icon in the bottom-right corner.';
+            document.getElementById('status').className = 'status success';
+        };
+        
+        script.onerror = function() {
+            console.log('❌ Failed to load widget script');
+            document.getElementById('status').innerHTML = '<strong>Status:</strong> ❌ Failed to load widget script. Check if Railway app is running.';
+            document.getElementById('status').className = 'status error';
+        };
+        
+        document.head.appendChild(script);
+        
+        // Monitor for widget initialization
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                console.log('Checking widget initialization...');
+                console.log('window.Papercups:', window.Papercups);
+                
+                if (window.Papercups && window.Papercups.widget) {
+                    console.log('✅ Widget initialized successfully');
+                } else {
+                    console.log('⚠️ Widget script loaded but widget not initialized');
+                    console.log('Available Papercups methods:', Object.keys(window.Papercups || {}));
+                    
+                    // Try to manually trigger widget initialization
+                    if (window.Papercups && window.Papercups.init) {
+                        console.log('Found init method, trying to call it...');
+                        try {
+                            window.Papercups.init();
+                        } catch (e) {
+                            console.log('Error calling init:', e);
+                        }
+                    }
+                    
+                    // Check if there's a render method
+                    if (window.Papercups && window.Papercups.render) {
+                        console.log('Found render method, trying to call it...');
+                        try {
+                            window.Papercups.render();
+                        } catch (e) {
+                            console.log('Error calling render:', e);
+                        }
+                    }
+                    
+                    // Check for any Papercups-related DOM elements
+                    const papercupsElements = document.querySelectorAll('[class*="papercups"], [id*="papercups"]');
+                    console.log('Papercups DOM elements found:', papercupsElements.length);
+                    papercupsElements.forEach((el, index) => {
+                        console.log(`Element ${index}:`, el.tagName, el.className, el.id, el.style.display, el.style.visibility);
+                    });
+                    
+                    // Check if there are any iframes
+                    const iframes = document.querySelectorAll('iframe');
+                    console.log('Iframes found:', iframes.length);
+                    iframes.forEach((iframe, index) => {
+                        console.log(`Iframe ${index}:`, iframe.src, iframe.style.display, iframe.style.visibility, iframe.style.position, iframe.style.zIndex);
+                    });
+                    
+                    // Check for any divs that might be the widget container
+                    const allDivs = document.querySelectorAll('div');
+                    const widgetDivs = Array.from(allDivs).filter(div => 
+                        div.id.includes('Papercups') || 
+                        div.className.includes('Papercups') ||
+                        div.style.position === 'fixed' ||
+                        div.style.zIndex > 1000
+                    );
+                    console.log('Potential widget divs found:', widgetDivs.length);
+                    widgetDivs.forEach((div, index) => {
+                        console.log(`Widget div ${index}:`, div.id, div.className, div.style.cssText);
+                    });
+                }
+            }, 5000); // Increased timeout
+        });
+    </script>
+</body>
+</html>
