@@ -55,7 +55,7 @@
     "remark-breaks": "^2.0.0",
     "rrweb": "^0.9.7",
     "rrweb-player": "^0.6.2",
-    "sanitize-html": "^2.4.0",
+    "sanitize-html": "^2.3.3",
     "superagent": "^5.3.1",
     "theme-ui": "^0.3.1",
     "typescript": "~3.9.7"
