@@ -43,8 +43,10 @@ RUN npm run build --prefix=assets
 COPY mix.exs mix.lock ./
 COPY config config
 
-RUN mix local.hex --force && \
-    mix local.rebar --force && \
+# Install Hex with a fallback in case the default download endpoint is unavailable
+RUN set -e; \
+    mix local.hex --force || mix archive.install github hexpm/hex branch latest --force; \
+    mix local.rebar --force; \
     mix deps.get --only prod
 
 COPY lib lib
