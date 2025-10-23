@@ -86,7 +86,11 @@ priv/static/assets/
 
 # Docker
 .dockerignore
+docker-compose.yml
 docker-compose.override.yml
+
+# Local development scripts
+dev.sh
 
 # Railway
 .railway/

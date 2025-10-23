@@ -3,7 +3,7 @@ defmodule ChatApiWeb.ConversationChannel do
   use Appsignal.Instrumentation.Decorators
 
   alias ChatApiWeb.Presence
-  alias ChatApi.{Messages, Conversations}
+  alias ChatApi.{Messages, Conversations, LLM.ResponseHandler}
   alias ChatApi.Messages.Message
 
   @impl true
@@ -92,6 +92,33 @@ defmodule ChatApiWeb.ConversationChannel do
       message = Messages.get_message!(message.id)
 
       broadcast_new_message(socket, message)
+
+      # Trigger LLM response if this is a customer message (no user_id)
+      if is_nil(message.user_id) do
+        Task.start(fn ->
+          case ResponseHandler.handle_customer_message(conversation_id, account_id) do
+            {:ok, llm_message} ->
+              # Broadcast the LLM response to the conversation
+              ChatApiWeb.Endpoint.broadcast!(
+                "conversation:#{conversation_id}",
+                "shout",
+                Messages.Helpers.format(llm_message)
+              )
+              
+              # Also broadcast to admin notifications
+              llm_message
+              |> Messages.Notification.broadcast_to_admin!()
+              |> Messages.Notification.notify(:new_message_email)
+              |> Messages.Notification.notify(:webhooks)
+              |> Messages.Notification.notify(:push)
+              |> Messages.Helpers.handle_post_creation_hooks()
+
+            {:error, reason} ->
+              require Logger
+              Logger.error("Failed to generate LLM response: #{inspect(reason)}")
+          end
+        end)
+      end
     else
       _ ->
         broadcast(socket, "shout", payload)

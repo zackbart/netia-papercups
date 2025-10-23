@@ -74,6 +74,7 @@ defmodule ChatApiWeb.Router do
     post("/ses/webhook", SesController, :webhook)
 
     post("/newsletters/:newsletter/subscribe", NewsletterController, :subscribe)
+    post("/onboarding", OnboardingController, :create)
   end
 
   # Protected routes
@@ -161,6 +162,10 @@ defmodule ChatApiWeb.Router do
     resources("/lambdas", LambdaController, except: [:new, :edit])
     resources("/forwarding_addresses", ForwardingAddressController, except: [:new, :edit])
     resources("/inboxes", InboxController, except: [:new, :edit])
+
+    get("/business_context", BusinessContextController, :show)
+    post("/business_context", BusinessContextController, :create)
+    put("/business_context", BusinessContextController, :update)
 
     post("/lambdas/:id/deploy", LambdaController, :deploy)
     post("/lambdas/:id/invoke", LambdaController, :invoke)

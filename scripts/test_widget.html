@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LLM Chat Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 LLM Chat Integration Test</h1>
+        
+        <div class="test-info">
+            <h3>Test Configuration:</h3>
+            <ul>
+                <li><strong>Account ID:</strong> 1141ec4f-505b-4172-9c11-30fe1479d417</li>
+                <li><strong>Inbox ID:</strong> 04ea1e58-cef4-43cd-86a9-dd97b4c25ea0</li>
+                <li><strong>Business Name:</strong> Netia</li>
+                <li><strong>Business Description:</strong> We help small businesses use AI that actually works to make their business more successful!</li>
+            </ul>
+        </div>
+
+        <div class="status info">
+            <strong>Test Instructions:</strong>
+            <ol>
+                <li>Open the chat widget (bottom right corner)</li>
+                <li>Send a message like: "Hello! I'm interested in your AI services."</li>
+                <li>Wait for the LLM response (should mention Netia and AI services)</li>
+                <li>Try asking: "What do you offer?" or "How can you help my business?"</li>
+            </ol>
+        </div>
+
+        <div id="status" class="status info">
+            <strong>Status:</strong> Ready to test. Open the chat widget below.
+        </div>
+
+        <h3>Expected LLM Response:</h3>
+        <p>The LLM should respond with information about Netia's AI services, mentioning that they help small businesses use AI successfully.</p>
+    </div>
+
+    <!-- Papercups Chat Widget -->
+    <script>
+        window.Papercups = {
+            config: {
+                token: "1141ec4f-505b-4172-9c11-30fe1479d417",
+                inbox: "04ea1e58-cef4-43cd-86a9-dd97b4c25ea0",
+                title: "Welcome to Netia",
+                subtitle: "Ask us anything about our AI services! 😊",
+                primaryColor: "#1890ff",
+                newMessagePlaceholder: "Ask about our AI services...",
+                showAgentAvailability: false,
+                agentAvailableText: "We're online right now!",
+                agentUnavailableText: "We're away at the moment.",
+                requireEmailUpfront: false,
+                iconVariant: "outlined",
+                baseUrl: "http://localhost:4000"
+            },
+        };
+    </script>
+    <script>
+        // Debug script to check if widget loads
+        console.log('Loading widget from: http://localhost:4000/widget.js');
+        
+        // Create script element dynamically to ensure correct URL
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.defer = true;
+        script.src = 'http://localhost:4000/widget.js';
+        
+        script.onload = function() {
+            console.log('✅ Widget script loaded successfully');
+            
+            // Monitor network requests to see if widget is trying to connect
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                console.log('🌐 Network request:', args[0]);
+                return originalFetch.apply(this, args).then(response => {
+                    console.log('🌐 Response:', response.status, response.url);
+                    return response;
+                }).catch(error => {
+                    console.log('🌐 Network error:', error);
+                    throw error;
+                });
+            };
+            
+            // Wait a bit for the widget to initialize
+            setTimeout(function() {
+                console.log('Checking widget initialization...');
+                console.log('window.Papercups after script load:', window.Papercups);
+                
+                // Check if the widget is trying to connect
+                if (window.Papercups && window.Papercups.config) {
+                    console.log('Widget config found:', window.Papercups.config);
+                    console.log('Available Papercups methods:', Object.keys(window.Papercups));
+                    
+                    // Try to manually trigger widget initialization if it exists
+                    if (window.Papercups.init) {
+                        console.log('Found window.Papercups.init, trying to call it...');
+                        try {
+                            window.Papercups.init();
+                        } catch (e) {
+                            console.log('Error calling window.Papercups.init:', e);
+                        }
+                    } else {
+                        console.log('No window.Papercups.init method found');
+                    }
+                    
+                    // Check if there's a render method
+                    if (window.Papercups.render) {
+                        console.log('Found window.Papercups.render, trying to call it...');
+                        try {
+                            window.Papercups.render();
+                        } catch (e) {
+                            console.log('Error calling window.Papercups.render:', e);
+                        }
+                    }
+                }
+            }, 2000);
+        };
+        
+        script.onerror = function() {
+            console.log('❌ Failed to load widget script');
+            document.getElementById('status').innerHTML = '<strong>Status:</strong> ❌ Failed to load widget script. Check if Papercups server is running on localhost:4000';
+            document.getElementById('status').className = 'status error';
+        };
+        
+        document.head.appendChild(script);
+        
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking for widget...');
+            console.log('window.Papercups:', window.Papercups);
+            console.log('window.Papercups.config:', window.Papercups ? window.Papercups.config : 'undefined');
+            
+            setTimeout(function() {
+                console.log('Checking widget after timeout...');
+                console.log('window.Papercups:', window.Papercups);
+                console.log('window.Papercups.widget:', window.Papercups ? window.Papercups.widget : 'undefined');
+                
+                if (window.Papercups && window.Papercups.widget) {
+                    console.log('✅ Widget loaded successfully');
+                    document.getElementById('status').innerHTML = '<strong>Status:</strong> ✅ Widget loaded successfully! Try sending a message.';
+                    document.getElementById('status').className = 'status success';
+                } else {
+                    console.log('❌ Widget not loaded');
+                    console.log('Available window properties:', Object.keys(window).filter(key => key.toLowerCase().includes('papercups')));
+                    
+                    // Check if there are any Papercups-related elements in the DOM
+                    var papercupsElements = document.querySelectorAll('[class*="papercups"], [id*="papercups"]');
+                    console.log('Papercups DOM elements found:', papercupsElements.length);
+                    
+                    document.getElementById('status').innerHTML = '<strong>Status:</strong> ❌ Widget failed to load. Check browser console for errors.';
+                    document.getElementById('status').className = 'status error';
+                }
+            }, 5000); // Increased timeout to 5 seconds
+        });
+    </script>
+</body>
+</html>
