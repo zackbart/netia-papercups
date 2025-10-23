@@ -61,8 +61,8 @@
     "typescript": "~3.9.7"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "postbuild": "mkdirp ../priv/static && cpx \"./build/**\" \"../priv/static\" --clean",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -101,8 +101,10 @@
   },
   "proxy": "http://localhost:4000",
   "devDependencies": {
+    "@craco/craco": "^5.6.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "path-browserify": "^1.0.1"
   }
 }
