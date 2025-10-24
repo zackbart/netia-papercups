@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Production Netia Widget with AI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1890ff;
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #0050b3;
+        }
+        
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        .info {
+            background: #fff7e6;
+            border: 1px solid #ffd591;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Netia AI Widget Test</h1>
+        <p>Testing the production Netia widget with AI integration</p>
+        
+        <div class="instructions">
+            <h3>📋 Test Instructions</h3>
+            <ol>
+                <li>Click the blue chat widget in the bottom right corner</li>
+                <li>Send a message to test the AI response</li>
+                <li>Watch the console for debug logs</li>
+                <li>Verify the AI responds via real-time WebSocket</li>
+            </ol>
+        </div>
+        
+        <div class="info">
+            <strong>ℹ️ Configuration:</strong><br>
+            <strong>Token:</strong> <code>1141ec4f-505b-4172-9c11-30fe1479d417</code><br>
+            <strong>Inbox:</strong> <code>04ea1e58-cef4-43cd-86a9-dd97b4c25ea0</code><br>
+            <strong>Base URL:</strong> <code>http://localhost:4000</code>
+        </div>
+        
+        <div class="success">
+            <strong>✅ What to expect:</strong><br>
+            1. Widget loads from <code>/widget.js</code> (production bundle)<br>
+            2. Message sent to backend via public API<br>
+            3. AI generates response using LLM<br>
+            4. Response delivered in real-time via Phoenix Channel<br>
+            5. Widget displays AI message immediately
+        </div>
+    </div>
+
+    <!-- Load the production Netia widget -->
+    <script>
+        // Configure the widget
+        window.Papercups = {
+            config: {
+                // Required
+                token: '1141ec4f-505b-4172-9c11-30fe1479d417',
+                inbox: '04ea1e58-cef4-43cd-86a9-dd97b4c25ea0',
+                
+                // Customization
+                title: 'Netia AI Assistant',
+                subtitle: 'Ask me anything!',
+                primaryColor: '#1890ff',
+                greeting: 'Hi! I\'m your AI assistant. How can I help you today?',
+                newMessagePlaceholder: 'Type your message...',
+                
+                // Base URL for local development
+                baseUrl: 'http://localhost:4000',
+                
+                // IMPORTANT: Override the iframe URL to load the chat widget, not the admin dashboard
+                iframeUrlOverride: 'http://localhost:4000/chat',
+                
+                // Show the widget immediately for testing
+                defaultIsOpen: true,
+                
+                // Debug mode
+                debug: true,
+                
+                // Callbacks for testing
+                onChatLoaded: function(chat) {
+                    console.log('✅ Chat widget loaded successfully!');
+                    console.log('Chat controls:', chat);
+                },
+                
+                onChatOpened: function() {
+                    console.log('📖 Chat opened');
+                },
+                
+                onChatClosed: function() {
+                    console.log('📕 Chat closed');
+                },
+                
+                onMessageSent: function(message) {
+                    console.log('📤 Message sent:', message);
+                },
+                
+                onMessageReceived: function(message) {
+                    console.log('📥 Message received:', message);
+                    
+                    // Check if this is an AI message
+                    if (message.user_id && !message.customer_id) {
+                        console.log('🤖 AI Response detected!');
+                    }
+                }
+            }
+        };
+    </script>
+    
+    <!-- Load the production widget -->
+    <script src="http://localhost:4000/widget.js"></script>
+</body>
+</html>
+
