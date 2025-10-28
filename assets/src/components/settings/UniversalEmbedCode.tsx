@@ -37,47 +37,81 @@ const UniversalEmbedCode: FunctionComponent<UniversalEmbedCodeProps> = ({
   isBrandingHidden,
 }) => {
   const generateEmbedCode = () => {
+    const params = new URLSearchParams({
+      token: accountId,
+      ...(inboxId && {inbox: inboxId}),
+      ...(title && {title}),
+      ...(subtitle && {subtitle}),
+      ...(color && {primaryColor: color}),
+      ...(greeting && {greeting}),
+      ...(awayMessage && {awayMessage}),
+      ...(newMessagePlaceholder && {newMessagePlaceholder}),
+      showAgentAvailability: showAgentAvailability ? '1' : '0',
+      ...(agentAvailableText && {agentAvailableText}),
+      ...(agentUnavailableText && {agentUnavailableText}),
+      requireEmailUpfront: requireEmailUpfront ? '1' : '0',
+      ...(iconVariant && {iconVariant}),
+      isBrandingHidden: isBrandingHidden ? 'true' : 'false',
+    });
+
     return `
+<!-- Netia Chat Widget -->
+<div id="netia-chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+  <button id="netia-chat-button" style="
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: ${color || '#1890ff'};
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 24px;
+    transition: transform 0.2s;
+  ">💬</button>
+</div>
+
 <script>
-window.Papercups = {
-  config: {
-    ${[
-      `token: "${accountId}"`,
-      inboxId && `inbox: "${inboxId}"`,
-      title && `title: "${title}"`,
-      subtitle && `subtitle: "${subtitle}"`,
-      color && `primaryColor: "${color}"`,
-      greeting && `greeting: "${greeting}"`,
-      awayMessage && `awayMessage: "${awayMessage}"`,
-      newMessagePlaceholder &&
-        `newMessagePlaceholder: "${newMessagePlaceholder}"`,
-      `showAgentAvailability: ${showAgentAvailability}`,
-      agentAvailableText && `agentAvailableText: "${agentAvailableText}"`,
-      agentUnavailableText && `agentUnavailableText: "${agentUnavailableText}"`,
-      `requireEmailUpfront: ${requireEmailUpfront}`,
-      iconVariant && `iconVariant: "${iconVariant}"`,
-      `baseUrl: "${FRONTEND_BASE_URL}"`,
-    ]
-      .filter(Boolean)
-      .join(',\n    ')}
-    // Optionally include data about your customer here to identify them
-    // customer: {
-    //   name: __CUSTOMER__.name,
-    //   email: __CUSTOMER__.email,
-    //   external_id: __CUSTOMER__.id,
-    //   metadata: {
-    //     plan: "premium"
-    //   }
-    // }
-  },
-};
+(function() {
+  const button = document.getElementById('netia-chat-button');
+  const widget = document.getElementById('netia-chat-widget');
+  let iframe = null;
+  
+  button.addEventListener('click', function() {
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.src = '${FRONTEND_BASE_URL}/chat?${params.toString()}';
+      iframe.style.cssText = \`
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 400px;
+        height: 600px;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        max-width: calc(100vw - 40px);
+        max-height: calc(100vh - 120px);
+      \`;
+      document.body.appendChild(iframe);
+      button.innerHTML = '✕';
+    } else {
+      const isVisible = iframe.style.display !== 'none';
+      iframe.style.display = isVisible ? 'none' : 'block';
+      button.innerHTML = isVisible ? '💬' : '✕';
+    }
+  });
+  
+  button.addEventListener('mouseenter', function() {
+    button.style.transform = 'scale(1.1)';
+  });
+  
+  button.addEventListener('mouseleave', function() {
+    button.style.transform = 'scale(1)';
+  });
+})();
 </script>
-<script
-  type="text/javascript"
-  async
-  defer
-  src="${FRONTEND_BASE_URL}/widget.js"
-></script>
 `.trim();
   };
 

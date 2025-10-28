@@ -399,8 +399,8 @@ defmodule ChatApi.Emails.Email do
   def password_reset(%ChatApi.Users.User{email: email, password_reset_token: token} = _user) do
     new()
     |> to(email)
-    |> from({"Papercups", @from_address})
-    |> subject("[Papercups] Link to reset your password")
+    |> from({"Netia", @from_address})
+    |> subject("[Netia] Link to reset your password")
     |> html_body(password_reset_html(token))
     |> text_body(password_reset_text(token))
   end
@@ -418,12 +418,12 @@ defmodule ChatApi.Emails.Email do
     """
     Hi there!
 
-    Click the link below to reset your Papercups password:
+    Click the link below to reset your Netia password:
 
     #{get_app_domain()}/reset?token=#{token}
 
     Best,
-    Alex & Kam @ Papercups
+    The Netia Team
     """
   end
 
@@ -434,13 +434,13 @@ defmodule ChatApi.Emails.Email do
     """
     <p>Hi there!</p>
 
-    <p>Click the link below to reset your Papercups password:</p>
+    <p>Click the link below to reset your Netia password:</p>
 
     <a href="#{link}">#{link}</a>
 
     <p>
     Best,<br />
-    Alex & Kam @ Papercups
+    The Netia Team
     </p>
     """
   end
