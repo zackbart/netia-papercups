@@ -54,12 +54,13 @@ const getStepsMetadata = (
     },
     {
       completed: onboardingStatus.has_configured_profile,
-      ctaHref: '/settings/profile',
-      ctaText: 'Set up profile',
+      ctaHref: '/settings/business-context',
+      ctaText: 'Add your business information',
       text: (
         <>
-          <Text strong>Set up your profile</Text> to personalize the experience
-          with your customers.
+          <Text strong>Add your business information</Text> to help the AI
+          assistant provide more relevant and personalized responses to your
+          customers.
         </>
       ),
     },
@@ -74,28 +75,29 @@ const getStepsMetadata = (
         </>
       ),
     },
-    {
-      completed: onboardingStatus.has_integrations,
-      ctaHref: '/integrations',
-      ctaText: 'Add integrations',
-      text: (
-        <>
-          <Text strong>Connect more integrations</Text> to make the most of
-          Papercups.
-        </>
-      ),
-    },
-    {
-      completed: onboardingStatus.has_upgraded_subscription,
-      ctaHref: '/settings/billing',
-      ctaText: 'Upgrade subscription',
-      text: (
-        <>
-          <Text strong>Upgrade your subscription</Text> for access to even more
-          features!
-        </>
-      ),
-    },
+    // Hidden steps - keeping integrations and billing hidden
+    // {
+    //   completed: onboardingStatus.has_integrations,
+    //   ctaHref: '/integrations',
+    //   ctaText: 'Add integrations',
+    //   text: (
+    //     <>
+    //       <Text strong>Connect more integrations</Text> to make the most of
+    //       Papercups.
+    //     </>
+    //   ),
+    // },
+    // {
+    //   completed: onboardingStatus.has_upgraded_subscription,
+    //   ctaHref: '/settings/billing',
+    //   ctaText: 'Upgrade subscription',
+    //   text: (
+    //     <>
+    //       <Text strong>Upgrade your subscription</Text> for access to even more
+    //       features!
+    //     </>
+    //   ),
+    // },
   ];
 };
 

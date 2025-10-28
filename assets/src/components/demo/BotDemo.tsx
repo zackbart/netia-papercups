@@ -19,13 +19,10 @@ import {BASE_URL, env} from '../../config';
 import * as API from '../../api';
 import logger from '../../logger';
 import {getBotDemoFaqs, setBotDemoFaqs} from '../../storage';
-// Import widget from separate package
-import ChatWidget from '@papercups-io/chat-widget';
 import {formatUserExternalId} from '../../utils';
 
-const {
-  REACT_APP_ADMIN_ACCOUNT_ID = 'eb504736-0f20-4978-98ff-1a82ae60b266',
-} = env;
+const {REACT_APP_ADMIN_ACCOUNT_ID = 'eb504736-0f20-4978-98ff-1a82ae60b266'} =
+  env;
 
 type FAQ = {
   q: string;
@@ -34,14 +31,12 @@ type FAQ = {
 
 const DEFAULT_FAQS: Array<FAQ> = [
   {
-    q: 'What is Papercups?',
-    a:
-      "It's a chat widget that you can embed on your website or mobile app so you can talk with your users :) ",
+    q: 'What is Netia?',
+    a: "It's a chat widget that you can embed on your website or mobile app so you can talk with your users :) ",
   },
   {
-    q: 'How does Papercups work?',
-    a:
-      'You can embed our chat widget on your website or mobile app so you can talk with your users :) ',
+    q: 'How does Netia work?',
+    a: 'You can embed our chat widget on your website or mobile app so you can talk with your users :) ',
   },
   {
     q: 'Do you support live chat?',
@@ -57,7 +52,7 @@ const DEFAULT_FAQS: Array<FAQ> = [
   },
   {
     q: 'Who are you?',
-    a: "My name is Alex, I'm one of the co-creators of Papercups :)",
+    a: "My name is Alex, I'm one of the co-creators of Netia :)",
   },
   {
     q: 'Where are you?',
@@ -185,7 +180,7 @@ class Demo extends React.Component<Props, State> {
         }}
       >
         <Box mb={4}>
-          <Title>Papercups Bot Demo</Title>
+          <Title>Netia Bot Demo</Title>
           <Alert
             message={
               <Text>
@@ -218,7 +213,7 @@ class Demo extends React.Component<Props, State> {
               <label htmlFor="answer">Answer</label>
               <TextArea
                 id="answer"
-                placeholder="Hmm... it's gotta be Papercups!"
+                placeholder="Hmm... it's gotta be Netia!"
                 value={newAnswer}
                 onChange={this.handleChangeAnswer}
               />
@@ -285,23 +280,23 @@ class Demo extends React.Component<Props, State> {
           </Link>
         </Flex>
 
-        <ChatWidget
-          token={REACT_APP_ADMIN_ACCOUNT_ID}
-          accountId={REACT_APP_ADMIN_ACCOUNT_ID}
-          title="Welcome to Papercups!"
-          subtitle="Test out our bot in the chat window below 💭"
-          primaryColor={colors.primary}
-          greeting="Hey there! Try asking a question similar to the FAQs to your left :)"
-          customer={customer}
-          baseUrl={BASE_URL}
-          defaultIsOpen
-          onChatLoaded={() => logger.debug('Chat loaded!')}
-          onChatClosed={() => logger.debug('Chat closed!')}
-          onChatOpened={() => logger.debug('Chat opened!')}
-          onMessageReceived={(message: any) =>
-            logger.debug('Message received!', message)
-          }
-          onMessageSent={this.handleNlpDemo}
+        <iframe
+          src={`${BASE_URL}/chat?token=${REACT_APP_ADMIN_ACCOUNT_ID}&title=${encodeURIComponent(
+            'Welcome to Netia!'
+          )}&subtitle=${encodeURIComponent(
+            'Test out our bot in the chat window below 💭'
+          )}&primaryColor=${encodeURIComponent(
+            colors.primary
+          )}&greeting=${encodeURIComponent(
+            'Hey there! Try asking a question similar to the FAQs to your left :)'
+          )}&customer=${encodeURIComponent(JSON.stringify(customer))}`}
+          style={{
+            width: '100%',
+            height: '500px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+          }}
+          title="Bot Demo Chat"
         />
       </Box>
     );

@@ -5,7 +5,6 @@ import {Box, Flex} from 'theme-ui';
 import {colors, Button, Table, Tag, Text} from '../common';
 import {PlusOutlined, SettingOutlined} from '../icons';
 import {IntegrationType} from './support';
-import {Papercups} from '@papercups-io/chat-widget';
 
 const IntegrationsTable = ({
   loading,
@@ -126,7 +125,13 @@ const IntegrationsTable = ({
 
           default:
             return isChatAvailable ? (
-              <Button onClick={Papercups.toggle}>Chat with us!</Button>
+              <Button
+                onClick={() =>
+                  window.open(`${window.location.origin}/chat`, '_blank')
+                }
+              >
+                Chat with us!
+              </Button>
             ) : (
               <Button disabled>Coming soon!</Button>
             );

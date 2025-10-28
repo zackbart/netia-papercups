@@ -1,6 +1,5 @@
 import React from 'react';
 import {Flex} from 'theme-ui';
-import {Papercups} from '@papercups-io/chat-widget';
 
 import * as API from '../../api';
 import {formatServerError, sleep} from '../../utils';
@@ -43,7 +42,12 @@ const LambdasOnboarding = () => {
           title="Unable to request access"
           subTitle={<Text>{error}</Text>}
           extra={
-            <Button type="primary" onClick={Papercups.toggle}>
+            <Button
+              type="primary"
+              onClick={() =>
+                window.open(`${window.location.origin}/chat`, '_blank')
+              }
+            >
               Contact us for help
             </Button>
           }

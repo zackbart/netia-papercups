@@ -95,11 +95,25 @@ defmodule ChatApiWeb.ConversationChannel do
 
       # Trigger LLM response if this is a customer message (no user_id)
       if is_nil(message.user_id) do
+        # Broadcast typing indicator start
+        ChatApiWeb.Endpoint.broadcast!(
+          "conversation:#{conversation_id}",
+          "typing",
+          %{typing: true, type: "ai"}
+        )
+        
         Task.start(fn ->
           case ResponseHandler.handle_customer_message(conversation_id, account_id) do
             {:ok, llm_message} ->
               # Reload message with associations to avoid NotLoaded errors
               llm_message_loaded = Messages.get_message!(llm_message.id)
+              
+              # Broadcast typing indicator stop
+              ChatApiWeb.Endpoint.broadcast!(
+                "conversation:#{conversation_id}",
+                "typing",
+                %{typing: false, type: "ai"}
+              )
               
               # Broadcast the LLM response to the conversation
               ChatApiWeb.Endpoint.broadcast!(
@@ -119,6 +133,13 @@ defmodule ChatApiWeb.ConversationChannel do
             {:error, reason} ->
               require Logger
               Logger.error("Failed to generate LLM response: #{inspect(reason)}")
+              
+              # Broadcast typing indicator stop on error
+              ChatApiWeb.Endpoint.broadcast!(
+                "conversation:#{conversation_id}",
+                "typing",
+                %{typing: false, type: "ai"}
+              )
           end
         end)
       end

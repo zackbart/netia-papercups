@@ -9,20 +9,16 @@ import {
 } from 'react-router-dom';
 import {Helmet} from 'react-helmet';
 import {Box, Flex} from 'theme-ui';
-import {ChatWidget, Papercups} from '@papercups-io/chat-widget';
 // import {Storytime} from '../lib/storytime'; // For testing
 import {Storytime} from '@papercups-io/storytime';
 import {colors, Layout, Menu, Sider} from './common';
 import {
-  ApiOutlined,
-  CodeOutlined,
   GlobalOutlined,
   LineChartOutlined,
   LogoutOutlined,
   MailOutlined,
   SettingOutlined,
   SmileOutlined,
-  TeamOutlined,
   VideoCameraOutlined,
 } from './icons';
 import {
@@ -95,9 +91,8 @@ import CannedResponsesOverview from './canned-responses/CannedResponsesOverview'
 import ForwardingAddressSettings from './settings/ForwardingAddressSettings';
 import InboxesDashboard from './inboxes/InboxesDashboard';
 
-const {
-  REACT_APP_ADMIN_ACCOUNT_ID = 'eb504736-0f20-4978-98ff-1a82ae60b266',
-} = env;
+const {REACT_APP_ADMIN_ACCOUNT_ID = 'eb504736-0f20-4978-98ff-1a82ae60b266'} =
+  env;
 
 const TITLE_FLASH_INTERVAL = 2000;
 
@@ -106,17 +101,7 @@ const shouldDisplayChat = (pathname: string) => {
 };
 
 const getSectionKey = (pathname: string) => {
-  if (pathname.startsWith('/companies')) {
-    return ['customers', 'companies'];
-  } else if (pathname.startsWith('/customers')) {
-    return ['customers', 'people'];
-  } else if (pathname.startsWith('/tags')) {
-    return ['customers', 'tags'];
-  } else if (pathname.startsWith('/notes')) {
-    return ['customers', 'notes'];
-  } else if (pathname.startsWith('/functions')) {
-    return ['developers', 'functions'];
-  } else if (pathname.startsWith('/inboxes')) {
+  if (pathname.startsWith('/inboxes')) {
     return ['conversations', ...pathname.split('/').slice(2)];
   } else {
     return pathname.split('/').slice(1); // Slice off initial slash
@@ -150,48 +135,39 @@ const ChatWithUs = ({
   currentUser: User;
   account?: Account | null;
 }) => {
-  if (isEuEdition) {
-    return (
-      <ChatWidget
-        token={REACT_APP_ADMIN_ACCOUNT_ID}
-        accountId={REACT_APP_ADMIN_ACCOUNT_ID}
-        title="Need help with anything?"
-        subtitle="Ask us in the chat window below 😊"
-        greeting="Hi there! Send us a message and we'll get back to you as soon as we can."
-        primaryColor="#1890ff"
-        hideToggleButton
-        baseUrl="https://app.papercups-eu.io"
-        customer={{
-          external_id: formatUserExternalId(currentUser),
-          email: currentUser.email,
-          metadata: {
-            company_name: account?.company_name,
-            subscription_plan: account?.subscription_plan,
-            edition: 'EU',
-          },
-        }}
-      />
-    );
-  }
+  const chatUrl = `${BASE_URL}/chat?token=${REACT_APP_ADMIN_ACCOUNT_ID}&title=${encodeURIComponent(
+    'Need help with anything?'
+  )}&subtitle=${encodeURIComponent(
+    'Ask us in the chat window below 😊'
+  )}&greeting=${encodeURIComponent(
+    "Hi there! Send us a message and we'll get back to you as soon as we can."
+  )}&primaryColor=#1890ff&customer=${encodeURIComponent(
+    JSON.stringify({
+      external_id: formatUserExternalId(currentUser),
+      email: currentUser.email,
+      metadata: {
+        company_name: account?.company_name,
+        subscription_plan: account?.subscription_plan,
+        edition: isEuEdition ? 'EU' : 'US',
+      },
+    })
+  )}`;
 
   return (
-    <ChatWidget
-      token={REACT_APP_ADMIN_ACCOUNT_ID}
-      accountId={REACT_APP_ADMIN_ACCOUNT_ID}
-      title="Need help with anything?"
-      subtitle="Ask us in the chat window below 😊"
-      greeting="Hi there! Send us a message and we'll get back to you as soon as we can."
-      primaryColor="#1890ff"
-      hideToggleButton
-      customer={{
-        external_id: formatUserExternalId(currentUser),
-        email: currentUser.email,
-        metadata: {
-          company_name: account?.company_name,
-          subscription_plan: account?.subscription_plan,
-          edition: 'US',
-        },
+    <iframe
+      src={chatUrl}
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        width: '350px',
+        height: '500px',
+        border: 'none',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 1000,
       }}
+      title="Chat Support"
     />
   );
 };
@@ -201,11 +177,11 @@ const ChatWithUs = ({
 // tab (i.e. HTML title) so users can see when new messages arrive
 const DashboardHtmlHead = ({totalNumUnread}: {totalNumUnread: number}) => {
   const doc = document || window.document;
-  const [htmlTitle, setHtmlTitle] = useState('Papercups');
+  const [htmlTitle, setHtmlTitle] = useState('Netia');
   const isWindowVisible = useWindowVisibility(doc);
   const timer = useRef<any>();
 
-  const hasDefaultTitle = (title: string) => title.startsWith('Papercups');
+  const hasDefaultTitle = (title: string) => title.startsWith('Netia');
 
   const toggleNotificationMessage = () => {
     if (totalNumUnread > 0 && hasDefaultTitle(htmlTitle) && !isWindowVisible) {
@@ -213,7 +189,7 @@ const DashboardHtmlHead = ({totalNumUnread}: {totalNumUnread: number}) => {
         `(${totalNumUnread}) New message${totalNumUnread === 1 ? '' : 's'}!`
       );
     } else {
-      setHtmlTitle('Papercups');
+      setHtmlTitle('Netia');
     }
   };
 
@@ -235,7 +211,7 @@ const DashboardHtmlHead = ({totalNumUnread}: {totalNumUnread: number}) => {
 
   return (
     <Helmet defer={false}>
-      <title>{totalNumUnread ? htmlTitle : 'Papercups'}</title>
+      <title>{totalNumUnread ? htmlTitle : 'Netia'}</title>
     </Helmet>
   );
 };
@@ -330,28 +306,6 @@ const Dashboard = (props: RouteComponentProps) => {
                 </Menu.Item>
               )}
 
-              <Menu.SubMenu
-                key="customers"
-                icon={<TeamOutlined />}
-                title="Customers"
-              >
-                <Menu.Item key="people">
-                  <Link to="/customers">People</Link>
-                </Menu.Item>
-                <Menu.Item key="companies">
-                  <Link to="/companies">Companies</Link>
-                </Menu.Item>
-                <Menu.Item key="tags">
-                  <Link to="/tags">Tags</Link>
-                </Menu.Item>
-                <Menu.Item key="issues">
-                  <Link to="/issues">Issues</Link>
-                </Menu.Item>
-                <Menu.Item key="notes">
-                  <Link to="/notes">Notes</Link>
-                </Menu.Item>
-              </Menu.SubMenu>
-
               <Menu.Item
                 title="Reporting"
                 icon={<LineChartOutlined />}
@@ -359,26 +313,6 @@ const Dashboard = (props: RouteComponentProps) => {
               >
                 <Link to="/reporting">Reporting</Link>
               </Menu.Item>
-
-              {isAdminUser && (
-                <Menu.SubMenu
-                  key="developers"
-                  icon={<CodeOutlined />}
-                  title="Developers"
-                >
-                  <Menu.Item key="personal-api-keys">
-                    <Link to="/developers/personal-api-keys">API keys</Link>
-                  </Menu.Item>
-                  <Menu.Item key="event-subscriptions">
-                    <Link to="/developers/event-subscriptions">
-                      Event subscriptions
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="functions">
-                    <Link to="/functions">Functions</Link>
-                  </Menu.Item>
-                </Menu.SubMenu>
-              )}
 
               {/* Sessions menu item removed for LLM-only setup */}
 
@@ -433,7 +367,7 @@ const Dashboard = (props: RouteComponentProps) => {
                   title="Chat with us!"
                   icon={<SmileOutlined />}
                   key="chat"
-                  onClick={Papercups.toggle}
+                  onClick={() => window.open(`${BASE_URL}/chat`, '_blank')}
                 >
                   Chat with us!
                 </Menu.Item>

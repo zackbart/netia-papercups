@@ -3,7 +3,6 @@ import {RouteComponentProps} from 'react-router';
 import {capitalize, debounce} from 'lodash';
 import {Box} from 'theme-ui';
 import {TwitterPicker} from 'react-color';
-import {ChatWidget, Papercups} from '@papercups-io/chat-widget';
 
 import * as API from '../../api';
 import {Account, Inbox, User, WidgetIconVariant} from '../../types';
@@ -201,9 +200,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
   };
 
   handleChangeIconVariant = (variant: 'outlined' | 'filled') => {
-    // Ensure the chat is closed to view the icon
-    Papercups.close();
-
+    // Icon variant changed - no need to close anything since we're using iframe
     this.setState({iconVariant: variant}, this.debouncedUpdateWidgetSettings);
   };
 
@@ -504,25 +501,38 @@ class ChatWidgetSettings extends React.Component<Props, State> {
             />
           </Box>
 
-          <ChatWidget
-            accountId={accountId}
-            token={accountId}
-            inbox={inboxId}
-            title={title || 'Welcome!'}
-            subtitle={subtitle}
-            primaryColor={color}
-            greeting={greeting}
-            awayMessage={awayMessage}
-            showAgentAvailability={showAgentAvailability}
-            agentAvailableText={agentAvailableText}
-            agentUnavailableText={agentUnavailableText}
-            requireEmailUpfront={requireEmailUpfront}
-            newMessagePlaceholder={newMessagePlaceholder}
-            customer={customer}
-            baseUrl={BASE_URL}
-            iconVariant={iconVariant}
-            defaultIsOpen
-          />
+          <Box mb={4}>
+            <Title level={4}>Widget Preview</Title>
+            <Paragraph>
+              <Text>Preview of your chat widget with current settings:</Text>
+            </Paragraph>
+            <iframe
+              src={`${BASE_URL}/chat?token=${accountId}&inbox=${inboxId}&title=${encodeURIComponent(
+                title || 'Welcome!'
+              )}&subtitle=${encodeURIComponent(
+                subtitle
+              )}&primaryColor=${encodeURIComponent(
+                color
+              )}&greeting=${encodeURIComponent(
+                greeting
+              )}&awayMessage=${encodeURIComponent(
+                awayMessage
+              )}&showAgentAvailability=${showAgentAvailability}&agentAvailableText=${encodeURIComponent(
+                agentAvailableText
+              )}&agentUnavailableText=${encodeURIComponent(
+                agentUnavailableText
+              )}&requireEmailUpfront=${requireEmailUpfront}&newMessagePlaceholder=${encodeURIComponent(
+                newMessagePlaceholder
+              )}&iconVariant=${iconVariant}&isBrandingHidden=${isBrandingHidden}`}
+              style={{
+                width: '100%',
+                height: '500px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+              }}
+              title="Chat Widget Preview"
+            />
+          </Box>
         </Box>
 
         <Box mb={4}>
@@ -555,246 +565,27 @@ class ChatWidgetSettings extends React.Component<Props, State> {
         <PlatformInstructions />
 
         <Box mb={4}>
-          <Title level={4}>Legacy Installation (React Component)</Title>
+          <Title level={4}>Installation Instructions</Title>
           <Paragraph>
-            <Text type="secondary">
-              If you're using React and prefer the NPM package approach, use the
-              legacy installation method below. For all other use cases, we
-              recommend the Universal Embed Code above.
+            <Text>
+              Simply copy the Universal Embed Code above and paste it into your
+              website's HTML. The widget will automatically load and connect to
+              your chat system.
             </Text>
           </Paragraph>
         </Box>
 
-        <CodeSnippet
-          accountId={accountId}
-          inboxId={inboxId}
-          title={title}
-          subtitle={subtitle}
-          color={color}
-          greeting={greeting}
-          awayMessage={awayMessage}
-          newMessagePlaceholder={newMessagePlaceholder}
-          showAgentAvailability={showAgentAvailability}
-          agentAvailableText={agentAvailableText}
-          agentUnavailableText={agentUnavailableText}
-          requireEmailUpfront={requireEmailUpfront}
-          iconVariant={iconVariant}
-        />
-
         <Title level={4}>Learn more</Title>
         <Paragraph>
           <Text>
-            See the code and star our{' '}
-            <a
-              href="https://github.com/papercups-io/chat-widget"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Github repo
-            </a>
-            .
+            This chat widget is powered by your custom implementation at{' '}
+            <Text code>/chat</Text>. All settings are applied in real-time to
+            the widget preview above.
           </Text>
         </Paragraph>
       </Box>
     );
   }
 }
-
-enum Languages {
-  HTML = 'HTML',
-  REACT = 'REACT',
-}
-
-type CodeSnippetProps = {
-  accountId: string | null;
-  inboxId?: string;
-  title: string;
-  subtitle: string;
-  color: string;
-  greeting?: string;
-  awayMessage?: string;
-  newMessagePlaceholder?: string;
-  showAgentAvailability: boolean;
-  agentAvailableText?: string;
-  agentUnavailableText?: string;
-  requireEmailUpfront: boolean;
-  iconVariant: WidgetIconVariant;
-};
-
-const CodeSnippet: FunctionComponent<CodeSnippetProps> = ({
-  accountId,
-  inboxId,
-  title,
-  subtitle,
-  color,
-  greeting,
-  awayMessage,
-  newMessagePlaceholder,
-  showAgentAvailability,
-  agentAvailableText,
-  agentUnavailableText,
-  requireEmailUpfront,
-  iconVariant,
-}) => {
-  return (
-    <Tabs
-      defaultActiveKey={Languages.HTML}
-      type="card"
-      className="GettingStartedCode"
-    >
-      <Tabs.TabPane tab="HTML" key={Languages.HTML}>
-        <Box mb={4}>
-          <Title level={4}>Usage in HTML</Title>
-          <Paragraph>
-            <Text>
-              Paste the code below between your <Text code>{'<head>'}</Text> and{' '}
-              <Text code>{'</head>'}</Text> tags:
-            </Text>
-          </Paragraph>
-
-          <StandardSyntaxHighlighter language="html">
-            {`
-<script>
-window.Papercups = {
-  config: {
-    ${[
-      `token: "${accountId}"`,
-      inboxId && `inbox: "${inboxId}"`,
-      `title: "${title}"`,
-      `subtitle: "${subtitle}"`,
-      `primaryColor: "${color}"`,
-      greeting && `greeting: "${greeting || ''}"`,
-      awayMessage && `awayMessage: "${awayMessage || ''}"`,
-      newMessagePlaceholder &&
-        `newMessagePlaceholder: "${newMessagePlaceholder || ''}"`,
-      `showAgentAvailability: ${showAgentAvailability}`,
-      agentAvailableText && `agentAvailableText: "${agentAvailableText || ''}"`,
-      agentUnavailableText &&
-        `agentUnavailableText: "${agentUnavailableText || ''}"`,
-      `requireEmailUpfront: ${requireEmailUpfront}`,
-      `iconVariant: "${iconVariant}"`,
-      `baseUrl: "${BASE_URL}"`,
-    ]
-      .filter(Boolean)
-      .join(',\n    ')}
-    // Optionally include data about your customer here to identify them
-    // customer: {
-    //   name: __CUSTOMER__.name,
-    //   email: __CUSTOMER__.email,
-    //   external_id: __CUSTOMER__.id,
-    //   metadata: {
-    //     plan: "premium"
-    //   }
-    // }
-  },
-};
-</script>
-<script
-  type="text/javascript"
-  async
-  defer
-  src="${FRONTEND_BASE_URL}/widget.js"
-></script>
-`.trim()}
-          </StandardSyntaxHighlighter>
-        </Box>
-      </Tabs.TabPane>
-
-      <Tabs.TabPane tab="React" tabKey={Languages.REACT}>
-        <Box mb={4}>
-          <Title level={4}>Usage in React</Title>
-          <Box mb={3}>
-            <Alert
-              message={
-                <Text>
-                  If you've already installed a previous version of{' '}
-                  <Text code>@papercups-io/chat-widget</Text>, please upgrade to
-                  version <Text code>^1.2.0</Text> in order to receive inbox
-                  support.
-                </Text>
-              }
-              type="warning"
-              showIcon
-            />
-          </Box>
-          <Paragraph>
-            <Text>
-              First, install the <Text code>@papercups-io/chat-widget</Text>{' '}
-              package:
-            </Text>
-          </Paragraph>
-
-          <Paragraph>
-            <StandardSyntaxHighlighter language="bash">
-              npm install --save @papercups-io/chat-widget
-            </StandardSyntaxHighlighter>
-          </Paragraph>
-
-          <Paragraph>
-            <Text>
-              Your account token has been prefilled in the code below. Simply
-              copy and paste the code into whichever pages you would like to
-              display the chat widget!
-            </Text>
-          </Paragraph>
-
-          <StandardSyntaxHighlighter language="typescript">
-            {`
-import React from "react";
-import {ChatWidget} from "@papercups-io/chat-widget";
-
-const ExamplePage = () => {
-  return (
-    <>
-      {/*
-        Put <ChatWidget /> at the bottom of whatever pages you would
-        like to render the widget on, or in your root/router component
-        if you would like it to render on every page
-      */}
-      <ChatWidget
-        // \`accountId\` is used instead of \`token\` in older versions
-        // of the @papercups-io/chat-widget package (before v1.2.x).
-        // You can delete this line if you are on the latest version.
-        // accountId="${accountId}"
-        ${[
-          `token="${accountId}"`,
-          inboxId && `inbox="${inboxId}"`,
-          `title="${title}"`,
-          `subtitle="${subtitle}"`,
-          `primaryColor="${color}"`,
-          greeting && `greeting="${greeting || ''}"`,
-          awayMessage && `awayMessage="${awayMessage || ''}"`,
-          newMessagePlaceholder &&
-            `newMessagePlaceholder="${newMessagePlaceholder || ''}"`,
-          `showAgentAvailability={${showAgentAvailability}}`,
-          agentAvailableText && `agentAvailableText="${agentAvailableText}"`,
-          agentUnavailableText &&
-            `agentUnavailableText="${agentUnavailableText}"`,
-          `requireEmailUpfront={${requireEmailUpfront}}`,
-          `iconVariant="${iconVariant}"`,
-          `baseUrl="${BASE_URL}"`,
-        ]
-          .filter(Boolean)
-          .join('\n        ')}
-        // Optionally include data about your customer here to identify them
-        // customer={{
-        //   name: __CUSTOMER__.name,
-        //   email: __CUSTOMER__.email,
-        //   external_id: __CUSTOMER__.id,
-        //   metadata: {
-        //     plan: "premium"
-        //   }
-        // }}
-      />
-    </>
-  );
-};
-`.trim()}
-          </StandardSyntaxHighlighter>
-        </Box>
-      </Tabs.TabPane>
-    </Tabs>
-  );
-};
 
 export default ChatWidgetSettings;

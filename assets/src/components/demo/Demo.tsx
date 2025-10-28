@@ -19,7 +19,6 @@ import logger from '../../logger';
 // Testing widget in separate package
 // import {Storytime} from '../../lib/storytime'; // For testing
 import {Storytime} from '@papercups-io/storytime';
-import ChatWidget from '@papercups-io/chat-widget';
 import {formatUserExternalId} from '../../utils';
 
 const {
@@ -50,7 +49,7 @@ class Demo extends React.Component<Props, State> {
 
     this.state = {
       color: defaultColor || colors.primary,
-      title: defaultTitle || 'Welcome to Papercups!',
+      title: defaultTitle || 'Welcome to Netia!',
       subtitle: defaultSubtitle || 'Ask us anything using the chat window 💭',
       accountId: REACT_APP_ADMIN_ACCOUNT_ID,
       inboxId: REACT_APP_ADMIN_INBOX_ID,
@@ -189,28 +188,25 @@ class Demo extends React.Component<Props, State> {
           </Link>
         </Flex>
 
-        <ChatWidget
-          token={accountId}
-          accountId={accountId}
-          inbox={inboxId}
-          title={title || 'Welcome!'}
-          subtitle={subtitle}
-          primaryColor={color}
-          greeting="Hi try chatting here and changing the colors on the chat widget!"
-          customer={customer}
-          baseUrl={BASE_URL}
-          iconVariant="filled"
-          defaultIsOpen
-          showAgentAvailability
-          onChatLoaded={() => logger.debug('Chat loaded!')}
-          onChatClosed={() => logger.debug('Chat closed!')}
-          onChatOpened={() => logger.debug('Chat opened!')}
-          onMessageReceived={(message: any) =>
-            logger.debug('Message received!', message)
-          }
-          onMessageSent={(message: any) =>
-            logger.debug('Message sent!', message)
-          }
+        <iframe
+          src={`${BASE_URL}/chat?token=${accountId}&inbox=${inboxId}&title=${encodeURIComponent(
+            title || 'Welcome!'
+          )}&subtitle=${encodeURIComponent(
+            subtitle
+          )}&primaryColor=${encodeURIComponent(
+            color
+          )}&greeting=${encodeURIComponent(
+            'Hi try chatting here and changing the colors on the chat widget!'
+          )}&iconVariant=filled&showAgentAvailability=true&customer=${encodeURIComponent(
+            JSON.stringify(customer)
+          )}`}
+          style={{
+            width: '100%',
+            height: '500px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+          }}
+          title="Chat Widget Demo"
         />
       </Box>
     );

@@ -1,12 +1,12 @@
 **:warning: Maintenance Mode**
 
-> _Papercups is in maintenance mode. This means there won't be any major new features in the near future. We will still accept pull requests and conduct major bug fixes. Read more [here](https://papercups.io/blog/papercups-maintenance)_
+> _Netia is in maintenance mode. This means there won't be any major new features in the near future. We will still accept pull requests and conduct major bug fixes._
 
-# Papercups
+# Netia
 
-Papercups is an open source live customer support tool web app written in Elixir. We offer a hosted version at [app.papercups.io](https://app.papercups.io/).
+Netia is an open source live customer support tool web app written in Elixir. We offer a hosted version at [app.netia.io](https://app.netia.io/).
 
-You can check out how our chat widget looks and play around with customizing it on our [demo page](https://app.papercups.io/demo/). The chat widget component is also open sourced at [github.com/papercups-io/chat-widget](https://github.com/papercups-io/chat-widget).
+You can check out how our chat widget looks and play around with customizing it on our [demo page](https://app.netia.io/demo/). The chat widget component is also open sourced at [github.com/netia-io/chat-widget](https://github.com/netia-io/chat-widget).
 
 _Watch how easy it is to get set up with our Slack integration 🚀 :_
 ![slack-setup](https://user-images.githubusercontent.com/4218509/88716918-a0583180-d0d4-11ea-93b3-12437ac51138.gif)

@@ -33,6 +33,53 @@ defmodule ChatApiWeb.WidgetController do
                     min-width: 60px;
                 }
             }
+            
+            /* Typing indicator styles */
+            .typing-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+                margin: 10px 0;
+                background: #f0f0f0;
+                border-radius: 8px;
+                max-width: 80%;
+                margin-right: auto;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .typing-indicator.show {
+                opacity: 1;
+            }
+            
+            .typing-dots {
+                display: flex;
+                gap: 4px;
+            }
+            
+            .typing-dot {
+                width: 6px;
+                height: 6px;
+                background: #999;
+                border-radius: 50%;
+                animation: typing 1.4s infinite ease-in-out;
+            }
+            
+            .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+            .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+            .typing-dot:nth-child(3) { animation-delay: 0s; }
+            
+            @keyframes typing {
+                0%, 80%, 100% {
+                    transform: scale(0.8);
+                    opacity: 0.5;
+                }
+                40% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
         </style>
     </head>
     <body>
@@ -67,6 +114,13 @@ defmodule ChatApiWeb.WidgetController do
                         '<p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">' + config.subtitle + '</p>' +
                     '</div>' +
                     '<div id="messages" style="flex: 1; overflow-y: auto; padding: 10px 0;"></div>' +
+                    '<div id="typing-indicator" class="typing-indicator">' +
+                        '<div class="typing-dots">' +
+                            '<div class="typing-dot"></div>' +
+                            '<div class="typing-dot"></div>' +
+                            '<div class="typing-dot"></div>' +
+                        '</div>' +
+                    '</div>' +
                     '<div style="display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid #eee;">' +
                         '<input type="text" id="message-input" placeholder="' + config.newMessagePlaceholder + '" ' +
                             'style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" />' +
@@ -80,6 +134,7 @@ defmodule ChatApiWeb.WidgetController do
             const messagesEl = document.getElementById('messages');
             const inputEl = document.getElementById('message-input');
             const sendBtn = document.getElementById('send-btn');
+            const typingIndicatorEl = document.getElementById('typing-indicator');
 
             function addMessage(text, isCustomer) {
                 const msgDiv = document.createElement('div');
@@ -97,6 +152,21 @@ defmodule ChatApiWeb.WidgetController do
                         behavior: 'smooth'
                     });
                 }, 100);
+            }
+
+            function showTypingIndicator() {
+                typingIndicatorEl.classList.add('show');
+                // Smooth scroll to bottom to show typing indicator
+                setTimeout(function() {
+                    messagesEl.scrollTo({
+                        top: messagesEl.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+
+            function hideTypingIndicator() {
+                typingIndicatorEl.classList.remove('show');
             }
 
             async function sendMessage() {
@@ -148,11 +218,25 @@ defmodule ChatApiWeb.WidgetController do
 
             let socket = null;
             let channel = null;
+            let reconnectAttempts = 0;
+            const maxReconnectAttempts = 5;
 
             function connectToConversation(conversationId) {
-                if (channel) return;
+                if (channel && channel.state === 'joined') return;
+                
                 socket = new Phoenix.Socket('/socket', {params: {}});
-                socket.onOpen(() => console.log('Socket connected'));
+                socket.onOpen(() => {
+                    console.log('Socket connected');
+                    reconnectAttempts = 0;
+                });
+                socket.onError(() => {
+                    console.log('Socket error, attempting reconnection...');
+                    setTimeout(() => reconnectToConversation(conversationId), 2000);
+                });
+                socket.onClose(() => {
+                    console.log('Socket closed, attempting reconnection...');
+                    setTimeout(() => reconnectToConversation(conversationId), 2000);
+                });
                 socket.connect();
 
                 channel = socket.channel('conversation:' + conversationId, { customer_id: config.customerId });
@@ -161,7 +245,46 @@ defmodule ChatApiWeb.WidgetController do
                         addMessage(payload.body);
                     }
                 });
-                channel.join();
+                channel.on('typing', (payload) => {
+                    if (payload.type === 'ai') {
+                        if (payload.typing) {
+                            showTypingIndicator();
+                        } else {
+                            hideTypingIndicator();
+                        }
+                    }
+                });
+                channel.join()
+                    .receive('ok', () => {
+                        console.log('Joined conversation channel');
+                        reconnectAttempts = 0;
+                    })
+                    .receive('error', () => {
+                        console.log('Failed to join conversation channel');
+                        setTimeout(() => reconnectToConversation(conversationId), 2000);
+                    });
+            }
+
+            function reconnectToConversation(conversationId) {
+                if (reconnectAttempts >= maxReconnectAttempts) {
+                    console.log('Max reconnection attempts reached');
+                    return;
+                }
+                reconnectAttempts++;
+                console.log('Reconnection attempt ' + reconnectAttempts);
+                
+                // Clean up existing connection
+                if (channel) {
+                    channel.leave();
+                    channel = null;
+                }
+                if (socket) {
+                    socket.disconnect();
+                    socket = null;
+                }
+                
+                // Reconnect
+                connectToConversation(conversationId);
             }
 
             sendBtn.addEventListener('click', sendMessage);
