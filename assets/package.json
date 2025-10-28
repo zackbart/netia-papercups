@@ -5,6 +5,9 @@
   "license": "MIT",
   "repository": "https://github.com/papercups-io/papercups",
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@theme-ui/core": "^0.17.2",
+    "@theme-ui/components": "^0.17.2",
     "@monaco-editor/react": "^3.0.0",
     "@papercups-io/storytime": "^1.0.6",
     "@sentry/react": "^5.20.1",
