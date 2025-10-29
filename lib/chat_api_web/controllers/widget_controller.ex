@@ -92,7 +92,7 @@ defmodule ChatApiWeb.WidgetController do
                 baseUrl: params.get('baseUrl') || window.location.origin,
                 title: decodeURIComponent(params.get('title') || 'Chat'),
                 subtitle: decodeURIComponent(params.get('subtitle') || ''),
-                primaryColor: params.get('primaryColor') || '#1890ff',
+                primaryColor: params.get('primaryColor') || '#1677ff',
                 greeting: decodeURIComponent(params.get('greeting') || ''),
                 newMessagePlaceholder: decodeURIComponent(params.get('newMessagePlaceholder') || 'Type your message...'),
                 agentAvailableText: decodeURIComponent(params.get('agentAvailableText') || ''),

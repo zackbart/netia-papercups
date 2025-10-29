@@ -1,14 +1,103 @@
 @import '~antd/dist/antd.css';
 
+/* Netia Design System Colors */
+:root {
+  --netia-primary: #1677ff;
+  --netia-primary-dark: #0b63d1;
+  --netia-primary-light: #eaf3ff;
+  --netia-fg: #0a0a0a;
+  --netia-muted: #6f7278;
+  --netia-surface: #f5f5f5;
+  --netia-border: #e6e6e6;
+}
+
+/* Override Ant Design primary color */
+.ant-btn-primary,
+.ant-menu-item-selected,
+.ant-menu-item-active,
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-switch-checked {
+  background-color: var(--netia-primary) !important;
+  border-color: var(--netia-primary) !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: var(--netia-primary-dark) !important;
+  border-color: var(--netia-primary-dark) !important;
+}
+
+.ant-link,
+.ant-typography a {
+  color: var(--netia-primary) !important;
+}
+
+.ant-link:hover,
+.ant-typography a:hover {
+  color: var(--netia-primary-dark) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector,
+.ant-picker-focused {
+  border-color: var(--netia-primary) !important;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2) !important;
+}
+
+/* Apply Sora font to headings */
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6,
+h1.ant-typography,
+h2.ant-typography,
+h3.ant-typography,
+h4.ant-typography,
+h5.ant-typography,
+h6.ant-typography {
+  font-family: 'Sora', 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--netia-fg);
+}
+
+/* Update text colors to match Netia design */
+.ant-typography {
+  color: var(--netia-fg);
+}
+
+.ant-typography-secondary {
+  color: var(--netia-muted) !important;
+}
+
 * {
   box-sizing: border-box;
 }
 
 html,
 body {
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, san-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   font-weight: 400;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Sora', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', sans-serif;
+  font-weight: 600;
 }
 
 #root {

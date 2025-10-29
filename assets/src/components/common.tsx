@@ -60,7 +60,9 @@ const {RangePicker} = DatePicker;
 export const colors = {
   white: '#fff',
   black: '#000',
-  primary: blue[5],
+  primary: '#1677ff', // Netia primary blue
+  primaryLight: '#eaf3ff', // primary-50
+  primaryDark: '#0b63d1', // primary-600
   green: green[5],
   red: red[5],
   gold: gold[5],
@@ -70,8 +72,11 @@ export const colors = {
   magenta: magenta[5],
   blue: blue, // expose all blues
   gray: grey, // expose all grays
-  text: 'rgba(0, 0, 0, 0.65)',
-  secondary: 'rgba(0, 0, 0, 0.45)',
+  text: '#0a0a0a', // Netia foreground color
+  secondary: '#6f7278', // Netia muted color
+  muted: '#6f7278',
+  surface: '#f5f5f5',
+  border: '#e6e6e6',
   note: '#fff1b8',
   noteSecondary: 'rgba(254,237,175,.4)',
 };

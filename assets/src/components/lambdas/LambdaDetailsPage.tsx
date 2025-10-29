@@ -464,7 +464,7 @@ class LambdaDetailsPage extends React.Component<Props, State> {
                   sx={{flex: 1, height: '100%', width: '100%'}}
                   config={{
                     accountId,
-                    primaryColor: '#1890ff',
+                    primaryColor: '#1677ff',
                     greeting:
                       'Send a message below to test your webhook handler!',
                     newMessagePlaceholder: 'Send a test message...',

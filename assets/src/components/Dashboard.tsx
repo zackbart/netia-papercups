@@ -141,7 +141,7 @@ const ChatWithUs = ({
     'Ask us in the chat window below 😊'
   )}&greeting=${encodeURIComponent(
     "Hi there! Send us a message and we'll get back to you as soon as we can."
-  )}&primaryColor=#1890ff&customer=${encodeURIComponent(
+  )}&primaryColor=#1677ff&customer=${encodeURIComponent(
     JSON.stringify({
       external_id: formatUserExternalId(currentUser),
       email: currentUser.email,

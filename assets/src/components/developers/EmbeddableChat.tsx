@@ -25,7 +25,7 @@ const EmbeddableChat = ({
   )}&subtitle=${encodeURIComponent(
     config.subtitle || ''
   )}&primaryColor=${encodeURIComponent(
-    config.primaryColor || '#1890ff'
+    config.primaryColor || '#1677ff'
   )}&greeting=${encodeURIComponent(
     config.greeting || ''
   )}&customer=${encodeURIComponent(JSON.stringify(config.customer || {}))}`;

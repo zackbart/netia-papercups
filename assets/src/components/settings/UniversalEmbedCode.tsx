@@ -61,7 +61,7 @@ const UniversalEmbedCode: FunctionComponent<UniversalEmbedCodeProps> = ({
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: ${color || '#1890ff'};
+        background: ${color || '#1677ff'};
     color: white;
     border: none;
     cursor: pointer;

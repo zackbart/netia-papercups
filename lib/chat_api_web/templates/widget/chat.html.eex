@@ -33,7 +33,7 @@
             // Appearance
             title: decodeURIComponent(params.get('title') || 'Chat'),
             subtitle: decodeURIComponent(params.get('subtitle') || ''),
-            primaryColor: params.get('primaryColor') || '#1890ff',
+            primaryColor: params.get('primaryColor') || '#1677ff',
             
             // Messages
             greeting: decodeURIComponent(params.get('greeting') || ''),

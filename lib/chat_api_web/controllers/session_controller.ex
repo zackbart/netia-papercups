@@ -88,42 +88,62 @@ defmodule ChatApiWeb.SessionController do
   defp validate_subscription_and_login(conn) do
     with %{account_id: account_id} <- conn.assigns.current_user,
          account <- Accounts.get_account!(account_id),
-         true <- validate_has_customer_id(account, conn) do
-      check_subscription_status(account, conn, fn subscription ->
-        json(conn, %{
-          data: %{
-            user_id: conn.assigns.current_user.id,
-            email: conn.assigns.current_user.email,
-            account_id: conn.assigns.current_user.account_id,
-            token: conn.private[:api_auth_token],
-            renew_token: conn.private[:api_renew_token],
-            subscription: format_subscription_response(subscription)
-          }
-        })
-      end)
+         conn <- validate_has_customer_id(account, conn) do
+      if conn.halted do
+        conn
+      else
+        check_subscription_status(account, conn, fn subscription ->
+          json(conn, %{
+            data: %{
+              user_id: conn.assigns.current_user.id,
+              email: conn.assigns.current_user.email,
+              account_id: conn.assigns.current_user.account_id,
+              token: conn.private[:api_auth_token],
+              renew_token: conn.private[:api_renew_token],
+              subscription: format_subscription_response(subscription)
+            }
+          })
+        end)
+      end
+    else
+      _error ->
+        conn
+        |> put_status(500)
+        |> json(%{error: %{status: 500, message: "Internal server error"}})
     end
   end
 
   @spec validate_subscription_and_renew(Conn.t(), ChatApi.Users.User.t()) :: Conn.t()
   defp validate_subscription_and_renew(conn, user) do
     with account <- Accounts.get_account!(user.account_id),
-         true <- validate_has_customer_id(account, conn) do
-      check_subscription_status(account, conn, fn subscription ->
-        json(conn, %{
-          data: %{
-            user_id: user.id,
-            email: user.email,
-            account_id: user.account_id,
-            token: conn.private[:api_auth_token],
-            renew_token: conn.private[:api_renew_token],
-            subscription: format_subscription_response(subscription)
-          }
-        })
-      end)
+         conn <- validate_has_customer_id(account, conn) do
+      if conn.halted do
+        conn
+      else
+        check_subscription_status(account, conn, fn subscription ->
+          json(conn, %{
+            data: %{
+              user_id: user.id,
+              email: user.email,
+              account_id: user.account_id,
+              token: conn.private[:api_auth_token],
+              renew_token: conn.private[:api_renew_token],
+              subscription: format_subscription_response(subscription)
+            }
+          })
+        end)
+      end
+    else
+      _error ->
+        conn
+        |> put_status(500)
+        |> json(%{error: %{status: 500, message: "Internal server error"}})
     end
   end
 
-  @spec validate_has_customer_id(ChatApi.Accounts.Account.t(), Conn.t()) :: boolean()
+  @spec validate_has_customer_id(ChatApi.Accounts.Account.t(), Conn.t()) :: Conn.t()
+  defp validate_has_customer_id(%{subscription_exempt: true}, conn), do: conn
+
   defp validate_has_customer_id(%{stripe_customer_id: nil}, conn) do
     conn
     |> put_status(403)
@@ -135,11 +155,9 @@ defmodule ChatApiWeb.SessionController do
       }
     })
     |> halt()
-
-    false
   end
 
-  defp validate_has_customer_id(_account, _conn), do: true
+  defp validate_has_customer_id(_account, conn), do: conn
 
   @spec check_subscription_status(ChatApi.Accounts.Account.t(), Conn.t(), function()) :: Conn.t()
   defp check_subscription_status(account, conn, on_success) do
