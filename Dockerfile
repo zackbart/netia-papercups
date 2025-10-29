@@ -47,7 +47,11 @@ COPY config config
 RUN set -e; \
     mix local.hex --force || mix archive.install github hexpm/hex branch latest --force; \
     mix local.rebar --force; \
-    mix deps.get --only prod
+    mix hex.clean --all || true; \
+    for i in 1 2 3; do \
+        mix deps.get --only prod && break || \
+        (echo "Attempt $i failed, retrying in 5 seconds..." && sleep 5); \
+    done
 
 COPY lib lib
 RUN mix deps.compile
