@@ -111,8 +111,8 @@ case mailer_adapter do
 
   "Swoosh.Adapters.SMTP" ->
     smtp_port = System.get_env("SMTP_HOST_PORT", "25") |> String.to_integer()
-    # For Gmail: port 587 uses STARTTLS (must use tls: :always), port 465 uses SSL
-    smtp_tls = if smtp_port == 587, do: :always, else: :if_available
+    # For Gmail: port 587 uses STARTTLS (must use tls: :always), port 465 uses SSL (tls: :never)
+    smtp_tls = if smtp_port == 587, do: :always, else: :never
     smtp_ssl = if smtp_port == 465, do: true, else: false
     smtp_retries = case System.get_env("SMTP_RETRIES") do
       nil -> 2
