@@ -395,3 +395,17 @@ export type BusinessContext = {
   inserted_at: string;
   updated_at: string;
 };
+
+export type Subscription = {
+  status: 'active' | 'trialing';
+  trial_end?: string;
+  current_period_end?: string;
+};
+
+export type SubscriptionError = {
+  status: 403;
+  message: string;
+  subscription_status?: string;
+  reason?: string;
+  action_required?: 'setup_account' | 'update_payment' | 'contact_support';
+};

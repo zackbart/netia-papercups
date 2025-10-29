@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {getAuthTokens, setAuthTokens, removeAuthTokens} from '../../storage';
 import * as API from '../../api';
 import logger from '../../logger';
-import {Account, User} from '../../types';
+import {Account, User, Subscription, SubscriptionError} from '../../types';
 
 export const AuthContext = React.createContext<{
   isAuthenticated: boolean;
@@ -10,6 +10,7 @@ export const AuthContext = React.createContext<{
   loading: boolean;
   currentUser: User | null;
   account: Account | null;
+  subscription: Subscription | null;
   register: (params: any) => Promise<void>;
   login: (params: any) => Promise<void>;
   logout: () => Promise<void>;
@@ -20,6 +21,7 @@ export const AuthContext = React.createContext<{
   loading: false,
   currentUser: null,
   account: null,
+  subscription: null,
   register: () => Promise.resolve(),
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
@@ -37,6 +39,7 @@ type State = {
   tokens: any;
   currentUser: User | null;
   account: Account | null;
+  subscription: Subscription | null;
   isAuthenticated: boolean;
 };
 
@@ -53,6 +56,7 @@ export class AuthProvider extends React.Component<Props, State> {
       isAuthenticated: false,
       currentUser: null,
       account: null,
+      subscription: null,
       tokens: cachedTokens,
     };
   }
@@ -91,8 +95,16 @@ export class AuthProvider extends React.Component<Props, State> {
       this.fetchCurrentAccount(),
     ]);
     const nextRefreshToken = tokens && tokens.renew_token;
+    const subscription =
+      tokens && tokens.subscription ? tokens.subscription : null;
 
-    this.setState({tokens, currentUser, account, isAuthenticated: true});
+    this.setState({
+      tokens,
+      currentUser,
+      account,
+      subscription,
+      isAuthenticated: true,
+    });
 
     // Refresh the session every 20 mins to avoid the access token expiring
     // (By default, the session will expire after 30 mins)
@@ -109,6 +121,7 @@ export class AuthProvider extends React.Component<Props, State> {
       tokens: null,
       currentUser: null,
       account: null,
+      subscription: null,
       isAuthenticated: false,
     });
   };
@@ -138,6 +151,7 @@ export class AuthProvider extends React.Component<Props, State> {
       .then((tokens) => this.handleAuthSuccess(tokens))
       .catch((err) => {
         logger.error('Invalid session:', err);
+        this.handleSubscriptionError(err);
       });
   };
 
@@ -158,6 +172,11 @@ export class AuthProvider extends React.Component<Props, State> {
       .then((tokens) => this.handleAuthSuccess(tokens))
       .then(() => {
         logger.debug('Successfully logged in!');
+      })
+      .catch((err) => {
+        logger.error('Login error:', err);
+        this.handleSubscriptionError(err);
+        throw err;
       });
   };
 
@@ -171,8 +190,44 @@ export class AuthProvider extends React.Component<Props, State> {
       });
   };
 
+  handleSubscriptionError = (err: any) => {
+    // Check if this is a subscription error (403 with subscription_status)
+    if (
+      err &&
+      err.response &&
+      err.response.body &&
+      err.response.body.error &&
+      err.response.body.error.status === 403 &&
+      err.response.body.error.subscription_status !== undefined
+    ) {
+      const error: SubscriptionError = err.response.body.error;
+      logger.error('Subscription error:', error);
+
+      // Redirect to billing page if action is required
+      if (
+        error.action_required === 'update_payment' ||
+        error.action_required === 'setup_account'
+      ) {
+        const billingPath = '/billing';
+        if (window.location.pathname !== billingPath) {
+          window.location.href = billingPath;
+        }
+      }
+
+      // Clear auth if subscription is invalid
+      this.handleClearAuth();
+    }
+  };
+
   render() {
-    const {loading, isAuthenticated, tokens, currentUser, account} = this.state;
+    const {
+      loading,
+      isAuthenticated,
+      tokens,
+      currentUser,
+      account,
+      subscription,
+    } = this.state;
 
     return (
       <AuthContext.Provider
@@ -182,6 +237,7 @@ export class AuthProvider extends React.Component<Props, State> {
           tokens,
           currentUser,
           account,
+          subscription,
 
           register: this.register,
           login: this.login,
@@ -194,3 +250,5 @@ export class AuthProvider extends React.Component<Props, State> {
     );
   }
 }
+
+export default AuthProvider;

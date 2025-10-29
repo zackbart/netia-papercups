@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import analytics from './analytics';
-import {AuthProvider} from './components/auth/AuthProvider';
+import AuthProvider from './components/auth/AuthProvider';
 import * as serviceWorker from './serviceWorker';
 
 analytics.init();
