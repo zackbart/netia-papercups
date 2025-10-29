@@ -161,7 +161,12 @@ defmodule ChatApiWeb.SessionController do
 
   @spec check_subscription_status(ChatApi.Accounts.Account.t(), Conn.t(), function()) :: Conn.t()
   defp check_subscription_status(account, conn, on_success) do
-    case Subscriptions.check_subscription_status(account) do
+    # Bypass all subscription checks if account is exempt
+    if Map.get(account, :subscription_exempt) do
+      on_success.(nil)
+      conn
+    else
+      case Subscriptions.check_subscription_status(account) do
       {:ok, subscription} ->
         case Subscriptions.subscription_allows_login?(subscription) do
           {true, _status, _reason} ->
@@ -193,7 +198,7 @@ defmodule ChatApiWeb.SessionController do
             })
         end
 
-      {:error, :no_customer_id} ->
+        {:error, :no_customer_id} ->
         conn
         |> put_status(403)
         |> json(%{
@@ -204,7 +209,7 @@ defmodule ChatApiWeb.SessionController do
           }
         })
 
-      {:error, :no_subscription} ->
+        {:error, :no_subscription} ->
         conn
         |> put_status(403)
         |> json(%{
@@ -216,7 +221,7 @@ defmodule ChatApiWeb.SessionController do
           }
         })
 
-      {:error, reason} ->
+        {:error, reason} ->
         Logger.error("Stripe API error during login: #{inspect(reason)}")
         conn
         |> put_status(403)
@@ -227,6 +232,7 @@ defmodule ChatApiWeb.SessionController do
             action_required: "contact_support"
           }
         })
+      end
     end
   end
 
