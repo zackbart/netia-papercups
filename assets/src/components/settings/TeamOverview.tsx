@@ -84,13 +84,7 @@ class TeamOverview extends React.Component<Props, State> {
         description,
         duration: 10, // 10 seconds
         btn: (
-          <a
-            href={
-              shouldDisplayBillingLink
-                ? '/billing'
-                : 'https://papercups.io/pricing'
-            }
-          >
+          <a href={shouldDisplayBillingLink ? '/billing' : '/billing'}>
             <Button type="primary" size="small">
               Upgrade subscription
             </Button>
@@ -127,13 +121,7 @@ class TeamOverview extends React.Component<Props, State> {
         description,
         duration: 10, // 10 seconds
         btn: (
-          <a
-            href={
-              shouldDisplayBillingLink
-                ? '/billing'
-                : 'https://papercups.io/pricing'
-            }
-          >
+          <a href={shouldDisplayBillingLink ? '/billing' : '/billing'}>
             <Button type="primary" size="small">
               Upgrade subscription
             </Button>

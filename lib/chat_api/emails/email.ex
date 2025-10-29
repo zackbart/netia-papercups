@@ -100,7 +100,7 @@ defmodule ChatApi.Emails.Email do
 
     new()
     |> to(to_address)
-    |> from({"Papercups", @from_address})
+    |> from({"Netia", @from_address})
     |> subject(subject)
     |> html_body(html)
     |> text_body(text)
@@ -207,7 +207,7 @@ defmodule ChatApi.Emails.Email do
     |> to(to)
     |> from({from, @from_address})
     |> reply_to(reply_to)
-    |> subject("You were mentioned in a message on Papercups!")
+    |> subject("You were mentioned in a message on Netia!")
     |> html_body(mention_notification_html(messages, from: from, to: user, company: company))
     |> text_body(mention_notification_text(messages, from: from, to: user, company: company))
   end
@@ -220,7 +220,7 @@ defmodule ChatApi.Emails.Email do
     """
     Hi there!
 
-    You were mentioned in a message on Papercups:
+    You were mentioned in a message on Netia:
 
     #{
       Enum.map(messages, fn msg ->
@@ -241,7 +241,7 @@ defmodule ChatApi.Emails.Email do
 
     """
     <p>Hi there!</p>
-    <p>You were mentioned in a message on Papercups:</p>
+    <p>You were mentioned in a message on Netia:</p>
     <hr />
     #{Enum.map(messages, fn msg -> format_message_html(msg, company) end)}
     <hr />
@@ -259,9 +259,9 @@ defmodule ChatApi.Emails.Email do
   def welcome(to_address) do
     new()
     |> to(to_address)
-    |> from({"Alex", @from_address})
-    |> reply_to("alex@papercups.io")
-    |> subject("Welcome to Papercups!")
+    |> from({"Netia", @from_address})
+    |> reply_to("support@netia.ai")
+    |> subject("Welcome to Netia!")
     |> html_body(welcome_email_html())
     |> text_body(welcome_email_text())
   end
@@ -272,18 +272,14 @@ defmodule ChatApi.Emails.Email do
     """
     Hi there!
 
-    Thanks for signing up for Papercups :)
+    Thanks for signing up for Netia :)
 
-    I'm Alex, one of the founders of Papercups along with Kam. If you have any questions,
-    feedback, or need any help getting started, don't hesitate to reach out!
+    If you have any questions, feedback, or need any help getting started, don't hesitate to reach out!
 
-    Feel free to reply directly to this email, or contact me at alex@papercups.io
+    Feel free to reply directly to this email, or contact us at support@netia.ai
 
     Best,
-    Alex
-
-    We also have a Slack channel if you'd like to see what we're up to :)
-    https://github.com/papercups-io/papercups#get-in-touch
+    The Netia Team
     """
   end
 
@@ -293,21 +289,15 @@ defmodule ChatApi.Emails.Email do
     """
     <p>Hi there!</p>
 
-    <p>Thanks for signing up for Papercups :)</p>
+    <p>Thanks for signing up for Netia :)</p>
 
-    <p>I'm Alex, one of the founders of Papercups along with Kam. If you have any questions,
-    feedback, or need any help getting started, don't hesitate to reach out!</p>
+    <p>If you have any questions, feedback, or need any help getting started, don't hesitate to reach out!</p>
 
-    <p>Feel free to reply directly to this email, or contact me at alex@papercups.io</p>
+    <p>Feel free to reply directly to this email, or contact us at support@netia.ai</p>
 
     <p>
     Best,<br />
-    Alex
-    </p>
-
-    <p>
-    PS: We also have a Slack channel if you'd like to see what we're up to :) <br/>
-    https://github.com/papercups-io/papercups#get-in-touch
+    The Netia Team
     </p>
     """
   end
@@ -323,21 +313,21 @@ defmodule ChatApi.Emails.Email do
       ) do
     subject =
       if from_name == company,
-        do: "You've been invited to join #{company} on Papercups!",
-        else: "#{from_name} has invited you to join #{company} on Papercups!"
+        do: "You've been invited to join #{company} on Netia!",
+        else: "#{from_name} has invited you to join #{company} on Netia!"
 
     intro_line =
       if from_name == company,
-        do: "#{from_address} has invited you to join #{company} on Papercups!",
-        else: "#{from_name} (#{from_address}) has invited you to join #{company} on Papercups!"
+        do: "#{from_address} has invited you to join #{company} on Netia!",
+        else: "#{from_name} (#{from_address}) has invited you to join #{company} on Netia!"
 
     invitation_url =
       "#{get_app_domain()}/register/#{invitation_token}?#{URI.encode_query(%{email: to_address})}"
 
     new()
     |> to(to_address)
-    |> from({"Alex", @from_address})
-    |> reply_to("alex@papercups.io")
+    |> from({"Netia", @from_address})
+    |> reply_to("support@netia.ai")
     |> subject(subject)
     |> html_body(
       user_invitation_email_html(%{
@@ -369,7 +359,7 @@ defmodule ChatApi.Emails.Email do
     #{invitation_url}
 
     Best,
-    Alex & Kam @ Papercups
+    The Netia Team
     """
   end
 
@@ -391,7 +381,7 @@ defmodule ChatApi.Emails.Email do
 
     <p>
     Best,<br />
-    Alex & Kam @ Papercups
+    The Netia Team
     </p>
     """
   end

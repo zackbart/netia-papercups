@@ -427,11 +427,11 @@ class ChatWidgetSettings extends React.Component<Props, State> {
                     This will only show up for anonymous users. To see an
                     example of what this looks like, visit{' '}
                     <a
-                      href="https://papercups.io"
+                      href="https://app.netia.ai"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      https://papercups.io
+                      https://app.netia.ai
                     </a>{' '}
                     and open the chat.
                   </Box>

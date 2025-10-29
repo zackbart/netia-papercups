@@ -321,9 +321,8 @@ class BillingOverview extends React.Component<Props, State> {
 
     const {name: planName} = getPlanInfo(selectedSubscriptionPlan);
     const subscriptionPlanPrice = calculateSubscriptionPrice(subscription);
-    const subscriptionPlanDiscount = calculateSubscriptionDiscount(
-      subscription
-    );
+    const subscriptionPlanDiscount =
+      calculateSubscriptionDiscount(subscription);
     const nextDueDate = getNextDueDate(subscription);
     const trialEndDate = getTrialEndDate(subscription);
 
@@ -361,8 +360,8 @@ class BillingOverview extends React.Component<Props, State> {
               <Alert
                 message={
                   <Text>
-                    You are currently on a free trial of Papercups. Please
-                    select a subscription plan to continue using your account.
+                    You are currently on a free trial of Netia. Please select a
+                    subscription plan to continue using your account.
                   </Text>
                 }
                 type="info"
@@ -451,8 +450,7 @@ class BillingOverview extends React.Component<Props, State> {
           {trialEndDate && (
             <Box mb={3}>
               <Text type="secondary">
-                (Free trial of Papercups ends <Text strong>{trialEndDate}</Text>
-                )
+                (Free trial of Netia ends <Text strong>{trialEndDate}</Text>)
               </Text>
             </Box>
           )}

@@ -106,19 +106,30 @@ case mailer_adapter do
       adapter: Swoosh.Adapters.Mailgun,
       api_key: System.get_env("MAILGUN_API_KEY"),
       # Domain is the email address that mailgun is sent from
-      domain: System.get_env("DOMAIN")
+      domain: System.get_env("DOMAIN"),
+      from: System.get_env("FROM_ADDRESS") || "noreply@support.netia.ai"
 
   "Swoosh.Adapters.SMTP" ->
+    smtp_port = System.get_env("SMTP_HOST_PORT", "25") |> String.to_integer()
+    # For Gmail: port 587 uses STARTTLS (must use tls: :always), port 465 uses SSL
+    smtp_tls = if smtp_port == 587, do: :always, else: :if_available
+    smtp_ssl = if smtp_port == 465, do: true, else: false
+    smtp_retries = case System.get_env("SMTP_RETRIES") do
+      nil -> 2
+      val when is_binary(val) -> String.to_integer(val)
+      val -> val
+    end
+    
     config :chat_api, ChatApi.Mailers,
       adapter: Swoosh.Adapters.SMTP,
       relay: System.get_env("SMTP_HOST_ADDR", "mail"),
-      port: System.get_env("SMTP_HOST_PORT", "25"),
+      port: smtp_port,
       username: System.get_env("SMTP_USER_NAME"),
       password: System.get_env("SMTP_USER_PWD"),
-      ssl: System.get_env("SMTP_HOST_SSL_ENABLED") || false,
-      tls: :if_available,
-      retries: System.get_env("SMTP_RETRIES") || 2,
-      no_mx_lookups: System.get_env("SMTP_MX_LOOKUPS_ENABLED") || true
+      ssl: smtp_ssl,
+      tls: smtp_tls,
+      retries: smtp_retries,
+      no_mx_lookups: System.get_env("SMTP_MX_LOOKUPS_ENABLED") != "false"
 
   "Swoosh.Adapters.Local" ->
     config :swoosh,

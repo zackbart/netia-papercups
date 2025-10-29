@@ -119,10 +119,6 @@ class Login extends React.Component<Props, State> {
               </Box>
             )}
 
-            <Box mt={error ? 3 : 4}>
-              Don't have an account?{' '}
-              <Link to={`/register${location.search}`}>Sign up!</Link>
-            </Box>
             <Box my={3}>
               <Link to="/reset-password">Forgot your password?</Link>
             </Box>

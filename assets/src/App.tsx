@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 import {useAuth} from './components/auth/AuthProvider';
 import Login from './components/auth/Login';
-import Register from './components/auth/Register';
 import EmailVerification from './components/auth/EmailVerification';
 import PasswordReset from './components/auth/PasswordReset';
 import RequestPasswordReset from './components/auth/RequestPasswordReset';
@@ -35,8 +34,6 @@ const App = () => {
           <Route path="/demo" component={Demo} />
           <Route path="/bot/demo" component={BotDemo} />
           <Route path="/login" component={Login} />
-          <Route path="/register/:invite" component={Register} />
-          <Route path="/register" component={Register} />
           <Route path="/verify" component={EmailVerification} />
           <Route path="/reset-password" component={RequestPasswordReset} />
           <Route path="/reset" component={PasswordReset} />
@@ -62,8 +59,6 @@ const App = () => {
     <Router>
       <Switch>
         <Route path="/login" component={Login} />
-        <Route path="/register/:invite" component={Register} />
-        <Route path="/register" component={Register} />
         <Route path="/verify" component={EmailVerification} />
         <Route path="/reset-password" component={RequestPasswordReset} />
         <Route path="/reset" component={PasswordReset} />

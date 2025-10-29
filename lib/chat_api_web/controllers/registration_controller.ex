@@ -153,10 +153,19 @@ defmodule ChatApiWeb.RegistrationController do
   @spec enqueue_welcome_email(Conn.t()) :: Conn.t()
   defp enqueue_welcome_email(conn) do
     with %{email: email} <- conn.assigns.current_user do
-      %{email: email}
-      # Send email 35 mins after registering
-      |> ChatApi.Workers.SendWelcomeEmail.new(schedule_in: 35 * 60)
-      |> Oban.insert()
+      # Send welcome email immediately after registration
+      Task.start(fn ->
+        case ChatApi.Emails.send_welcome_email(email) do
+          {:ok, result} ->
+            Logger.info("Successfully sent welcome email: #{inspect(result)}")
+
+          {:warning, reason} ->
+            Logger.warn("Warning when sending welcome email: #{inspect(reason)}")
+
+          {:error, reason} ->
+            Logger.error("Error when sending welcome email: #{inspect(reason)}")
+        end
+      end)
     end
 
     conn

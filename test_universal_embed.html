@@ -80,55 +80,63 @@
       3. Your Account ID and Inbox ID will be in the embed code shown there
       4. Copy them and replace the values below
     -->
-    <script>
-      (function() {
-        var config = {
-          token: "1141ec4f-505b-4172-9c11-30fe1479d417",  // Your account ID
-          inbox: "04ea1e58-cef4-43cd-86a9-dd97b4c25ea0",     // Your inbox ID
-          title: "Welcome to Netia",
-          subtitle: "Ask us anything!",
-          primaryColor: "#1890ff",
-          greeting: "Hello! How can we help you today?",
-          newMessagePlaceholder: "Type your message...",
-          showAgentAvailability: 1,
-          agentAvailableText: "We're online right now!",
-          requireEmailUpfront: 0,
-          iconVariant: "outlined",
-          isBrandingHidden: "false"
-        };
-        
-        // Create floating chat button
-        var btn = document.createElement('button');
-        btn.innerHTML = '💬';
-        btn.style.cssText = 'position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:'+config.primaryColor+';color:white;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:9999;font-size:24px;transition:transform 0.2s;';
-        btn.onmouseenter = function() { btn.style.transform = 'scale(1.1)'; };
-        btn.onmouseleave = function() { btn.style.transform = 'scale(1)'; };
-        
-        btn.onclick = function() {
-          if (!window.netiaChat) {
-            var iframe = document.createElement('iframe');
-            var params = new URLSearchParams(config).toString();
-            iframe.src = 'http://localhost:4000/chat?' + params;
-            iframe.style.cssText = 'position:fixed;bottom:90px;right:20px;width:400px;height:600px;border:none;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:9999;max-width:calc(100vw - 40px);max-height:calc(100vh - 120px);';
-            document.body.appendChild(iframe);
-            window.netiaChat = iframe;
-            btn.innerHTML = '✕';
-          } else {
-            var isVisible = window.netiaChat.style.display !== 'none';
-            window.netiaChat.style.display = isVisible ? 'none' : 'block';
-            btn.innerHTML = isVisible ? '💬' : '✕';
-          }
-        };
-        
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() {
-            document.body.appendChild(btn);
-          });
-        } else {
-          document.body.appendChild(btn);
-        }
-      })();
-    </script>
+      <!-- Netia Chat Widget -->
+<div id="netia-chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+  <button id="netia-chat-button" style="
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #8ed1fc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 24px;
+    transition: transform 0.2s;
+  ">💬</button>
+</div>
+
+<script>
+(function() {
+  const button = document.getElementById('netia-chat-button');
+  const widget = document.getElementById('netia-chat-widget');
+  let iframe = null;
+  
+  button.addEventListener('click', function() {
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.src = 'https://app.netia.ai/chat?token=77f2c279-9451-4403-9960-ff0445f45870&inbox=d790d8f5-92b9-4db8-bea2-644c6f587f49&title=Welcome+to+Netia&subtitle=Ask+us+anything+in+the+chat+window+below+%F0%9F%98%8A&primaryColor=%238ed1fc&newMessagePlaceholder=Start+typing...&showAgentAvailability=0&agentAvailableText=We%27re+online+right+now%21&agentUnavailableText=We%27re+away+at+the+moment.&requireEmailUpfront=0&iconVariant=outlined&isBrandingHidden=false';
+      iframe.style.cssText = `
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 400px;
+        height: 600px;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        max-width: calc(100vw - 40px);
+        max-height: calc(100vh - 120px);
+      `;
+      document.body.appendChild(iframe);
+      button.innerHTML = '✕';
+    } else {
+      const isVisible = iframe.style.display !== 'none';
+      iframe.style.display = isVisible ? 'none' : 'block';
+      button.innerHTML = isVisible ? '💬' : '✕';
+    }
+  });
+  
+  button.addEventListener('mouseenter', function() {
+    button.style.transform = 'scale(1.1)';
+  });
+  
+  button.addEventListener('mouseleave', function() {
+    button.style.transform = 'scale(1)';
+  });
+})();
+</script>
     <!-- END NETIA AI CHAT WIDGET -->
 </body>
 </html>

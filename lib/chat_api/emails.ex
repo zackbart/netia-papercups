@@ -159,19 +159,56 @@ defmodule ChatApi.Emails do
 
   @spec deliver(Email.t()) :: deliver_result()
   def deliver(email) do
+    Logger.info("Attempting to deliver email to: #{inspect(email.to)}")
+    Logger.info("Email from: #{inspect(email.from)}")
+    Logger.info("Email subject: #{inspect(email.subject)}")
+    
     try do
       if has_valid_to_addresses?(email) do
-        ChatApi.Mailers.deliver(email)
+        Logger.info("Email addresses are valid, attempting delivery...")
+        
+        # Log SMTP config for debugging
+        mailer_config = Application.get_env(:chat_api, ChatApi.Mailers)
+        Logger.info("Mailer config: #{inspect(mailer_config, pretty: true)}")
+        
+        result = ChatApi.Mailers.deliver(email)
+        Logger.info("Mailer deliver result: #{inspect(result)}")
+        
+        # Check if result is actually an error disguised as success
+        case result do
+          {:ok, %{id: _id}} ->
+            Logger.info("Email delivery reported as successful")
+          {:ok, message} when is_binary(message) ->
+            Logger.info("Email delivery reported as successful: #{String.trim(message)}")
+          {:error, reason} ->
+            Logger.error("Email delivery failed: #{inspect(reason)}")
+          error ->
+            Logger.error("Unexpected email delivery result: #{inspect(error)}")
+        end
+        
+        result
       else
+        Logger.warning("Skipped sending to potentially invalid email: #{inspect(email.to)}")
         {:warning, "Skipped sending to potentially invalid email: #{inspect(email.to)}"}
       end
     rescue
       e ->
+        Logger.error("Email delivery error: #{inspect(e)}")
+        Logger.error("Error message: #{e.message}")
+        Logger.error("Error stacktrace: #{inspect(__STACKTRACE__)}")
+        
         IO.puts(
           "Email config environment variable may not have been setup properly: #{e.message}"
         )
 
         {:error, e.message}
+    catch
+      :exit, reason ->
+        Logger.error("Email delivery exit: #{inspect(reason)}")
+        {:error, "SMTP connection failed: #{inspect(reason)}"}
+      :throw, reason ->
+        Logger.error("Email delivery throw: #{inspect(reason)}")
+        {:error, "SMTP error: #{inspect(reason)}"}
     end
   end
 

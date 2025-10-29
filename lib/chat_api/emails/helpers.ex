@@ -44,8 +44,9 @@ defmodule ChatApi.Emails.Helpers do
   end
 
   def valid?(email) do
-    # TODO: not sure how reliable this actually is...
-    valid_format?(email) && valid_mx?(email)
+    # Only check format, skip MX record validation
+    # MX records can be unreliable and block legitimate emails
+    valid_format?(email)
   end
 
   defp lookup_all_mx_records(domain_name) do
