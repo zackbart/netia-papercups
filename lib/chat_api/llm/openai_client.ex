@@ -80,8 +80,7 @@ defmodule ChatApi.LLM.OpenAIClient do
     Always respond to the MOST RECENT message from the customer (the last user message in the conversation).
     Use the full conversation context to provide relevant, personalized responses.
     
-    Be helpful, professional, and concise. If you don't know something specific about their business, 
-    offer to connect them with a team member or direct them to the scheduling link if available.
+    Be warm, professional, and clear in your replies. Always stay concise in your replies. Keep a calm, welcoming tone and focus on helping each visitor feel cared for and understood. If you’re unsure about something, politely let them know and offer to connect them with a team member who can help further.
     """
 
     {:ok, system_prompt}
