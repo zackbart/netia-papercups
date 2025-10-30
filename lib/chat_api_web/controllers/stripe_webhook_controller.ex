@@ -7,43 +7,49 @@ defmodule ChatApiWeb.StripeWebhookController do
 
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, _params) do
-    signature = get_req_header(conn, "stripe-signature") |> List.first()
-    secret = System.get_env("STRIPE_WEBHOOK_SECRET")
+    try do
+      signature = get_req_header(conn, "stripe-signature") |> List.first()
+      secret = System.get_env("STRIPE_WEBHOOK_SECRET")
 
-    if is_nil(secret) do
-      Logger.error("Missing STRIPE_WEBHOOK_SECRET; rejecting webhook")
-      send_resp(conn, 500, "missing configuration")
-    else
-      raw_body = conn.assigns[:raw_body] || ""
+      if is_nil(secret) do
+        Logger.error("Missing STRIPE_WEBHOOK_SECRET; rejecting webhook")
+        send_resp(conn, 500, "missing configuration")
+      else
+        raw_body = conn.assigns[:raw_body] || ""
 
-      cond do
-        is_nil(signature) or signature == "" ->
-          Logger.warn("Stripe webhook: missing signature header")
-          send_resp(conn, 400, "missing signature")
+        cond do
+          is_nil(signature) or signature == "" ->
+            Logger.warn("Stripe webhook: missing signature header")
+            send_resp(conn, 400, "missing signature")
 
-        raw_body == "" ->
-          Logger.warn("Stripe webhook: empty body")
-          send_resp(conn, 400, "empty body")
+          raw_body == "" ->
+            Logger.warn("Stripe webhook: empty body")
+            send_resp(conn, 400, "empty body")
 
-        true ->
-          with {:ok, %Stripe.Event{} = event} <- construct_event_safe(raw_body, signature, secret),
-           :ok <- process_once(event.id, fn -> handle_event(event) end) do
-            Logger.info("Stripe webhook handled: id=#{event.id} type=#{event.type}")
-            send_resp(conn, 200, "ok")
-          else
-            {:error, :already_processed} ->
-              Logger.info("Stripe webhook duplicate ignored: id=#{inspect(get_event_id(signature))}")
+          true ->
+            with {:ok, %Stripe.Event{} = event} <- construct_event_safe(raw_body, signature, secret),
+                 :ok <- process_once(event.id, fn -> handle_event(event) end) do
+              Logger.info("Stripe webhook handled: id=#{event.id} type=#{event.type}")
               send_resp(conn, 200, "ok")
+            else
+              {:error, :already_processed} ->
+                Logger.info("Stripe webhook duplicate ignored")
+                send_resp(conn, 200, "ok")
 
-            {:error, :invalid_signature} ->
-              Logger.warn("Stripe webhook: invalid signature")
-              send_resp(conn, 400, "invalid signature")
+              {:error, :invalid_signature} ->
+                Logger.warn("Stripe webhook: invalid signature")
+                send_resp(conn, 400, "invalid signature")
 
-            {:error, reason} ->
-              Logger.error("Stripe webhook processing error: #{inspect(reason)}")
-              send_resp(conn, 400, "bad request")
-          end
+              {:error, reason} ->
+                Logger.error("Stripe webhook processing error: #{inspect(reason)}")
+                send_resp(conn, 400, "bad request")
+            end
+        end
       end
+    rescue
+      e ->
+        Logger.error("Stripe webhook crashed: #{Exception.message(e)}")
+        send_resp(conn, 400, "bad request")
     end
   end
 
@@ -56,6 +62,13 @@ defmodule ChatApiWeb.StripeWebhookController do
   end
 
   defp get_event_id(_signature), do: nil
+
+  @doc """
+  Simple health endpoint to verify routing/reachability without signature.
+  """
+  def health(conn, _params) do
+    send_resp(conn, 200, "ok")
+  end
 
   defp process_once(event_id, fun) when is_binary(event_id) do
     # Use a simple upsert into the processed events table

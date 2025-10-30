@@ -82,6 +82,7 @@ defmodule ChatApiWeb.Router do
 
     # Stripe webhooks (unauthenticated; secured via signature)
     post("/stripe/webhooks", StripeWebhookController, :create)
+    get("/stripe/webhooks/health", StripeWebhookController, :health)
 
     post("/newsletters/:newsletter/subscribe", NewsletterController, :subscribe)
     post("/onboarding", OnboardingController, :create)
