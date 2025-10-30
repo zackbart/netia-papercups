@@ -45,6 +45,9 @@ defmodule ChatApi.Accounts.Account do
     field(:stripe_customer_id, :string)
     field(:stripe_subscription_id, :string)
     field(:stripe_product_id, :string)
+    field(:stripe_subscription_status, :string)
+    field(:stripe_current_period_end, :utc_datetime)
+    field(:stripe_price_id, :string)
     field(:stripe_default_payment_method_id, :string)
 
     field(:subscription_exempt, :boolean, default: false)
@@ -84,6 +87,9 @@ defmodule ChatApi.Accounts.Account do
       :stripe_customer_id,
       :stripe_subscription_id,
       :stripe_product_id,
+      :stripe_subscription_status,
+      :stripe_current_period_end,
+      :stripe_price_id,
       :stripe_default_payment_method_id,
       :subscription_exempt
     ])

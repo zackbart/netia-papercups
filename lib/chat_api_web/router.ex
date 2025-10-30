@@ -80,6 +80,9 @@ defmodule ChatApiWeb.Router do
     post("/github/webhook", GithubController, :webhook)
     post("/ses/webhook", SesController, :webhook)
 
+    # Stripe webhooks (unauthenticated; secured via signature)
+    post("/stripe/webhooks", StripeWebhookController, :create)
+
     post("/newsletters/:newsletter/subscribe", NewsletterController, :subscribe)
     post("/onboarding", OnboardingController, :create)
   end
