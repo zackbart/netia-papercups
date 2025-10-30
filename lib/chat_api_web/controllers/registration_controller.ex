@@ -214,7 +214,12 @@ defmodule ChatApiWeb.RegistrationController do
     json(conn, %{
       data: %{
         token: conn.private[:api_auth_token],
-        renew_token: conn.private[:api_renew_token]
+        renew_token: conn.private[:api_renew_token],
+        account_id:
+          case conn.assigns[:current_user] do
+            %{account_id: account_id} -> account_id
+            _ -> nil
+          end
       }
     })
   end
