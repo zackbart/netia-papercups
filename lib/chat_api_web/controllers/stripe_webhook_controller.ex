@@ -139,12 +139,14 @@ defmodule ChatApiWeb.StripeWebhookController do
            _ -> nil
          end)
 
+    price_id = if is_map(price), do: price.id, else: nil
+
     %{
       stripe_subscription_id: s.id,
       stripe_subscription_status: s.status,
       stripe_current_period_end: unix_to_datetime(s.current_period_end),
       stripe_product_id: plan_product_id,
-      stripe_price_id: if is_map(price), do: price.id, else: nil
+      stripe_price_id: price_id
     }
   end
 
