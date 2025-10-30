@@ -200,10 +200,22 @@ defmodule ChatApiWeb.StripeWebhookController do
 
   defp fetch_account(nil), do: {:error, :no_account_in_metadata}
   defp fetch_account(account_id) do
-    try do
-      {:ok, Accounts.get_account!(account_id)}
-    rescue
-      _ -> {:error, :account_not_found}
+    id =
+      case account_id do
+        s when is_binary(s) -> String.trim(s)
+        other -> other
+      end
+
+    case Ecto.UUID.cast(id) do
+      {:ok, _} ->
+        try do
+          {:ok, Accounts.get_account!(id)}
+        rescue
+          _ -> {:error, :account_not_found}
+        end
+
+      :error ->
+        {:error, :invalid_account_id}
     end
   end
 end
