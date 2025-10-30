@@ -96,7 +96,7 @@ defmodule ChatApiWeb.StripeWebhookController do
     end
   end
 
-  defp apply_checkout_session(%Stripe.Checkout.Session{} = session) do
+  defp apply_checkout_session(session) when is_map(session) do
     account_id = get_in(session, [Access.key(:metadata, %{}), "netia_account_id"])
 
     with {:ok, %Account{} = account} <- fetch_account(account_id) do
