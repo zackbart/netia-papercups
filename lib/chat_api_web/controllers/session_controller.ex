@@ -164,7 +164,6 @@ defmodule ChatApiWeb.SessionController do
     # Bypass all subscription checks if account is exempt
     if Map.get(account, :subscription_exempt) do
       on_success.(nil)
-      conn
     else
       case Subscriptions.check_subscription_status(account) do
       {:ok, subscription} ->
