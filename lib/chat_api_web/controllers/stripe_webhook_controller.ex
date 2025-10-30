@@ -131,15 +131,19 @@ defmodule ChatApiWeb.StripeWebhookController do
     price = Map.get(item, :price)
     product = if is_map(price), do: Map.get(price, :product), else: nil
 
+    plan_product_id =
+      as_id(product) ||
+        (case Map.get(item, :plan) do
+           %Stripe.Plan{id: id} -> id
+           id when is_binary(id) -> id
+           _ -> nil
+         end)
+
     %{
       stripe_subscription_id: s.id,
       stripe_subscription_status: s.status,
       stripe_current_period_end: unix_to_datetime(s.current_period_end),
-      stripe_product_id: as_id(product) || Map.get(item, :plan) |> case do
-        %Stripe.Plan{id: id} -> id
-        id when is_binary(id) -> id
-        _ -> nil
-      end,
+      stripe_product_id: plan_product_id,
       stripe_price_id: if is_map(price), do: price.id, else: nil
     }
   end
