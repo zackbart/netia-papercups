@@ -23,11 +23,13 @@ class Login extends React.Component<Props, State> {
     email: '',
     password: '',
     error: null,
-    redirect: '/conversations',
+    redirect: '/getting-started',
   };
 
   componentDidMount() {
-    const {redirect = '/conversations'} = qs.parse(this.props.location.search);
+    const {redirect = '/getting-started'} = qs.parse(
+      this.props.location.search
+    );
 
     this.setState({redirect: String(redirect)});
   }
