@@ -16,18 +16,46 @@ defmodule ChatApiWeb.StripeWebhookController do
     else
       raw_body = conn.assigns[:raw_body] || ""
 
-      with {:ok, %Stripe.Event{} = event} <- Stripe.Webhook.construct_event(raw_body, signature, secret),
+      cond do
+        is_nil(signature) or signature == "" ->
+          Logger.warn("Stripe webhook: missing signature header")
+          send_resp(conn, 400, "missing signature")
+
+        raw_body == "" ->
+          Logger.warn("Stripe webhook: empty body")
+          send_resp(conn, 400, "empty body")
+
+        true ->
+          with {:ok, %Stripe.Event{} = event} <- construct_event_safe(raw_body, signature, secret),
            :ok <- process_once(event.id, fn -> handle_event(event) end) do
-        send_resp(conn, 200, "ok")
-      else
-        {:error, :already_processed} -> send_resp(conn, 200, "ok")
-        {:error, :invalid_signature} -> send_resp(conn, 400, "invalid signature")
-        {:error, reason} ->
-          Logger.error("Stripe webhook processing error: #{inspect(reason)}")
-          send_resp(conn, 400, "bad request")
+            Logger.info("Stripe webhook handled: id=#{event.id} type=#{event.type}")
+            send_resp(conn, 200, "ok")
+          else
+            {:error, :already_processed} ->
+              Logger.info("Stripe webhook duplicate ignored: id=#{inspect(get_event_id(signature))}")
+              send_resp(conn, 200, "ok")
+
+            {:error, :invalid_signature} ->
+              Logger.warn("Stripe webhook: invalid signature")
+              send_resp(conn, 400, "invalid signature")
+
+            {:error, reason} ->
+              Logger.error("Stripe webhook processing error: #{inspect(reason)}")
+              send_resp(conn, 400, "bad request")
+          end
       end
     end
   end
+
+  defp construct_event_safe(raw_body, signature, secret) do
+    try do
+      Stripe.Webhook.construct_event(raw_body, signature, secret)
+    rescue
+      _e -> {:error, :invalid_signature}
+    end
+  end
+
+  defp get_event_id(_signature), do: nil
 
   defp process_once(event_id, fun) when is_binary(event_id) do
     # Use a simple upsert into the processed events table
