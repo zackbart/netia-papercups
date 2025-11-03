@@ -16,12 +16,12 @@ defmodule ChatApiWeb.PageController do
       
       case File.read(index_path) do
         {:ok, file} ->
-          file
-          |> String.replace(
-            "__SERVER_ENV_DATA__",
-            Jason.encode!(server_env_data(), escape: :html_safe)
-          )
-          |> then(&html(conn, &1))
+          content = file
+            |> String.replace(
+              "__SERVER_ENV_DATA__",
+              Jason.encode!(server_env_data(), escape: :html_safe)
+            )
+          html(conn, content)
 
         {:error, reason} ->
           # Fallback if index.html doesn't exist
