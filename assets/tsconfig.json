@@ -26,5 +26,8 @@
   "include": [
     "src",
     "src/lib/storytime"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

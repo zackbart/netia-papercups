@@ -100,6 +100,7 @@
     ]
   },
   "devDependencies": {
+    "@types/minimatch": "3.0.5",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "prettier": "^2.0.5"
