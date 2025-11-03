@@ -23,9 +23,12 @@ if [ -f .env ]; then
 fi
 
 cleanup() {
-  echo -e "\n${WARN_COLOR}🛑 Stopping dev servers...${RESET_COLOR}"
+  echo -e "\n${WARN_COLOR}🛑 Stopping servers...${RESET_COLOR}"
   pkill -f "react-scripts" 2>/dev/null || true
   pkill -f "mix phx.server" 2>/dev/null || true
+  pkill -f "beam.smp.*papercups" 2>/dev/null || true
+  # Release process runs as papercups, stop it
+  pkill -f "papercups.*start" 2>/dev/null || true
   exit 0
 }
 
@@ -99,7 +102,96 @@ case "$1" in
     # Build frontend assets
     export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
     npm run build --prefix assets
+    # Digest static assets (same as Dockerfile)
+    MIX_ENV=prod mix phx.digest priv/static
     echo -e "${INFO_COLOR}✅ Build complete! Assets in priv/static/${RESET_COLOR}"
+    ;;
+
+  "prod")
+    trap cleanup SIGINT SIGTERM EXIT
+    echo -e "${INFO_COLOR}🚀 Starting production server locally...${RESET_COLOR}"
+    
+    # Warn if build hasn't been run
+    if [ ! -f priv/static/index.html ]; then
+      echo -e "${WARN_COLOR}⚠️  Production build not found. Run './dev.sh build' first.${RESET_COLOR}"
+      echo -e "${INFO_COLOR}   Building now...${RESET_COLOR}"
+      MIX_ENV=prod mix compile --force || true
+      export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
+      npm run build --prefix assets || exit 1
+      MIX_ENV=prod mix phx.digest priv/static || true
+    fi
+
+    # Check required env vars
+    if [ -z "$DATABASE_URL" ]; then
+      echo -e "${WARN_COLOR}⚠️  DATABASE_URL not set. Make sure it's in .env${RESET_COLOR}"
+    fi
+    
+    if [ -z "$SECRET_KEY_BASE" ]; then
+      echo -e "${WARN_COLOR}⚠️  SECRET_KEY_BASE not set. Make sure it's in .env${RESET_COLOR}"
+    fi
+
+    # Ensure NODE_OPTIONS for any watchers
+    export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
+    export MIX_ENV=prod
+    
+    # Start Phoenix in production mode (serves compiled static files)
+    PORT=${PORT:-4000}
+    echo -e "${INFO_COLOR}🌐 Starting on http://localhost:${PORT}${RESET_COLOR}"
+    echo -e "${INFO_COLOR}   (Serving compiled assets from priv/static/)${RESET_COLOR}"
+    MIX_ENV=prod PORT=$PORT mix phx.server
+    ;;
+
+  "release")
+    echo -e "${INFO_COLOR}📦 Creating production release...${RESET_COLOR}"
+    
+    # Build first if needed
+    if [ ! -f priv/static/index.html ]; then
+      echo -e "${INFO_COLOR}   Building assets first...${RESET_COLOR}"
+      MIX_ENV=prod mix compile --force
+      export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
+      npm run build --prefix assets
+      MIX_ENV=prod mix phx.digest priv/static
+    fi
+    
+    # Create release
+    MIX_ENV=prod mix release papercups
+    RELEASE_PATH="_build/prod/rel/papercups/bin/papercups"
+    
+    if [ -f "$RELEASE_PATH" ]; then
+      echo -e "${INFO_COLOR}✅ Release created!${RESET_COLOR}"
+      echo -e "${INFO_COLOR}   Run with: ${RELEASE_PATH} start${RESET_COLOR}"
+      echo -e "${INFO_COLOR}   Or: ./dev.sh prod:release${RESET_COLOR}"
+    else
+      echo -e "${WARN_COLOR}❌ Release not found at ${RELEASE_PATH}${RESET_COLOR}"
+      exit 1
+    fi
+    ;;
+
+  "prod:release")
+    trap cleanup SIGINT SIGTERM EXIT
+    echo -e "${INFO_COLOR}🚀 Starting production release locally...${RESET_COLOR}"
+    
+    RELEASE_PATH="_build/prod/rel/papercups/bin/papercups"
+    
+    # Build release if needed
+    if [ ! -f "$RELEASE_PATH" ]; then
+      echo -e "${INFO_COLOR}   Creating release first...${RESET_COLOR}"
+      ./dev.sh release || exit 1
+    fi
+    
+    # Check required env vars
+    if [ -z "$DATABASE_URL" ]; then
+      echo -e "${WARN_COLOR}⚠️  DATABASE_URL not set. Make sure it's in .env${RESET_COLOR}"
+    fi
+    
+    if [ -z "$SECRET_KEY_BASE" ]; then
+      echo -e "${WARN_COLOR}⚠️  SECRET_KEY_BASE not set. Make sure it's in .env${RESET_COLOR}"
+    fi
+
+    PORT=${PORT:-4000}
+    echo -e "${INFO_COLOR}🌐 Starting release on http://localhost:${PORT}${RESET_COLOR}"
+    echo -e "${INFO_COLOR}   (Full production release - most similar to Railway)${RESET_COLOR}"
+    PORT=$PORT "$RELEASE_PATH" start
     ;;
 
   "stop")
@@ -131,5 +223,8 @@ case "$1" in
     echo "  test      - Run tests"
     echo "  format    - Format Elixir code"
     echo "  build     - Build for production (Elixir + frontend)"
+    echo "  prod      - Run production server locally (mix phx.server in prod mode)"
+    echo "  release   - Create production release (bin/papercups)"
+    echo "  prod:release - Run production release locally (most similar to Railway)"
     ;;
 esac

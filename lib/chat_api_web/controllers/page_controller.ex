@@ -5,19 +5,67 @@ defmodule ChatApiWeb.PageController do
   def index(conn, _params) do
     # In dev mode, redirect to CRA dev server on port 3000
     # In production, serve compiled static assets from priv/static
-    if Mix.env() == :dev do
+    # Check if Mix is available (not available in releases)
+    is_dev_mode = Code.ensure_loaded?(Mix) and function_exported?(Mix, :env, 0) and Mix.env() == :dev
+    
+    if is_dev_mode do
       redirect(conn, external: "http://localhost:3000#{conn.request_path}")
     else
-      file =
-        "./priv/static/index.html"
-        |> File.read!()
-        |> String.replace(
-          "__SERVER_ENV_DATA__",
-          Jason.encode!(server_env_data(), escape: :html_safe)
-        )
+      # Use Application.app_dir to get absolute path (works in releases)
+      index_path = Path.join([Application.app_dir(:chat_api), "priv", "static", "index.html"])
+      
+      case File.read(index_path) do
+        {:ok, file} ->
+          file
+          |> String.replace(
+            "__SERVER_ENV_DATA__",
+            Jason.encode!(server_env_data(), escape: :html_safe)
+          )
+          |> then(&html(conn, &1))
 
-      html(conn, file)
+        {:error, reason} ->
+          # Fallback if index.html doesn't exist
+          require Logger
+          Logger.error("priv/static/index.html not found at #{index_path}: #{inspect(reason)}")
+          html(conn, fallback_html())
+      end
     end
+  end
+
+  defp fallback_html do
+    """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Netia</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          margin: 0;
+          background: #f5f5f5;
+        }
+        .container {
+          text-align: center;
+          padding: 2rem;
+        }
+        h1 { color: #333; margin: 0 0 1rem 0; }
+        p { color: #666; margin: 0.5rem 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Application Starting</h1>
+        <p>Please wait while the application initializes.</p>
+      </div>
+    </body>
+    </html>
+    """
   end
 
   defp server_env_data() do
