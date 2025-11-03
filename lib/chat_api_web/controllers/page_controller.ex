@@ -3,15 +3,21 @@ defmodule ChatApiWeb.PageController do
 
   @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
-    file =
-      "./priv/static/index.html"
-      |> File.read!()
-      |> String.replace(
-        "__SERVER_ENV_DATA__",
-        Jason.encode!(server_env_data(), escape: :html_safe)
-      )
+    # In dev mode, redirect to CRA dev server on port 3000
+    # In production, serve compiled static assets from priv/static
+    if Mix.env() == :dev do
+      redirect(conn, external: "http://localhost:3000#{conn.request_path}")
+    else
+      file =
+        "./priv/static/index.html"
+        |> File.read!()
+        |> String.replace(
+          "__SERVER_ENV_DATA__",
+          Jason.encode!(server_env_data(), escape: :html_safe)
+        )
 
-    html(conn, file)
+      html(conn, file)
+    end
   end
 
   defp server_env_data() do

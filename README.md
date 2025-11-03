@@ -13,15 +13,51 @@ _Watch how easy it is to get set up with our Slack integration 🚀 :_
 
 ## Development Setup
 
-For local development, see our comprehensive guide:
+### Prerequisites
 
-**[📖 Development Guide](docs/development.md)**
+- **[asdf](https://asdf-vm.com/)** (recommended) - Tool version manager for Erlang, Elixir, Node.js
+  ```bash
+  brew install asdf  # macOS
+  ```
+- Or install directly:
+  - **Erlang** 24.3.4.13
+  - **Elixir** 1.14.5-otp-24
+  - **Node.js** 18.20.4
+  - **PostgreSQL** (optional - we use Railway Postgres for local dev)
 
-## One click Heroku deployment
+The project uses `.tool-versions` to specify exact versions when using asdf.
 
-The fastest way to get started is one click deploy on Heroku with:
+### Quick Start
 
-<a href="https://heroku.com/deploy?template=https://github.com/papercups-io/papercups"><img src="https://www.herokucdn.com/deploy/button.svg" width="200px" /></a>
+```bash
+# 1) Copy environment template
+cp .env.example .env
+# Edit .env with your Railway Postgres DATABASE_URL and other config
+
+# 2) One-time setup (installs dependencies, sets up database)
+./dev.sh setup
+
+# 3) Start development servers
+./dev.sh start
+```
+
+The app will be running at:
+- **Frontend**: http://localhost:3000 (CRA dev server)
+- **API**: http://localhost:4000 (Phoenix server)
+
+For detailed development instructions, see **[📖 Development Guide](docs/development.md)**
+
+## Deployment
+
+This project is configured for deployment on [Railway](https://railway.app). Railway automatically:
+- Detects the `Dockerfile` for production builds
+- Runs database migrations on deployment
+- Manages PostgreSQL via `DATABASE_URL` environment variable
+
+To deploy:
+1. Connect your GitHub repository to Railway
+2. Configure environment variables (see `.env.example` for required variables)
+3. Push to your main branch to trigger automatic deployments
 
 ## Philosophy
 
@@ -42,23 +78,41 @@ We wanted to make a self-hosted customer support tool like Zendesk and Intercom 
 - **Conversation management** - close, assign, and prioritize conversations
 - **Built on Elixir** - optimized for responsiveness, fault-tolerance, and support for realtime updates
 
+## Tech Stack
+
+**Backend:**
+- **Elixir** 1.14.5 with **Erlang/OTP** 24.3.4.13
+- **Phoenix** - Web framework with LiveView for real-time updates
+- **Ecto** - Database wrapper and query library
+- **PostgreSQL** - Database (hosted on Railway)
+
+**Frontend:**
+- **React** with **TypeScript**
+- **Create React App** - Build tooling
+- **Phoenix Channels** - WebSocket connections for real-time features
+
+**DevOps & Deployment:**
+- **Railway** - Hosting and database
+- **Docker** - Production containerization
+- **asdf** - Development tool version management
+
+**Development Tools:**
+- Hot reload for both Elixir and React code
+- Native development workflow (no Docker for local dev)
+- `dev.sh` - Unified development script
+
 ## Demo
 
-We set up a [simple page](https://app.papercups.io/demo) that demonstrates how Papercups works.
-
-Try sending us a message to see what the chat experience is like!
-
-## Blog
-
-Check out our [blog](https://papercups.io/blog) for more updates and learnings
+Check out our [demo page](https://app.netia.io/demo/) to see the chat widget in action and customize it to your needs.
 
 ## Documentation
 
-Check out our docs at [docs.papercups.io](https://docs.papercups.io/)
+- **[Development Guide](docs/development.md)** - Complete setup and development instructions
+- **[LLM Cost Analysis](docs/llm-cost-analysis.md)** - Analysis of LLM usage and costs
 
 ## Contributing
 
-We :heart: contributions big or small. See [CONTRIBUTING.md](https://github.com/papercups-io/papercups/blob/master/CONTRIBUTING.md) for a guide on how to get started.
+We :heart: contributions big or small. For local development setup, see the [Development Guide](docs/development.md) to get started.
 
 ## Thanks to all of our contributors!
 

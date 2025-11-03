@@ -4,7 +4,10 @@ defmodule ChatApi.Repo.Migrations.CreateInboxes do
   require Logger
 
   alias ChatApi.{Inboxes, Repo}
-  alias ChatApi.Accounts.Account
+  # NOTE: Do not use the Account schema here. Selecting from the schema can
+  # break if newer fields are added in later migrations (as Ecto will attempt
+  # to select all schema fields). Use a bare query against the "accounts" table
+  # selecting only the columns required for this seed.
   alias ChatApi.Conversations.Conversation
   alias ChatApi.ForwardingAddresses.ForwardingAddress
   alias ChatApi.Google.GoogleAuthorization
@@ -146,7 +149,7 @@ defmodule ChatApi.Repo.Migrations.CreateInboxes do
   end
 
   def create_primary_inbox_by_account() do
-    Account
+    from(a in "accounts", select: %{id: a.id, company_name: a.company_name})
     |> Repo.all()
     |> Enum.map(fn account ->
       {:ok, inbox} =

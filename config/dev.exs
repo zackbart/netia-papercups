@@ -1,13 +1,26 @@
 use Mix.Config
 
 database_url = System.get_env("DATABASE_URL") || "ecto://postgres:postgres@localhost/chat_api_dev"
+require_db_ssl = System.get_env("REQUIRE_DB_SSL") == "true"
 
 # Configure your database
-config :chat_api, ChatApi.Repo,
+repo_config = [
   url: database_url,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10,
-  socket_options: [:inet6]
+  pool_size: 10
+]
+
+# Add SSL configuration if required
+repo_config = if require_db_ssl do
+  repo_config ++ [
+    ssl: true,
+    ssl_opts: [verify: :verify_none]
+  ]
+else
+  repo_config
+end
+
+config :chat_api, ChatApi.Repo, repo_config
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -24,7 +37,12 @@ config :chat_api, ChatApiWeb.Endpoint,
     node: [
       "node_modules/react-scripts/bin/react-scripts.js",
       "start",
-      cd: Path.expand("../assets", __DIR__)
+      cd: Path.expand("../assets", __DIR__),
+      env: [
+        {"PORT", "3000"},
+        {"NODE_OPTIONS", System.get_env("NODE_OPTIONS") || "--openssl-legacy-provider"},
+        {"PATH", System.get_env("PATH")}
+      ]
     ]
   ]
 

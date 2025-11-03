@@ -2,13 +2,13 @@
 # NETIA PAPERCUPS - GIT IGNORE
 # =============================================================================
 
-# Environment files with secrets
+# Environment files with secrets (but allow .env.example)
 .env
 .env.local
 .env.production
 .env.staging
 .env.development
-*.env
+!*.env.example
 
 # Railway specific
 railway-variables.txt
@@ -79,6 +79,7 @@ docs/_build/
 # Phoenix artifacts
 priv/static/
 priv/static/assets/
+assets/build/
 
 # Elixir artifacts
 .elixir_ls/
@@ -89,8 +90,7 @@ priv/static/assets/
 docker-compose.yml
 docker-compose.override.yml
 
-# Local development scripts
-dev.sh
+# Local development scripts (dev.sh is now committed for team use)
 
 # Railway
 .railway/
