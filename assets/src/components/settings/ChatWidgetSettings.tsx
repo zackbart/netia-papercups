@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useSearchParams, useParams} from 'react-router-dom';
 import {capitalize, debounce} from 'lodash';
 import {Box} from 'theme-ui';
 import {TwitterPicker} from 'react-color';
@@ -28,7 +28,7 @@ import {Link} from 'react-router-dom';
 import UniversalEmbedCode from './UniversalEmbedCode';
 import PlatformInstructions from './PlatformInstructions';
 
-type Props = RouteComponentProps<{inbox_id?: string}> & {};
+type Props = {inbox_id?: string};
 type State = {
   accountId: string | null;
   account: Account | null;
@@ -69,7 +69,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
   };
 
   async componentDidMount() {
-    const {inbox_id: inboxId} = this.props.match.params;
+    const {inbox_id: inboxId} = this.props;
     const currentUser = await API.me();
     const account = await API.fetchAccountInfo();
     const {id: accountId, company_name: company} = account;
@@ -216,7 +216,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
   };
 
   updateWidgetSettings = async () => {
-    const {inbox_id: inboxId} = this.props.match.params;
+    const {inbox_id: inboxId} = this.props;
     const {
       color,
       title,
@@ -246,7 +246,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
       icon_variant: iconVariant,
       is_branding_hidden: isBrandingHidden,
       inbox_id: inboxId,
-    })
+    } as any)
       .then((res) => logger.debug('Updated widget settings:', res))
       .catch((err) => logger.error('Error updating widget settings:', err));
   };
@@ -294,7 +294,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     }
 
     const customer = this.getUserMetadata();
-    const {inbox_id: inboxId} = this.props.match.params;
+    const {inbox_id: inboxId} = this.props;
 
     return (
       <Box px={5} py={4} sx={{maxWidth: 800}}>
@@ -514,15 +514,15 @@ class ChatWidgetSettings extends React.Component<Props, State> {
               )}&primaryColor=${encodeURIComponent(
                 color
               )}&greeting=${encodeURIComponent(
-                greeting
+                greeting || ''
               )}&awayMessage=${encodeURIComponent(
-                awayMessage
+                awayMessage || ''
               )}&showAgentAvailability=${showAgentAvailability}&agentAvailableText=${encodeURIComponent(
-                agentAvailableText
+                agentAvailableText || ''
               )}&agentUnavailableText=${encodeURIComponent(
-                agentUnavailableText
+                agentUnavailableText || ''
               )}&requireEmailUpfront=${requireEmailUpfront}&newMessagePlaceholder=${encodeURIComponent(
-                newMessagePlaceholder
+                newMessagePlaceholder || ''
               )}&iconVariant=${iconVariant}&isBrandingHidden=${isBrandingHidden}`}
               style={{
                 width: '100%',
@@ -588,4 +588,9 @@ class ChatWidgetSettings extends React.Component<Props, State> {
   }
 }
 
-export default ChatWidgetSettings;
+const ChatWidgetSettingsWrapper = () => {
+  const {inbox_id} = useParams<{inbox_id?: string}>();
+  return <ChatWidgetSettings inbox_id={inbox_id} />;
+};
+
+export default ChatWidgetSettingsWrapper;

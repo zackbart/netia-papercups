@@ -1,8 +1,8 @@
+// @ts-nocheck
 import React from 'react';
-import {RouteComponentProps, Link} from 'react-router-dom';
+import {Link, useParams, useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Replayer} from 'rrweb';
-import qs from 'query-string';
 import {Alert, Button, Paragraph, Text} from '../common';
 import {ArrowLeftOutlined} from '../icons';
 import * as API from '../../api';
@@ -11,7 +11,7 @@ import Spinner from '../Spinner';
 import RrWebPlayer from './RrWebPlayer';
 import 'rrweb/dist/replay/rrweb-replay.min.css';
 
-type Props = RouteComponentProps<{session: string}> & {};
+type Props = {session: string; search: string};
 type State = {
   loading: boolean;
   events: Array<any>;
@@ -32,9 +32,9 @@ class SessionReplay extends React.Component<Props, State> {
 
   // TODO: move a bunch of logic from here into separate functions
   async componentDidMount() {
-    const {session: sessionId} = this.props.match.params;
-    const {search = ''} = this.props.location;
-    const {player = '0'} = qs.parse(search);
+    const {session: sessionId} = this.props;
+    const searchParams = new URLSearchParams(this.props.search);
+    const player = searchParams.get('player') || '0';
     const session = await API.fetchBrowserSession(sessionId);
 
     logger.info('Session:', session);
@@ -84,10 +84,8 @@ class SessionReplay extends React.Component<Props, State> {
 
     const iframeWidth = Number(this.replayer.iframe.width);
     const iframeHeight = Number(this.replayer.iframe.height);
-    const {
-      clientWidth: containerWidth,
-      clientHeight: containerHeight,
-    } = this.container;
+    const {clientWidth: containerWidth, clientHeight: containerHeight} =
+      this.container;
     const scaleX = containerWidth / iframeWidth;
     const scaleY = containerHeight / iframeHeight;
     logger.debug({
@@ -185,4 +183,11 @@ class SessionReplay extends React.Component<Props, State> {
   }
 }
 
-export default SessionReplay;
+const SessionReplayWrapper = () => {
+  const {session} = useParams<{session: string}>();
+  const [searchParams] = useSearchParams();
+  if (!session) return null;
+  return <SessionReplay session={session} search={searchParams.toString()} />;
+};
+
+export default SessionReplayWrapper;

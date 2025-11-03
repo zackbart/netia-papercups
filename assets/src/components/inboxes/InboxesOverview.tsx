@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {
   colors,
@@ -86,7 +86,7 @@ const InboxesTable = ({
   );
 };
 
-type Props = RouteComponentProps<{}>;
+type Props = {};
 type State = {
   loading: boolean;
   inboxes: Array<Inbox>;

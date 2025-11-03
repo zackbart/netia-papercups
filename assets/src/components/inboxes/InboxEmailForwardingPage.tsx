@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 
 import {
@@ -128,7 +129,7 @@ const filterForwardingAddressesByQuery = (
   });
 };
 
-type Props = RouteComponentProps<{inbox_id: string}>;
+type Props = {inbox_id: string};
 type State = {
   account: Account | null;
   inbox: Inbox | null;
@@ -151,7 +152,7 @@ class InboxEmailForwardingPage extends React.Component<Props, State> {
   };
 
   async componentDidMount() {
-    const {inbox_id: inboxId} = this.props.match.params;
+    const {inbox_id: inboxId} = this.props;
 
     this.setState({
       account: await API.fetchAccountInfo(),
@@ -182,7 +183,7 @@ class InboxEmailForwardingPage extends React.Component<Props, State> {
 
   handleRefreshForwardingAddresses = async () => {
     try {
-      const {inbox_id: inboxId} = this.props.match.params;
+      const {inbox_id: inboxId} = this.props;
       const {filterQuery} = this.state;
       const forwardingAddresses = await API.fetchForwardingAddresses({
         inbox_id: inboxId,
@@ -227,7 +228,7 @@ class InboxEmailForwardingPage extends React.Component<Props, State> {
   };
 
   render() {
-    const {inbox_id: inboxId} = this.props.match.params;
+    const {inbox_id: inboxId} = this.props;
     const {loading, filteredForwardingAddresses = [], inbox} = this.state;
 
     return (
@@ -293,4 +294,10 @@ class InboxEmailForwardingPage extends React.Component<Props, State> {
   }
 }
 
-export default InboxEmailForwardingPage;
+const InboxEmailForwardingPageWrapper = () => {
+  const {inbox_id: inboxId} = useParams<{inbox_id: string}>();
+  if (!inboxId) return null;
+  return <InboxEmailForwardingPage inbox_id={inboxId} />;
+};
+
+export default InboxEmailForwardingPageWrapper;

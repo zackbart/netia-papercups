@@ -1,6 +1,7 @@
 import request from 'superagent';
 import qs from 'query-string';
 import {getAuthTokens} from './storage';
+import {BASE_URL, isDev} from './config';
 import {
   Account,
   BrowserSession,
@@ -36,6 +37,51 @@ function now() {
     date.getUTCMinutes(),
     date.getUTCSeconds()
   );
+}
+
+/**
+ * Constructs absolute API URLs to avoid proxy issues in development.
+ *
+ * We use absolute URLs instead of Create React App's proxy because:
+ * 1. The proxy is unreliable and causes ECONNREFUSED errors
+ * 2. It's simpler and more predictable to use direct URLs
+ * 3. Production uses same-origin URLs anyway (no proxy needed)
+ *
+ * In development: http://localhost:4000/api/*
+ * In production: https://${REACT_URL}/api/*
+ */
+// Export apiUrl so other files can use it if needed
+export function apiUrl(path: string): string {
+  // Remove leading slash if present (we'll add BASE_URL which includes trailing protocol/host)
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  // If path already starts with http, return as-is (absolute URL)
+  if (cleanPath.startsWith('http')) {
+    return cleanPath;
+  }
+  // Always use BASE_URL - in dev it's localhost:4000, in prod it's the production URL
+  return `${BASE_URL}${cleanPath}`;
+}
+
+/**
+ * Health check: Verifies Phoenix backend is running in development.
+ * Only runs once on page load to avoid spamming the console.
+ * Uses the /api/ping endpoint which exists and doesn't require authentication.
+ */
+let healthCheckDone = false;
+if (isDev && !healthCheckDone) {
+  healthCheckDone = true;
+  // Check if Phoenix backend is running (non-blocking, async)
+  fetch(`${BASE_URL}/api/ping`, {method: 'GET'})
+    .then(() => {
+      console.log('✅ Phoenix backend is running on', BASE_URL);
+    })
+    .catch(() => {
+      console.warn(
+        '⚠️  Phoenix backend not responding on',
+        BASE_URL,
+        '\n   Make sure Phoenix is running: ./dev.sh start'
+      );
+    });
 }
 
 export type LoginParams = {
@@ -76,20 +122,20 @@ export const me = async (token = getAccessToken()): Promise<User> => {
   }
 
   return request
-    .get(`/api/me`)
+    .get(apiUrl(`/api/me`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
 
 export const login = async ({email, password}: LoginParams) => {
   return request
-    .post(`/api/session`)
+    .post(apiUrl(`/api/session`))
     .send({user: {email, password}})
     .then((res) => res.body.data);
 };
 
 export const logout = async () => {
-  return request.delete(`/api/session`).then((res) => res.body);
+  return request.delete(apiUrl(`/api/session`)).then((res) => res.body);
 };
 
 export const register = async ({
@@ -100,7 +146,7 @@ export const register = async ({
   passwordConfirmation,
 }: RegisterParams) => {
   return request
-    .post(`/api/registration`)
+    .post(apiUrl(`/api/registration`))
     .send({
       user: {
         company_name: companyName,
@@ -119,21 +165,21 @@ export const renew = async (token = getRefreshToken()) => {
   }
 
   return request
-    .post(`/api/session/renew`)
+    .post(apiUrl(`/api/session/renew`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
 
 export const verifyUserEmail = async (verificationToken: string) => {
   return request
-    .post(`/api/verify_email`)
+    .post(apiUrl(`/api/verify_email`))
     .send({token: verificationToken})
     .then((res) => res.body.data);
 };
 
 export const sendPasswordResetEmail = async (email: string) => {
   return request
-    .post(`/api/reset_password`)
+    .post(apiUrl(`/api/reset_password`))
     .send({email})
     .then((res) => res.body.data);
 };
@@ -143,7 +189,7 @@ export const attemptPasswordReset = async (
   {password, passwordConfirmation}: ResetPasswordParams
 ) => {
   return request
-    .put(`/api/reset_password`)
+    .put(apiUrl(`/api/reset_password`))
     .send({
       password,
       password_confirmation: passwordConfirmation,
@@ -157,7 +203,7 @@ export const createNewCustomer = async (
   params: Partial<Customer>
 ) => {
   return request
-    .post(`/api/customers`)
+    .post(apiUrl(`/api/customers`))
     .send({
       customer: {
         first_seen: now(),
@@ -178,7 +224,7 @@ export const fetchCustomers = async (
   }
 
   return request
-    .get(`/api/customers`)
+    .get(apiUrl(`/api/customers`))
     .query(qs.stringify(filters, {arrayFormat: 'bracket'}))
     .set('Authorization', token)
     .then((res) => res.body);
@@ -196,7 +242,7 @@ export const fetchCustomer = async (
   const {expand = []} = query;
 
   return request
-    .get(`/api/customers/${id}`)
+    .get(apiUrl(`/api/customers/${id}`))
     .query(qs.stringify({expand}, {arrayFormat: 'bracket'}))
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -212,7 +258,7 @@ export const updateCustomer = async (
   }
 
   return request
-    .put(`/api/customers/${id}`)
+    .put(apiUrl(`/api/customers/${id}`))
     .set('Authorization', token)
     .send({
       customer: updates,
@@ -226,7 +272,7 @@ export const deleteCustomer = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/customers/${id}`)
+    .delete(apiUrl(`/api/customers/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -240,7 +286,7 @@ export const createNewCompany = async (
   }
 
   return request
-    .post(`/api/companies`)
+    .post(apiUrl(`/api/companies`))
     .send({company: params})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -252,7 +298,7 @@ export const fetchCompanies = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/companies`)
+    .get(apiUrl(`/api/companies`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -263,7 +309,7 @@ export const fetchCompany = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/companies/${id}`)
+    .get(apiUrl(`/api/companies/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -278,7 +324,7 @@ export const updateCompany = async (
   }
 
   return request
-    .put(`/api/companies/${id}`)
+    .put(apiUrl(`/api/companies/${id}`))
     .set('Authorization', token)
     .send({company: updates})
     .then((res) => res.body.data);
@@ -289,7 +335,9 @@ export const deleteCompany = async (id: string, token = getAccessToken()) => {
     throw new Error('Invalid token!');
   }
 
-  return request.delete(`/api/companies/${id}`).set('Authorization', token);
+  return request
+    .delete(apiUrl(`/api/companies/${id}`))
+    .set('Authorization', token);
 };
 
 export const createNewConversation = async (
@@ -302,7 +350,7 @@ export const createNewConversation = async (
   }
 
   return request
-    .post(`/api/conversations`)
+    .post(apiUrl(`/api/conversations`))
     .set('Authorization', token)
     .send({
       conversation: {
@@ -321,7 +369,7 @@ export const fetchAccountInfo = async (
   }
 
   return request
-    .get(`/api/accounts/me`)
+    .get(apiUrl(`/api/accounts/me`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -335,7 +383,7 @@ export const updateAccountInfo = async (
   }
 
   return request
-    .put(`/api/accounts/me`)
+    .put(apiUrl(`/api/accounts/me`))
     .set('Authorization', token)
     .send({
       account: updates,
@@ -349,7 +397,7 @@ export const deleteMyAccount = async (token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/accounts/me`)
+    .delete(apiUrl(`/api/accounts/me`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -360,7 +408,7 @@ export const fetchUserProfile = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/profile`)
+    .get(apiUrl(`/api/profile`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -374,7 +422,7 @@ export const updateUserProfile = async (
   }
 
   return request
-    .put(`/api/profile`)
+    .put(apiUrl(`/api/profile`))
     .set('Authorization', token)
     .send({
       user_profile: updates,
@@ -390,7 +438,7 @@ export const fetchUserSettings = async (
   }
 
   return request
-    .get('/api/user_settings')
+    .get(apiUrl(`/api/user_settings`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -404,7 +452,7 @@ export const updateUserSettings = async (
   }
 
   return request
-    .put('/api/user_settings')
+    .put(apiUrl(`/api/user_settings`))
     .set('Authorization', token)
     .send({
       user_settings: updates,
@@ -433,7 +481,7 @@ export const countUnreadConversations = async (
   }
 
   return request
-    .get(`/api/conversations/unread`)
+    .get(apiUrl(`/api/conversations/unread`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -447,7 +495,7 @@ export const fetchConversations = async (
   }
 
   return request
-    .get(`/api/conversations`)
+    .get(apiUrl(`/api/conversations`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body);
@@ -549,7 +597,7 @@ export const fetchConversation = async (
   }
 
   return request
-    .get(`/api/conversations/${id}`)
+    .get(apiUrl(`/api/conversations/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -563,7 +611,7 @@ export const fetchPreviousConversation = async (
   }
 
   return request
-    .get(`/api/conversations/${id}/previous`)
+    .get(apiUrl(`/api/conversations/${id}/previous`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -577,7 +625,7 @@ export const fetchRelatedConversations = async (
   }
 
   return request
-    .get(`/api/conversations/${id}/related`)
+    .get(apiUrl(`/api/conversations/${id}/related`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -591,7 +639,7 @@ export const fetchSlackConversationThreads = async (
   }
 
   return request
-    .get(`/api/slack_conversation_threads`)
+    .get(apiUrl(`/api/slack_conversation_threads`))
     .query({conversation_id: conversationId})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -606,7 +654,7 @@ export const generateShareConversationToken = async (
   }
 
   return request
-    .post(`/api/conversations/${conversationId}/share`)
+    .post(apiUrl(`/api/conversations/${conversationId}/share`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -620,7 +668,7 @@ export const fetchSharedConversation = async (
   }
 
   return request
-    .get(`/api/conversations/shared`)
+    .get(apiUrl(`/api/conversations/shared`))
     .query({token, conversation_id: id})
     .then((res) => res.body.data);
 };
@@ -635,7 +683,7 @@ export const updateConversation = async (
   }
 
   return request
-    .put(`/api/conversations/${conversationId}`)
+    .put(apiUrl(`/api/conversations/${conversationId}`))
     .set('Authorization', token)
     .send(updates)
     .then((res) => res.body.data);
@@ -650,7 +698,7 @@ export const deleteConversation = async (
   }
 
   return request
-    .delete(`/api/conversations/${conversationId}`)
+    .delete(apiUrl(`/api/conversations/${conversationId}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -664,7 +712,7 @@ export const archiveConversation = async (
   }
 
   return request
-    .post(`/api/conversations/${conversationId}/archive`)
+    .post(apiUrl(`/api/conversations/${conversationId}/archive`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -678,7 +726,7 @@ export const createNewMessage = async (
   }
 
   return request
-    .post(`/api/messages`)
+    .post(apiUrl(`/api/messages`))
     .set('Authorization', token)
     .send({
       message: {
@@ -695,7 +743,7 @@ export const countMessages = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/messages/count`)
+    .get(apiUrl(`/api/messages/count`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -709,7 +757,7 @@ export const countAllConversations = async (
   }
 
   return request
-    .get(`/api/conversations/count`)
+    .get(apiUrl(`/api/conversations/count`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -720,7 +768,7 @@ export const fetchCustomerConversations = async (
   accountId: string
 ) => {
   return request
-    .get(`/api/conversations/customer`)
+    .get(apiUrl(`/api/conversations/customer`))
     .query({customer_id: customerId, account_id: accountId})
     .then((res) => res.body.data);
 };
@@ -731,7 +779,7 @@ export const generateUserInvitation = async (token = getAccessToken()) => {
   }
 
   return request
-    .post(`/api/user_invitations`)
+    .post(apiUrl(`/api/user_invitations`))
     .send({user_invitation: {}})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -746,7 +794,7 @@ export const sendUserInvitationEmail = async (
   }
 
   return request
-    .post(`/api/user_invitation_emails`)
+    .post(apiUrl(`/api/user_invitation_emails`))
     .send({to_address})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -765,7 +813,7 @@ export const sendSlackNotification = async (
   }
 
   return request
-    .post(`/api/slack/notify`)
+    .post(apiUrl(`/api/slack/notify`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -781,7 +829,7 @@ export const fetchSlackAuthorization = async (
   }
 
   return request
-    .get(`/api/slack/authorization`)
+    .get(apiUrl(`/api/slack/authorization`))
     .query({type, ...query})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -797,7 +845,7 @@ export const listSlackAuthorizations = async (
   }
 
   return request
-    .get(`/api/slack/authorizations`)
+    .get(apiUrl(`/api/slack/authorizations`))
     .query({type, ...query})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -813,7 +861,7 @@ export const updateSlackAuthorizationSettings = async (
   }
 
   return request
-    .post(`/api/slack/authorizations/${authorizationId}/settings`)
+    .post(apiUrl(`/api/slack/authorizations/${authorizationId}/settings`))
     .send({settings})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -828,7 +876,7 @@ export const deleteSlackAuthorization = async (
   }
 
   return request
-    .delete(`/api/slack/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/slack/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -841,7 +889,7 @@ export const fetchSlackChannels = async (
   }
 
   return request
-    .get(`/api/slack/channels`)
+    .get(apiUrl(`/api/slack/channels`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -856,7 +904,7 @@ export const fetchMattermostChannels = async (
   }
 
   return request
-    .get(`/api/mattermost/channels`)
+    .get(apiUrl(`/api/mattermost/channels`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -871,7 +919,7 @@ export const createMattermostAuthorization = async (
   }
 
   return request
-    .post(`/api/mattermost/auth`)
+    .post(apiUrl(`/api/mattermost/auth`))
     .send({authorization})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -886,7 +934,7 @@ export const fetchMattermostAuthorization = async (
   }
 
   return request
-    .get(`/api/mattermost/authorization`)
+    .get(apiUrl(`/api/mattermost/authorization`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -901,7 +949,7 @@ export const deleteMattermostAuthorization = async (
   }
 
   return request
-    .delete(`/api/mattermost/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/mattermost/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -914,7 +962,7 @@ export const createTwilioAuthorization = async (
   }
 
   return request
-    .post(`/api/twilio/auth`)
+    .post(apiUrl(`/api/twilio/auth`))
     .send({authorization})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -929,7 +977,7 @@ export const fetchTwilioAuthorization = async (
   }
 
   return request
-    .get(`/api/twilio/authorization`)
+    .get(apiUrl(`/api/twilio/authorization`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -944,7 +992,7 @@ export const deleteTwilioAuthorization = async (
   }
 
   return request
-    .delete(`/api/twilio/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/twilio/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -957,7 +1005,7 @@ export const sendTwilioSms = async (
   }
 
   return request
-    .post(`/api/twilio/send`)
+    .post(apiUrl(`/api/twilio/send`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -972,7 +1020,7 @@ export const fetchGoogleAuthorization = async (
   }
 
   return request
-    .get(`/api/google/authorization`)
+    .get(apiUrl(`/api/google/authorization`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -987,7 +1035,7 @@ export const deleteGoogleAuthorization = async (
   }
 
   return request
-    .delete(`/api/google/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/google/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -997,7 +1045,7 @@ export const fetchGithubAuthorization = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/github/authorization`)
+    .get(apiUrl(`/api/github/authorization`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1011,7 +1059,7 @@ export const deleteGithubAuthorization = async (
   }
 
   return request
-    .delete(`/api/github/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/github/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -1021,7 +1069,7 @@ export const fetchGithubRepos = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/github/repos`)
+    .get(apiUrl(`/api/github/repos`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1039,7 +1087,7 @@ export const findGithubIssues = async (
   }
 
   return request
-    .get(`/api/github/issues`)
+    .get(apiUrl(`/api/github/issues`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1054,7 +1102,7 @@ export const fetchGmailProfile = async (
   }
 
   return request
-    .get(`/api/gmail/profile`)
+    .get(apiUrl(`/api/gmail/profile`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1075,7 +1123,7 @@ export const sendGmailNotification = async (
   }
 
   return request
-    .post(`/api/gmail/send`)
+    .post(apiUrl(`/api/gmail/send`))
     .send({recipient, subject, message})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1087,7 +1135,7 @@ export const fetchHubspotAuthorization = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/hubspot/authorization`)
+    .get(apiUrl(`/api/hubspot/authorization`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1101,7 +1149,7 @@ export const createHubspotContact = async (
   }
 
   return request
-    .post(`/api/hubspot/contacts`)
+    .post(apiUrl(`/api/hubspot/contacts`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1116,7 +1164,7 @@ export const fetchHubspotContacts = async (
   }
 
   return request
-    .get(`/api/hubspot/contacts`)
+    .get(apiUrl(`/api/hubspot/contacts`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1140,7 +1188,7 @@ export const deleteHubspotAuthorization = async (
   }
 
   return request
-    .delete(`/api/hubspot/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/hubspot/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -1150,7 +1198,7 @@ export const fetchIntercomAuthorization = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/intercom/authorization`)
+    .get(apiUrl(`/api/intercom/authorization`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1164,7 +1212,7 @@ export const createIntercomContact = async (
   }
 
   return request
-    .post(`/api/intercom/contacts`)
+    .post(apiUrl(`/api/intercom/contacts`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1179,7 +1227,7 @@ export const fetchIntercomContacts = async (
   }
 
   return request
-    .get(`/api/intercom/contacts`)
+    .get(apiUrl(`/api/intercom/contacts`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1203,7 +1251,7 @@ export const deleteIntercomAuthorization = async (
   }
 
   return request
-    .delete(`/api/intercom/authorizations/${authorizationId}`)
+    .delete(apiUrl(`/api/intercom/authorizations/${authorizationId}`))
     .set('Authorization', token);
 };
 
@@ -1213,7 +1261,7 @@ export const fetchEventSubscriptions = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/event_subscriptions`)
+    .get(apiUrl(`/api/event_subscriptions`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1227,7 +1275,7 @@ export const verifyWebhookUrl = async (
   }
 
   return request
-    .post(`/api/event_subscriptions/verify`)
+    .post(apiUrl(`/api/event_subscriptions/verify`))
     .set('Authorization', token)
     .send({url})
     .then((res) => res.body.data);
@@ -1242,7 +1290,7 @@ export const createEventSubscription = async (
   }
 
   return request
-    .post(`/api/event_subscriptions`)
+    .post(apiUrl(`/api/event_subscriptions`))
     .set('Authorization', token)
     .send({
       event_subscription: params,
@@ -1260,7 +1308,7 @@ export const updateEventSubscription = async (
   }
 
   return request
-    .put(`/api/event_subscriptions/${id}`)
+    .put(apiUrl(`/api/event_subscriptions/${id}`))
     .set('Authorization', token)
     .send({
       event_subscription: updates,
@@ -1277,7 +1325,7 @@ export const deleteEventSubscription = async (
   }
 
   return request
-    .delete(`/api/event_subscriptions/${id}`)
+    .delete(apiUrl(`/api/event_subscriptions/${id}`))
     .set('Authorization', token);
 };
 
@@ -1290,7 +1338,7 @@ export const fetchForwardingAddresses = async (
   }
 
   return request
-    .get(`/api/forwarding_addresses`)
+    .get(apiUrl(`/api/forwarding_addresses`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1305,7 +1353,7 @@ export const createForwardingAddress = async (
   }
 
   return request
-    .post(`/api/forwarding_addresses`)
+    .post(apiUrl(`/api/forwarding_addresses`))
     .set('Authorization', token)
     .send({
       forwarding_address: params,
@@ -1323,7 +1371,7 @@ export const updateForwardingAddress = async (
   }
 
   return request
-    .put(`/api/forwarding_addresses/${id}`)
+    .put(apiUrl(`/api/forwarding_addresses/${id}`))
     .set('Authorization', token)
     .send({
       forwarding_address: updates,
@@ -1340,7 +1388,7 @@ export const deleteForwardingAddress = async (
   }
 
   return request
-    .delete(`/api/forwarding_addresses/${id}`)
+    .delete(apiUrl(`/api/forwarding_addresses/${id}`))
     .set('Authorization', token);
 };
 
@@ -1360,7 +1408,7 @@ export const authorizeSlackIntegration = async (
   }
 
   return request
-    .get(`/api/slack/oauth`)
+    .get(apiUrl(`/api/slack/oauth`))
     .query(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1375,7 +1423,7 @@ export const authorizeGmailIntegration = async (
   }
 
   return request
-    .get(`/api/gmail/oauth`)
+    .get(apiUrl(`/api/gmail/oauth`))
     .query({code})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1390,7 +1438,7 @@ export const authorizeGoogleIntegration = async (
   }
 
   return request
-    .get(`/api/google/oauth`)
+    .get(apiUrl(`/api/google/oauth`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1405,7 +1453,7 @@ export const authorizeGithubIntegration = async (
   }
 
   return request
-    .get(`/api/github/oauth`)
+    .get(apiUrl(`/api/github/oauth`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body);
@@ -1420,7 +1468,7 @@ export const authorizeHubspotIntegration = async (
   }
 
   return request
-    .get(`/api/hubspot/oauth`)
+    .get(apiUrl(`/api/hubspot/oauth`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body);
@@ -1435,7 +1483,7 @@ export const authorizeIntercomIntegration = async (
   }
 
   return request
-    .get(`/api/intercom/callback`)
+    .get(apiUrl(`/api/intercom/callback`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body);
@@ -1453,7 +1501,7 @@ export const fetchWidgetSettings = async (
   }
 
   return request
-    .get(`/api/widget_settings`)
+    .get(apiUrl(`/api/widget_settings`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1468,7 +1516,7 @@ export const updateWidgetSettings = async (
   }
 
   return request
-    .put(`/api/widget_settings`)
+    .put(apiUrl(`/api/widget_settings`))
     .send({widget_settings: widgetSettingsParams})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1480,7 +1528,7 @@ export const fetchDefaultPaymentMethod = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/payment_methods`)
+    .get(apiUrl(`/api/payment_methods`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1491,7 +1539,7 @@ export const fetchBillingInfo = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/billing`)
+    .get(apiUrl(`/api/billing`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1505,7 +1553,7 @@ export const createSubscriptionPlan = async (
   }
 
   return request
-    .post(`/api/billing`)
+    .post(apiUrl(`/api/billing`))
     .send({plan})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1520,7 +1568,7 @@ export const updateSubscriptionPlan = async (
   }
 
   return request
-    .put(`/api/billing`)
+    .put(apiUrl(`/api/billing`))
     .send({plan})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1532,7 +1580,7 @@ export const cancelSubscriptionPlan = async (token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/billing`)
+    .delete(apiUrl(`/api/billing`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1546,7 +1594,7 @@ export const createPaymentMethod = async (
   }
 
   return request
-    .post(`/api/payment_methods`)
+    .post(apiUrl(`/api/payment_methods`))
     .send({payment_method: paymentMethod})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1558,7 +1606,7 @@ export const fetchAccountUsers = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/users`)
+    .get(apiUrl(`/api/users`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1572,7 +1620,7 @@ export const fetchAccountUser = async (
   }
 
   return request
-    .get(`/api/users/${id}`)
+    .get(apiUrl(`/api/users/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1586,7 +1634,7 @@ export const disableAccountUser = async (
   }
 
   return request
-    .post(`/api/users/${userId}/disable`)
+    .post(apiUrl(`/api/users/${userId}/disable`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1601,7 +1649,7 @@ export const setAccountUserRole = async (
   }
 
   return request
-    .put(`/api/users/${userId}/role`)
+    .put(apiUrl(`/api/users/${userId}/role`))
     .set('Authorization', token)
     .send({role})
     .then((res) => res.body.data);
@@ -1616,7 +1664,7 @@ export const enableAccountUser = async (
   }
 
   return request
-    .post(`/api/users/${userId}/enable`)
+    .post(apiUrl(`/api/users/${userId}/enable`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1630,7 +1678,7 @@ export const archiveAccountUser = async (
   }
 
   return request
-    .post(`/api/users/${userId}/archive`)
+    .post(apiUrl(`/api/users/${userId}/archive`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1644,7 +1692,7 @@ export const fetchNotes = async (
   }
 
   return request
-    .get('/api/notes')
+    .get(apiUrl(`/api/notes`))
     .query(query)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1672,7 +1720,7 @@ export const createCustomerNote = async (
   }
 
   return request
-    .post(`/api/notes`)
+    .post(apiUrl(`/api/notes`))
     .set('Authorization', token)
     .send({
       note: {
@@ -1691,7 +1739,9 @@ export const deleteCustomerNote = async (
     throw new Error('Invalid token!');
   }
 
-  return request.delete(`/api/notes/${noteId}`).set('Authorization', token);
+  return request
+    .delete(apiUrl(`/api/notes/${noteId}`))
+    .set('Authorization', token);
 };
 
 export const fetchAllTags = async (token = getAccessToken()) => {
@@ -1700,7 +1750,7 @@ export const fetchAllTags = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/tags`)
+    .get(apiUrl(`/api/tags`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1711,7 +1761,7 @@ export const fetchTagById = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/tags/${id}`)
+    .get(apiUrl(`/api/tags/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1725,7 +1775,7 @@ export const createTag = async (
   }
 
   return request
-    .post(`/api/tags`)
+    .post(apiUrl(`/api/tags`))
     .send({tag})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1741,7 +1791,7 @@ export const updateTag = async (
   }
 
   return request
-    .put(`/api/tags/${id}`)
+    .put(apiUrl(`/api/tags/${id}`))
     .send({tag})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1753,7 +1803,7 @@ export const deleteTag = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/tags/${id}`)
+    .delete(apiUrl(`/api/tags/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -1768,7 +1818,7 @@ export const addConversationTag = async (
   }
 
   return request
-    .post(`/api/conversations/${conversationId}/tags`)
+    .post(apiUrl(`/api/conversations/${conversationId}/tags`))
     .send({tag_id: tagId})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1784,7 +1834,7 @@ export const removeConversationTag = async (
   }
 
   return request
-    .delete(`/api/conversations/${conversationId}/tags/${tagId}`)
+    .delete(apiUrl(`/api/conversations/${conversationId}/tags/${tagId}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1799,7 +1849,7 @@ export const addCustomerTag = async (
   }
 
   return request
-    .post(`/api/customers/${customerId}/tags`)
+    .post(apiUrl(`/api/customers/${customerId}/tags`))
     .send({tag_id: tagId})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1815,7 +1865,7 @@ export const removeCustomerTag = async (
   }
 
   return request
-    .delete(`/api/customers/${customerId}/tags/${tagId}`)
+    .delete(apiUrl(`/api/customers/${customerId}/tags/${tagId}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1829,7 +1879,7 @@ export const fetchAllIssues = async (
   }
 
   return request
-    .get(`/api/issues`)
+    .get(apiUrl(`/api/issues`))
     .set('Authorization', token)
     .query(query)
     .then((res) => res.body.data);
@@ -1841,7 +1891,7 @@ export const fetchIssueById = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/issues/${id}`)
+    .get(apiUrl(`/api/issues/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1855,7 +1905,7 @@ export const createIssue = async (
   }
 
   return request
-    .post(`/api/issues`)
+    .post(apiUrl(`/api/issues`))
     .send({issue})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1871,7 +1921,7 @@ export const updateIssue = async (
   }
 
   return request
-    .put(`/api/issues/${id}`)
+    .put(apiUrl(`/api/issues/${id}`))
     .send({issue})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1883,7 +1933,7 @@ export const deleteIssue = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/issues/${id}`)
+    .delete(apiUrl(`/api/issues/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -1898,7 +1948,7 @@ export const addCustomerIssue = async (
   }
 
   return request
-    .post(`/api/customers/${customerId}/issues`)
+    .post(apiUrl(`/api/customers/${customerId}/issues`))
     .send({issue_id: issueId})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -1914,7 +1964,7 @@ export const removeCustomerIssue = async (
   }
 
   return request
-    .delete(`/api/customers/${customerId}/issues/${issueId}`)
+    .delete(apiUrl(`/api/customers/${customerId}/issues/${issueId}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -1935,7 +1985,7 @@ export const fetchBrowserSessions = async (
   }
 
   return request
-    .get(`/api/browser_sessions`)
+    .get(apiUrl(`/api/browser_sessions`))
     .query(
       qs.stringify(
         {
@@ -1960,7 +2010,7 @@ export const countBrowserSessions = async (
   }
 
   return request
-    .get(`/api/browser_sessions/count`)
+    .get(apiUrl(`/api/browser_sessions/count`))
     .query(
       qs.stringify(
         {
@@ -1983,7 +2033,7 @@ export const fetchBrowserSession = async (
   }
 
   return request
-    .get(`/api/browser_sessions/${id}`)
+    .get(apiUrl(`/api/browser_sessions/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2002,7 +2052,7 @@ export const fetchReportingData = async (
   }
 
   return request
-    .get(`/api/reporting`)
+    .get(apiUrl(`/api/reporting`))
     .query(filters)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2014,7 +2064,7 @@ export const fetchPersonalApiKeys = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/personal_api_keys`)
+    .get(apiUrl(`/api/personal_api_keys`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2028,7 +2078,7 @@ export const createPersonalApiKey = async (
   }
 
   return request
-    .post(`/api/personal_api_keys`)
+    .post(apiUrl(`/api/personal_api_keys`))
     .send({label})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2043,7 +2093,7 @@ export const deletePersonalApiKey = async (
   }
 
   return request
-    .delete(`/api/personal_api_keys/${id}`)
+    .delete(apiUrl(`/api/personal_api_keys/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -2056,7 +2106,7 @@ export const getOnboardingStatus = async (
   }
 
   return request
-    .get(`/api/onboarding_status`)
+    .get(apiUrl(`/api/onboarding_status`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -2067,7 +2117,7 @@ export const fetchCannedResponses = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/canned_responses`)
+    .get(apiUrl(`/api/canned_responses`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2081,7 +2131,7 @@ export const createCannedResponse = async (
   }
 
   return request
-    .post(`/api/canned_responses`)
+    .post(apiUrl(`/api/canned_responses`))
     .send({canned_response: params})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2097,7 +2147,7 @@ export const updateCannedResponse = async (
   }
 
   return request
-    .put(`/api/canned_responses/${id}`)
+    .put(apiUrl(`/api/canned_responses/${id}`))
     .send({canned_response: updates})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2112,7 +2162,7 @@ export const deleteCannedResponse = async (
   }
 
   return request
-    .delete(`/api/canned_responses/${id}`)
+    .delete(apiUrl(`/api/canned_responses/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -2123,7 +2173,7 @@ export const fetchLambdas = async (token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/lambdas`)
+    .get(apiUrl(`/api/lambdas`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2134,7 +2184,7 @@ export const fetchLambda = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .get(`/api/lambdas/${id}`)
+    .get(apiUrl(`/api/lambdas/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2148,7 +2198,7 @@ export const createNewLambda = async (
   }
 
   return request
-    .post(`/api/lambdas`)
+    .post(apiUrl(`/api/lambdas`))
     .send({lambda: params})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2164,7 +2214,7 @@ export const updateLambda = async (
   }
 
   return request
-    .put(`/api/lambdas/${id}`)
+    .put(apiUrl(`/api/lambdas/${id}`))
     .send({lambda: updates})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2176,7 +2226,7 @@ export const deleteLambda = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/lambdas/${id}`)
+    .delete(apiUrl(`/api/lambdas/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -2191,7 +2241,7 @@ export const deployLambda = async (
   }
 
   return request
-    .post(`/api/lambdas/${id}/deploy`)
+    .post(apiUrl(`/api/lambdas/${id}/deploy`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2207,7 +2257,7 @@ export const invokeLambda = async (
   }
 
   return request
-    .post(`/api/lambdas/${id}/invoke`)
+    .post(apiUrl(`/api/lambdas/${id}/invoke`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2222,7 +2272,7 @@ export const sendAdminNotification = async (
   }
 
   return request
-    .post(`/api/admin/notifications`)
+    .post(apiUrl(`/api/admin/notifications`))
     .send(params)
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2236,7 +2286,7 @@ export const fetchInboxes = async (
   }
 
   return request
-    .get(`/api/inboxes`)
+    .get(apiUrl(`/api/inboxes`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2249,7 +2299,7 @@ export const fetchPrimaryInbox = async (
   }
 
   return request
-    .get(`/api/inboxes/primary`)
+    .get(apiUrl(`/api/inboxes/primary`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2263,7 +2313,7 @@ export const fetchInbox = async (
   }
 
   return request
-    .get(`/api/inboxes/${id}`)
+    .get(apiUrl(`/api/inboxes/${id}`))
     .set('Authorization', token)
     .then((res) => res.body.data);
 };
@@ -2277,7 +2327,7 @@ export const createInbox = async (
   }
 
   return request
-    .post(`/api/inboxes`)
+    .post(apiUrl(`/api/inboxes`))
     .send({inbox: params})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2293,7 +2343,7 @@ export const updateInbox = async (
   }
 
   return request
-    .put(`/api/inboxes/${id}`)
+    .put(apiUrl(`/api/inboxes/${id}`))
     .send({inbox: updates})
     .set('Authorization', token)
     .then((res) => res.body.data);
@@ -2305,7 +2355,7 @@ export const deleteInbox = async (id: string, token = getAccessToken()) => {
   }
 
   return request
-    .delete(`/api/inboxes/${id}`)
+    .delete(apiUrl(`/api/inboxes/${id}`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -2317,7 +2367,7 @@ export const fetchBusinessContext = async (token = getAccessToken()) => {
   }
 
   return request
-    .get('/api/business_context')
+    .get(apiUrl(`/api/business_context`))
     .set('Authorization', token)
     .then((res) => res.body);
 };
@@ -2331,7 +2381,7 @@ export const createBusinessContext = async (
   }
 
   return request
-    .post('/api/business_context')
+    .post(apiUrl(`/api/business_context`))
     .set('Authorization', token)
     .send({business_context: businessContext})
     .then((res) => res.body);
@@ -2346,7 +2396,7 @@ export const updateBusinessContext = async (
   }
 
   return request
-    .put('/api/business_context')
+    .put(apiUrl(`/api/business_context`))
     .set('Authorization', token)
     .send({business_context: businessContext})
     .then((res) => res.body);

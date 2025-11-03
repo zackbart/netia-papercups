@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Button, Title} from '../common';
 import {ArrowLeftOutlined} from '../icons';
@@ -11,7 +11,7 @@ import CustomerDetailsSidebar from './CustomerDetailsSidebar';
 import EditCustomerDetailsModal from './EditCustomerDetailsModal';
 import CustomerDetailsMainSection from './CustomerDetailsMainSection';
 
-type Props = RouteComponentProps<{id: string}>;
+type Props = {};
 type State = {
   customer: Customer | null;
   loading?: boolean;
@@ -19,7 +19,7 @@ type State = {
   isEditModalVisible: boolean;
 };
 
-class CustomerDetailsPage extends React.Component<Props, State> {
+class CustomerDetailsPage extends React.Component<Props & {id: string}, State> {
   state: State = {
     customer: null,
     loading: true,
@@ -42,7 +42,7 @@ class CustomerDetailsPage extends React.Component<Props, State> {
     }
   }
 
-  getCustomerId = () => this.props.match.params.id;
+  getCustomerId = () => this.props.id;
 
   fetchCustomer = async () => {
     return await API.fetchCustomer(this.getCustomerId(), {
@@ -71,7 +71,6 @@ class CustomerDetailsPage extends React.Component<Props, State> {
   handleCloseEditModal = () => this.setState({isEditModalVisible: false});
 
   render() {
-    const {history} = this.props;
     const {customer, isEditModalVisible, loading, session} = this.state;
 
     // TODO: add error handling when customer can't be loaded
@@ -129,10 +128,7 @@ class CustomerDetailsPage extends React.Component<Props, State> {
             </Box>
 
             <Box sx={{flex: 3}}>
-              <CustomerDetailsMainSection
-                customerId={this.getCustomerId()}
-                history={history}
-              />
+              <CustomerDetailsMainSection customerId={this.getCustomerId()} />
             </Box>
           </Flex>
         </Box>
@@ -141,4 +137,10 @@ class CustomerDetailsPage extends React.Component<Props, State> {
   }
 }
 
-export default CustomerDetailsPage;
+const CustomerDetailsPageWrapper = () => {
+  const {id} = useParams<{id: string}>();
+  if (!id) return null;
+  return <CustomerDetailsPage id={id} />;
+};
+
+export default CustomerDetailsPageWrapper;

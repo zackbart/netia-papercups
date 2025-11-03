@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Button, Input, Select, Title} from '../common';
 import {ArrowLeftOutlined} from '../icons';
@@ -7,7 +7,7 @@ import * as API from '../../api';
 import {Company, SlackAuthorization} from '../../types';
 import logger from '../../logger';
 
-type Props = RouteComponentProps<{id: string}>;
+type Props = {id: string; navigate: (path: string) => void};
 type State = {
   loading: boolean;
   saving: boolean;
@@ -41,7 +41,7 @@ class UpdateCompanyPage extends React.Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const {id: companyId} = this.props.match.params;
+      const {id: companyId} = this.props;
       const company = await API.fetchCompany(companyId);
       const {
         name,
@@ -84,7 +84,7 @@ class UpdateCompanyPage extends React.Component<Props, State> {
 
   handleResetCompanyFields = async () => {
     try {
-      const {id: companyId} = this.props.match.params;
+      const {id: companyId} = this.props;
       const company = await API.fetchCompany(companyId);
       const {
         name,
@@ -141,7 +141,7 @@ class UpdateCompanyPage extends React.Component<Props, State> {
     e.preventDefault();
 
     try {
-      const {id: companyId} = this.props.match.params;
+      const {id: companyId} = this.props;
       const {
         name,
         description,
@@ -163,14 +163,14 @@ class UpdateCompanyPage extends React.Component<Props, State> {
 
       this.setState({company});
 
-      return this.props.history.push(`/companies/${companyId}`);
+      return this.props.navigate(`/companies/${companyId}`);
     } catch (err) {
       logger.error('Error updating company:', err);
     }
   };
 
   render() {
-    const {id: companyId} = this.props.match.params;
+    const {id: companyId} = this.props;
     const {
       loading,
       name,
@@ -310,4 +310,11 @@ class UpdateCompanyPage extends React.Component<Props, State> {
   }
 }
 
-export default UpdateCompanyPage;
+const UpdateCompanyPageWrapper = () => {
+  const {id} = useParams<{id: string}>();
+  const navigate = useNavigate();
+  if (!id) return null;
+  return <UpdateCompanyPage id={id} navigate={navigate} />;
+};
+
+export default UpdateCompanyPageWrapper;

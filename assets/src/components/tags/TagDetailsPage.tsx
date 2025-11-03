@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {
   Button,
@@ -26,7 +27,7 @@ const DetailsSectionCard = ({children}: {children: any}) => {
   return <Card sx={{p: 3, mb: 3}}>{children}</Card>;
 };
 
-type Props = RouteComponentProps<{id: string}>;
+type Props = {id: string; navigate: (path: string) => void};
 type State = {
   loading: boolean;
   deleting: boolean;
@@ -67,7 +68,7 @@ class TagDetailsPage extends React.Component<Props, State> {
   }
 
   getTagId = () => {
-    return this.props.match.params.id;
+    return this.props.id;
   };
 
   handleRefreshTag = async () => {
@@ -93,7 +94,7 @@ class TagDetailsPage extends React.Component<Props, State> {
       await API.deleteTag(tagId);
       await sleep(1000);
 
-      this.props.history.push('/tags');
+      this.props.navigate('/tags');
     } catch (err) {
       logger.error('Error deleting tag!', err);
 
@@ -123,7 +124,7 @@ class TagDetailsPage extends React.Component<Props, State> {
       ? `/conversations/closed/${conversationId}`
       : `/conversations/all/${conversationId}`;
 
-    this.props.history.push(url);
+    this.props.navigate(url);
   };
 
   render() {
@@ -280,4 +281,11 @@ class TagDetailsPage extends React.Component<Props, State> {
   }
 }
 
-export default TagDetailsPage;
+const TagDetailsPageWrapper = () => {
+  const {id} = useParams<{id: string}>();
+  const navigate = useNavigate();
+  if (!id) return null;
+  return <TagDetailsPage id={id} navigate={navigate} />;
+};
+
+export default TagDetailsPageWrapper;

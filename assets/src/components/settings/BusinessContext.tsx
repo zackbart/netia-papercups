@@ -48,10 +48,10 @@ const BusinessContextSettings: React.FC = () => {
       const context = await fetchBusinessContext();
       setBusinessContext(context);
       setHasExistingContext(true);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to load business context:', err);
       // If no business context exists yet, that's okay - we'll start with empty form
-      if (err.status === 404) {
+      if ((err as any)?.status === 404) {
         console.log('No business context found, starting with empty form');
         setError(null);
         setHasExistingContext(false);

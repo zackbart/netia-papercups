@@ -1,7 +1,6 @@
 import React from 'react';
-import {RouteComponentProps} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
-import qs from 'query-string';
 import {colors} from '../common';
 import ConversationMessages from './ConversationMessages';
 import {sortConversationMessages} from '../../utils';
@@ -9,16 +8,19 @@ import * as API from '../../api';
 import {Message} from '../../types';
 import logger from '../../logger';
 
-type Props = RouteComponentProps<{}>;
+type Props = {};
 type State = {
   loading: boolean;
   messages: Array<Message>;
 };
 
-class SharedConversationContainer extends React.Component<Props, State> {
+class SharedConversationContainer extends React.Component<
+  Props & {search: string},
+  State
+> {
   scrollToEl: any = null;
 
-  constructor(props: Props) {
+  constructor(props: Props & {search: string}) {
     super(props);
 
     this.state = {loading: true, messages: []};
@@ -26,10 +28,9 @@ class SharedConversationContainer extends React.Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const {search} = this.props.location;
-      const q = qs.parse(search);
-      const conversationId = String(q?.cid);
-      const token = String(q?.token);
+      const q = new URLSearchParams(this.props.search);
+      const conversationId = q.get('cid') || '';
+      const token = q.get('token') || '';
       const {messages = []} = await API.fetchSharedConversation(
         conversationId,
         token
@@ -83,4 +84,9 @@ class SharedConversationContainer extends React.Component<Props, State> {
   }
 }
 
-export default SharedConversationContainer;
+const SharedConversation = () => {
+  const [searchParams] = useSearchParams();
+  return <SharedConversationContainer search={searchParams.toString()} />;
+};
+
+export default SharedConversation;

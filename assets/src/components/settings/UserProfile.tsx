@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useSearchParams, useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import qs from 'query-string';
 import {
@@ -18,7 +18,7 @@ import * as API from '../../api';
 import logger from '../../logger';
 import {PersonalGmailAuthorizationButton} from '../integrations/GoogleAuthorizationButton';
 
-type Props = RouteComponentProps<{}> & {};
+type Props = {search: string; navigate: (path: string) => void};
 type State = {
   email: string;
   fullName: string;
@@ -47,16 +47,16 @@ class UserProfile extends React.Component<Props, State> {
   };
 
   async componentDidMount() {
-    const {location, history} = this.props;
-    const {search} = location;
-    const q = qs.parse(search);
-    const code = q.code ? String(q.code) : null;
+    const {search, navigate} = this.props;
+    const q = new URLSearchParams(search);
+    const code = q.get('code');
 
     if (code) {
-      const success = await this.authorizeGoogleIntegration(code, q);
+      const queryParams = Object.fromEntries(q.entries());
+      const success = await this.authorizeGoogleIntegration(code, queryParams);
 
       if (success) {
-        history.push('/settings/profile');
+        navigate('/settings/profile');
       }
     }
 
@@ -404,4 +404,10 @@ class UserProfile extends React.Component<Props, State> {
   }
 }
 
-export default UserProfile;
+const UserProfileWrapper = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  return <UserProfile search={searchParams.toString()} navigate={navigate} />;
+};
+
+export default UserProfileWrapper;

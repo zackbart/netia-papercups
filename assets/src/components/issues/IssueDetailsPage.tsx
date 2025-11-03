@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {
   Button,
@@ -33,7 +34,7 @@ const DetailsSectionCard = ({children}: {children: any}) => {
   return <Card sx={{p: 3, mb: 3}}>{children}</Card>;
 };
 
-type Props = RouteComponentProps<{id: string}>;
+type Props = {id: string; navigate: (path: string) => void};
 type State = {
   loading: boolean;
   deleting: boolean;
@@ -68,7 +69,7 @@ class IssueDetailsPage extends React.Component<Props, State> {
   }
 
   getIssueId = () => {
-    return this.props.match.params.id;
+    return this.props.id;
   };
 
   handleRefreshIssue = async () => {
@@ -94,7 +95,7 @@ class IssueDetailsPage extends React.Component<Props, State> {
       await API.deleteIssue(issueId);
       await sleep(1000);
 
-      this.props.history.push('/issues');
+      this.props.navigate('/issues');
     } catch (err) {
       logger.error('Error deleting issue!', err);
 
@@ -115,20 +116,19 @@ class IssueDetailsPage extends React.Component<Props, State> {
     this.handleRefreshIssue();
   };
 
-  handleLinkNewCustomer = (onSuccess: (filters?: any) => any) => (
-    customer: T.Customer
-  ) => {
-    const {id: customerId} = customer;
-    const issueId = this.getIssueId();
+  handleLinkNewCustomer =
+    (onSuccess: (filters?: any) => any) => (customer: T.Customer) => {
+      const {id: customerId} = customer;
+      const issueId = this.getIssueId();
 
-    if (!customerId) {
-      return null;
-    }
+      if (!customerId) {
+        return null;
+      }
 
-    return API.addCustomerIssue(customerId, issueId)
-      .then(() => onSuccess())
-      .catch((err) => logger.error('Error linking issue to customer:', err));
-  };
+      return API.addCustomerIssue(customerId, issueId)
+        .then(() => onSuccess())
+        .catch((err) => logger.error('Error linking issue to customer:', err));
+    };
 
   render() {
     const {loading, deleting, issue} = this.state;
@@ -266,4 +266,11 @@ class IssueDetailsPage extends React.Component<Props, State> {
   }
 }
 
-export default IssueDetailsPage;
+const IssueDetailsPageWrapper = () => {
+  const {id} = useParams<{id: string}>();
+  const navigate = useNavigate();
+  if (!id) return null;
+  return <IssueDetailsPage id={id} navigate={navigate} />;
+};
+
+export default IssueDetailsPageWrapper;

@@ -10,8 +10,29 @@ export const isDev = Boolean(
 
 const serverEnvData = (window as any).__ENV__ || {};
 
+// Safely access process.env - CRA replaces process.env.REACT_APP_* at build time
+// Guard against "process is not defined" errors in the browser
+const getProcessEnv = (key: string): string | undefined => {
+  try {
+    return typeof process !== 'undefined' && process.env
+      ? (process.env as any)[key]
+      : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const env = {
-  ...process.env,
+  REACT_APP_URL: getProcessEnv('REACT_APP_URL'),
+  REACT_APP_EU_EDITION: getProcessEnv('REACT_APP_EU_EDITION'),
+  REACT_APP_STORYTIME_ENABLED: getProcessEnv('REACT_APP_STORYTIME_ENABLED'),
+  REACT_APP_USER_INVITATION_EMAIL_ENABLED: getProcessEnv(
+    'REACT_APP_USER_INVITATION_EMAIL_ENABLED'
+  ),
+  REACT_APP_SLACK_CLIENT_ID: getProcessEnv('REACT_APP_SLACK_CLIENT_ID'),
+  REACT_APP_GITHUB_APP_NAME: getProcessEnv('REACT_APP_GITHUB_APP_NAME'),
+  REACT_APP_HUBSPOT_CLIENT_ID: getProcessEnv('REACT_APP_HUBSPOT_CLIENT_ID'),
+  REACT_APP_INTERCOM_CLIENT_ID: getProcessEnv('REACT_APP_INTERCOM_CLIENT_ID'),
   ...serverEnvData,
 };
 
@@ -33,11 +54,16 @@ export const isUserInvitationEmailEnabled =
 
 export const REACT_URL = env.REACT_APP_URL || 'app.netia.ai';
 
+// In production, we can use window.location.hostname as a fallback
+// since frontend and API are served from the same domain
 export const BASE_URL = isDev
   ? 'http://localhost:4000'
-  : `https://${REACT_URL}`;
+  : env.REACT_APP_URL
+  ? `https://${REACT_URL}`
+  : `${window.location.protocol}//${window.location.host}`;
 
-// In the dev environment, we use port 3000 and proxy API requests to 4000
+// In the dev environment, CRA runs on port 3000 and makes direct API calls to Phoenix on 4000
+// (We don't use CRA's proxy - see apiUrl() in api.ts for details)
 export const FRONTEND_BASE_URL = isDev ? 'http://localhost:3000' : BASE_URL;
 
 // Defaults to Papercups client ID (it's ok for this value to be public)

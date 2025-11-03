@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteComponentProps} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Button, Container, Paragraph, Text, Title} from '../common';
 import {PlusOutlined} from '../icons';
@@ -10,7 +10,7 @@ import {EventSubscription} from '../../types';
 import WebhooksTable from '../integrations/WebhooksTable';
 import NewWebhookModal from '../integrations/NewWebhookModal';
 
-type Props = RouteComponentProps<{type?: string}> & {};
+type Props = {type?: string};
 type State = {
   loading: boolean;
   runkit: any;

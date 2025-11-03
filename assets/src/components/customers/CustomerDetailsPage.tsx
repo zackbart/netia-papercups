@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams, useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Button, Card, Empty, Title} from '../common';
 import {ArrowLeftOutlined} from '../icons';
@@ -18,7 +18,7 @@ const DetailsSectionCard = ({children}: {children: any}) => {
   return <Card sx={{p: 3, mb: 3}}>{children}</Card>;
 };
 
-type Props = RouteComponentProps<{id: string}>;
+type Props = {id: string; navigate: (path: string) => void};
 type State = {
   loading?: boolean;
   customer: Customer | null;
@@ -34,7 +34,7 @@ class CustomerDetailsPage extends React.Component<Props, State> {
     isModalOpen: false,
   };
 
-  getCustomerId = () => this.props.match.params.id;
+  getCustomerId = () => this.props.id;
 
   async componentDidMount() {
     const customerId = this.getCustomerId();
@@ -98,7 +98,7 @@ class CustomerDetailsPage extends React.Component<Props, State> {
       ? `/conversations/closed/${conversationId}`
       : `/conversations/all/${conversationId}`;
 
-    this.props.history.push(url);
+    this.props.navigate(url);
   };
 
   handleOpenModal = () => {
@@ -114,7 +114,7 @@ class CustomerDetailsPage extends React.Component<Props, State> {
   };
 
   handleCustomerDeleted = () => {
-    this.props.history.push('/customers');
+    this.props.navigate('/customers');
   };
 
   render() {
@@ -225,4 +225,11 @@ class CustomerDetailsPage extends React.Component<Props, State> {
   }
 }
 
-export default CustomerDetailsPage;
+const CustomerDetailsPageWrapper = () => {
+  const {id} = useParams<{id: string}>();
+  const navigate = useNavigate();
+  if (!id) return null;
+  return <CustomerDetailsPage id={id} navigate={navigate} />;
+};
+
+export default CustomerDetailsPageWrapper;

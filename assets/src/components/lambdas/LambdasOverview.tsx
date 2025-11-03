@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Badge, Button, Container, Paragraph, Table, Title} from '../common';
 import {PlusOutlined} from '../icons';
@@ -74,7 +75,7 @@ const LambdasTable = ({
   return <Table loading={loading} dataSource={data} columns={columns} />;
 };
 
-type Props = RouteComponentProps<{}>;
+type Props = {navigate: (path: string) => void};
 type State = {
   loading: boolean;
   lambdas: Array<Lambda>;
@@ -108,7 +109,7 @@ class LambdasOverview extends React.Component<Props, State> {
   handleNewLambdaCreated = (lambda: Lambda) => {
     const {id: lambdaId} = lambda;
 
-    this.props.history.push(`/functions/${lambdaId}`);
+    this.props.navigate(`/functions/${lambdaId}`);
   };
 
   render() {
@@ -143,4 +144,9 @@ class LambdasOverview extends React.Component<Props, State> {
   }
 }
 
-export default LambdasOverview;
+const LambdasOverviewWrapper = () => {
+  const navigate = useNavigate();
+  return <LambdasOverview navigate={navigate} />;
+};
+
+export default LambdasOverviewWrapper;

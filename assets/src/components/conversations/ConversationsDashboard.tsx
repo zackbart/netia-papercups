@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useParams, useNavigate, Navigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 
 import * as API from '../../api';
@@ -54,8 +54,8 @@ const EmptyMessagesPlaceholder = () => {
 const GettingStartedRedirect = ({inbox}: {inbox?: Inbox | null}) => {
   const extra =
     inbox && inbox.id ? (
-      <Link to={`/inboxes/${inbox.id}`}>
-        <Button type="primary">Configure inbox</Button>
+      <Link to={`/inboxes/${inbox.id}/conversations`}>
+        <Button type="primary">View conversations</Button>
       </Link>
     ) : (
       <Link to="/getting-started">
@@ -123,9 +123,8 @@ export const ConversationsDashboard = ({
   const [conversationIds, setConversationIds] = React.useState<Array<string>>(
     []
   );
-  const [pagination, setPaginationOptions] = React.useState<
-    API.PaginationOptions
-  >({});
+  const [pagination, setPaginationOptions] =
+    React.useState<API.PaginationOptions>({});
   const [selectedConversationId, setSelectedConversationId] = React.useState<
     string | null
   >(initialSelectedConversationId);
@@ -383,12 +382,10 @@ export const ConversationsDashboard = ({
   }
 
   async function handleLoadMoreConversations() {
-    const {
-      data = [],
-      ...nextPaginationOptions
-    } = await fetchFilteredConversations({
-      after: pagination.next,
-    });
+    const {data = [], ...nextPaginationOptions} =
+      await fetchFilteredConversations({
+        after: pagination.next,
+      });
 
     setConversationIds([
       ...new Set([...conversationIds, ...data.map((c) => c.id)]),
@@ -668,15 +665,17 @@ const isValidBucket = (bucket: string): bucket is ConversationBucket => {
   }
 };
 
-const Wrapper = (
-  props: RouteComponentProps<{bucket: string; conversation_id?: string}>
-) => {
-  const {bucket, conversation_id: conversationId = null} = props.match.params;
+const Wrapper = () => {
+  const {bucket, conversation_id: conversationId = null} = useParams<{
+    bucket: string;
+    conversation_id?: string;
+  }>();
+  const navigate = useNavigate();
   const {currentUser, account} = useAuth();
 
-  if (!isValidBucket(bucket)) {
-    // TODO: render error or redirect to default
-    return null;
+  if (!bucket || !isValidBucket(bucket)) {
+    // Redirect to default bucket if invalid
+    return <Navigate to="/conversations/all" replace />;
   }
 
   if (!account || !currentUser) {
@@ -783,7 +782,7 @@ const Wrapper = (
   const {title, filter, isValidConversation} = getBucketConfig(bucket);
 
   const handleSelectConversation = (conversationId: string) =>
-    props.history.push(`/conversations/${bucket}/${conversationId}`);
+    navigate(`/conversations/${bucket}/${conversationId}`);
 
   return (
     <ConversationsDashboard

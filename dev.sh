@@ -54,9 +54,6 @@ case "$1" in
       echo -e "${WARN_COLOR}   Run './dev.sh stop' first if needed.${RESET_COLOR}"
     fi
 
-    # Ensure NODE_OPTIONS for CRA on modern Node
-    export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
-
     # Ensure frontend deps exist (first run or after clean)
     if [ ! -d assets/node_modules ]; then
       echo -e "${INFO_COLOR}📦 Installing frontend deps (assets/)...${RESET_COLOR}"
@@ -74,12 +71,12 @@ case "$1" in
     # Start Phoenix; watcher in config/dev.exs spawns CRA (PATH is passed to watcher)
     iex -S mix phx.server
     ;;
-
+  
   "migrate")
     echo -e "${INFO_COLOR}🗄️  Running database migrations...${RESET_COLOR}"
     mix ecto.migrate
     ;;
-
+  
   "reset")
     echo -e "${WARN_COLOR}♻️  Resetting database (drop, create, migrate, seed)...${RESET_COLOR}"
     mix ecto.reset
@@ -100,7 +97,6 @@ case "$1" in
     # Compile Elixir/Phoenix
     MIX_ENV=prod mix compile --force
     # Build frontend assets
-    export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
     npm run build --prefix assets
     # Digest static assets (same as Dockerfile)
     MIX_ENV=prod mix phx.digest priv/static
@@ -116,7 +112,6 @@ case "$1" in
       echo -e "${WARN_COLOR}⚠️  Production build not found. Run './dev.sh build' first.${RESET_COLOR}"
       echo -e "${INFO_COLOR}   Building now...${RESET_COLOR}"
       MIX_ENV=prod mix compile --force || true
-      export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
       npm run build --prefix assets || exit 1
       MIX_ENV=prod mix phx.digest priv/static || true
     fi
@@ -130,8 +125,6 @@ case "$1" in
       echo -e "${WARN_COLOR}⚠️  SECRET_KEY_BASE not set. Make sure it's in .env${RESET_COLOR}"
     fi
 
-    # Ensure NODE_OPTIONS for any watchers
-    export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
     export MIX_ENV=prod
     
     # Start Phoenix in production mode (serves compiled static files)
@@ -140,7 +133,7 @@ case "$1" in
     echo -e "${INFO_COLOR}   (Serving compiled assets from priv/static/)${RESET_COLOR}"
     MIX_ENV=prod PORT=$PORT mix phx.server
     ;;
-
+  
   "release")
     echo -e "${INFO_COLOR}📦 Creating production release...${RESET_COLOR}"
     
@@ -148,7 +141,6 @@ case "$1" in
     if [ ! -f priv/static/index.html ]; then
       echo -e "${INFO_COLOR}   Building assets first...${RESET_COLOR}"
       MIX_ENV=prod mix compile --force
-      export NODE_OPTIONS=${NODE_OPTIONS:---openssl-legacy-provider}
       npm run build --prefix assets
       MIX_ENV=prod mix phx.digest priv/static
     fi
@@ -193,7 +185,7 @@ case "$1" in
     echo -e "${INFO_COLOR}   (Full production release - most similar to Railway)${RESET_COLOR}"
     PORT=$PORT "$RELEASE_PATH" start
     ;;
-
+  
   "stop")
     echo -e "${WARN_COLOR}🛑 Stopping dev servers...${RESET_COLOR}"
     lsof -ti :3000 | xargs kill -9 2>/dev/null || true
@@ -209,7 +201,7 @@ case "$1" in
     lsof -i :3000 -sTCP:LISTEN -nP || true
     lsof -i :4000 -sTCP:LISTEN -nP || true
     ;;
-
+  
   *)
     echo -e "${INFO_COLOR}📖 Papercups Development Helper${RESET_COLOR}"
     echo -e "${INFO_COLOR}📚 Documentation: docs/development.md${RESET_COLOR}"

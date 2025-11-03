@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  RouteComponentProps,
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
-  Redirect,
+  Navigate,
+  useLocation,
 } from 'react-router-dom';
 import {useAuth} from './components/auth/AuthProvider';
 import Login from './components/auth/Login';
@@ -19,6 +19,18 @@ import Sandbox from './components/Sandbox';
 import SharedConversation from './components/conversations/SharedConversation';
 import './App.css';
 
+// Component to handle catch-all redirects
+const CatchAllRoute = () => {
+  const auth = useAuth();
+  const location = useLocation();
+
+  if (auth.isAuthenticated) {
+    return <Navigate to="/conversations/all" replace />;
+  }
+
+  return <Navigate to={`/login?redirect=${location.pathname}`} replace />;
+};
+
 const App = () => {
   const auth = useAuth();
 
@@ -26,53 +38,30 @@ const App = () => {
     return null; // FIXME: show loading icon
   }
 
-  if (!auth.isAuthenticated) {
-    // Public routes
-    return (
-      <Router>
-        <Switch>
-          <Route path="/demo" component={Demo} />
-          <Route path="/bot/demo" component={BotDemo} />
-          <Route path="/login" component={Login} />
-          <Route path="/verify" component={EmailVerification} />
-          <Route path="/reset-password" component={RequestPasswordReset} />
-          <Route path="/reset" component={PasswordReset} />
-          <Route
-            path="/reset-password-requested"
-            component={PasswordResetRequested}
-          />
-          <Route path="/sandbox" component={Sandbox} />
-          <Route path="/share" component={SharedConversation} />
-          <Route
-            path="*"
-            render={(props: RouteComponentProps<{}>) => (
-              <Redirect to={`/login?redirect=${props.location.pathname}`} />
-            )}
-          />
-        </Switch>
-      </Router>
-    );
-  }
-
-  // Private routes
+  // Single Router for all routes - prevents state loss on navigation
   return (
     <Router>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/verify" component={EmailVerification} />
-        <Route path="/reset-password" component={RequestPasswordReset} />
-        <Route path="/reset" component={PasswordReset} />
+      <Routes>
+        {/* Public routes - accessible regardless of auth state */}
+        <Route path="/demo" element={<Demo />} />
+        <Route path="/bot/demo" element={<BotDemo />} />
+        <Route path="/sandbox" element={<Sandbox />} />
+        <Route path="/share" element={<SharedConversation />} />
+        <Route path="/verify" element={<EmailVerification />} />
+        <Route path="/reset-password" element={<RequestPasswordReset />} />
+        <Route path="/reset" element={<PasswordReset />} />
         <Route
           path="/reset-password-requested"
-          component={PasswordResetRequested}
+          element={<PasswordResetRequested />}
         />
-        <Route path="/demo" component={Demo} />
-        <Route path="/bot/demo" component={BotDemo} />
-        <Route path="/sandbox" component={Sandbox} />
-        <Route path="/share" component={SharedConversation} />
-        <Route path="/" component={Dashboard} />
-        <Route path="*" render={() => <Redirect to="/conversations" />} />
-      </Switch>
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected routes - require authentication */}
+        {auth.isAuthenticated && <Route path="/*" element={<Dashboard />} />}
+
+        {/* Catch-all route */}
+        <Route path="*" element={<CatchAllRoute />} />
+      </Routes>
     </Router>
   );
 };

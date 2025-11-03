@@ -1,12 +1,12 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {Box} from 'theme-ui';
 import {Button, Input, Select, Title} from '../common';
 import {ArrowLeftOutlined} from '../icons';
 import * as API from '../../api';
 import logger from '../../logger';
 
-type Props = RouteComponentProps<{}>;
+type Props = {navigate: (path: string) => void};
 type State = {
   submitting: boolean;
   name: string;
@@ -54,13 +54,8 @@ class CreateCompanyPage extends React.Component<Props, State> {
     e.preventDefault();
 
     try {
-      const {
-        name,
-        description,
-        websiteUrl,
-        slackChannelId,
-        slackChannelName,
-      } = this.state;
+      const {name, description, websiteUrl, slackChannelId, slackChannelName} =
+        this.state;
       const {id: companyId} = await API.createNewCompany({
         name,
         description,
@@ -69,7 +64,7 @@ class CreateCompanyPage extends React.Component<Props, State> {
         slack_channel_name: slackChannelName,
       });
 
-      return this.props.history.push(`/companies/${companyId}`);
+      return this.props.navigate(`/companies/${companyId}`);
     } catch (err) {
       logger.error('Error creating new company:', err);
     }
@@ -173,4 +168,9 @@ class CreateCompanyPage extends React.Component<Props, State> {
   }
 }
 
-export default CreateCompanyPage;
+const CreateCompanyPageWrapper = () => {
+  const navigate = useNavigate();
+  return <CreateCompanyPage navigate={navigate} />;
+};
+
+export default CreateCompanyPageWrapper;

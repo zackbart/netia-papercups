@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useSearchParams} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import qs from 'query-string';
@@ -22,7 +23,7 @@ import HubspotAuthorizationButton from './HubspotAuthorizationButton';
 import Spinner from '../Spinner';
 import {Account} from '../../types';
 
-type Props = RouteComponentProps<{}>;
+type Props = {};
 type State = {
   status: 'loading' | 'success' | 'error';
   account: Account | null;

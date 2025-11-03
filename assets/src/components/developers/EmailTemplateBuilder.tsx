@@ -67,8 +67,8 @@ export class EmailTemplateBuilder extends React.Component<any, any> {
           <MonacoEditor
             height="100%"
             width="100%"
-            defaultLanguage="javascript"
-            defaultValue={DEFAULT_CODE_VALUE}
+            language="javascript"
+            value={DEFAULT_CODE_VALUE}
             options={{tabSize: 2}}
             onMount={this.handleEditorMounted}
             onValidate={this.handleUpdateIframe}

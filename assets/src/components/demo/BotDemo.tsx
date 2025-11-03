@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteComponentProps, Link} from 'react-router-dom';
+import {Link, useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import request from 'superagent';
 import {
@@ -60,7 +60,7 @@ const DEFAULT_FAQS: Array<FAQ> = [
   },
 ];
 
-type Props = RouteComponentProps & {};
+type Props = {};
 type State = {
   currentUser?: any;
   faqs: Array<FAQ>;

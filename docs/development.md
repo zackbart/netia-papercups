@@ -15,12 +15,14 @@ brew install asdf   # macOS
 cp .env.example .env
 # Edit .env: set DATABASE_URL=ecto://postgres:password@host.proxy.rlwy.net:port/railway?ssl=true
 
-# 2) One-time setup (installs deps, sets up DB)
+# 2) One-time setup (installs deps, patches Pow for OTP 24+, sets up DB)
 ./dev.sh setup
 
 # 3) Run the app (single command)
 ./dev.sh start
 ```
+
+> **Note**: The setup process automatically patches the Pow library for OTP 24+ compatibility. If you run `mix deps.get` manually, you'll need to run `mix patch_pow` afterwards.
 
 App will be running at:
 - **Frontend**: http://localhost:3000 (CRA dev server)
@@ -64,6 +66,19 @@ App will be running at:
 **Hot Reload:**
 - Elixir/Phoenix: Automatic code reloading via `code_reloader`
 - React/CRA: Hot Module Replacement (HMR) on port 3000
+
+### Pow OTP 24+ Compatibility Patch
+
+This project uses Pow 1.0.18, which requires a patch for Erlang/OTP 24+ compatibility. The patch is automatically applied when you run `mix setup` or `mix patch_pow`.
+
+**Why?** Pow uses `:crypto.hmac/3`, which was deprecated in OTP 24+ in favor of `:crypto.mac/4`. The patch adds backward-compatible code that uses the newer API when available.
+
+**Manual patching:**
+```bash
+mix patch_pow
+```
+
+This task checks if Pow is already patched and applies the patch if needed. It's safe to run multiple times.
 
 ### Manual Mix Commands (Alternative)
 ```bash

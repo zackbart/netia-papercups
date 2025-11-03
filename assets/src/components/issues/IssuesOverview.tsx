@@ -1,4 +1,5 @@
 import React from 'react';
+import {useNavigate} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {
   Alert,
@@ -16,9 +17,8 @@ import * as T from '../../types';
 import logger from '../../logger';
 import IssuesTable from './IssuesTable';
 import NewIssueModal from './NewIssueModal';
-import {RouteComponentProps} from 'react-router';
 
-type Props = RouteComponentProps & {};
+type Props = {navigate: (path: string) => void};
 type State = {
   filterQuery: string;
   filteredIssues: Array<T.Issue>;
@@ -108,7 +108,7 @@ class IssuesOverview extends React.Component<Props, State> {
     this.handleNewIssueModalClosed();
     this.handleRefreshIssues();
 
-    this.props.history.push(`/issues/${issue.id}`);
+    this.props.navigate(`/issues/${issue.id}`);
   };
 
   render() {
@@ -210,4 +210,9 @@ class IssuesOverview extends React.Component<Props, State> {
   }
 }
 
-export default IssuesOverview;
+const IssuesOverviewWrapper = () => {
+  const navigate = useNavigate();
+  return <IssuesOverview navigate={navigate} />;
+};
+
+export default IssuesOverviewWrapper;

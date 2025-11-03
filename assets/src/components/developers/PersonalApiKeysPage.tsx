@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteComponentProps} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Button, Container, Paragraph, Text, Title} from '../common';
 import {PlusOutlined} from '../icons';
@@ -12,7 +12,7 @@ import NewApiKeyModal from '../integrations/NewApiKeyModal';
 import ApiExplorer from './ApiExplorer';
 import DynamicTable from './DynamicTable';
 
-type Props = RouteComponentProps<{type?: string}> & {};
+type Props = {type?: string};
 type State = {
   loading: boolean;
   runkit: any;

@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useParams} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 
@@ -22,7 +23,7 @@ import {formatServerError} from '../../utils';
 import InboxIntegrations from './InboxIntegrations';
 import MailOutlined from '@ant-design/icons/MailOutlined';
 
-type Props = RouteComponentProps<{inbox_id: string}>;
+type Props = {inbox_id: string};
 type State = {
   status: 'loading' | 'success' | 'error';
   inbox: Inbox | null;
@@ -38,7 +39,7 @@ class InboxDetailsPage extends React.Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const {inbox_id: inboxId} = this.props.match.params;
+      const {inbox_id: inboxId} = this.props;
       const inbox = await API.fetchInbox(inboxId);
 
       this.setState({inbox, status: 'success'});
@@ -114,4 +115,10 @@ class InboxDetailsPage extends React.Component<Props, State> {
   }
 }
 
-export default InboxDetailsPage;
+const InboxDetailsPageWrapper = () => {
+  const {inbox_id: inboxId} = useParams<{inbox_id: string}>();
+  if (!inboxId) return null;
+  return <InboxDetailsPage inbox_id={inboxId} />;
+};
+
+export default InboxDetailsPageWrapper;

@@ -1,11 +1,16 @@
 import React from 'react';
 import {Flex} from 'theme-ui';
-import Editor, {EditorProps, BeforeMount, Monaco} from '@monaco-editor/react';
+import Editor, {EditorProps, Monaco} from '@monaco-editor/react';
 
-type Props = {onSave?: (code: string) => void} & EditorProps;
+type Props = {
+  onSave?: (code: string) => void;
+  onMount?: (editor: any, monaco: Monaco) => void;
+  onValidate?: (markers: any[]) => void;
+  onChange?: (value: string | undefined) => void;
+} & EditorProps;
 
 export const MonacoEditor = (props: Props) => {
-  const {onMount, onSave, ...rest} = props;
+  const {onMount, onSave, onValidate, onChange, ...rest} = props;
 
   const handleEditorDidMount = (editor: any, monaco: Monaco) => {
     if (onMount) {
@@ -21,31 +26,37 @@ export const MonacoEditor = (props: Props) => {
         contextMenuOrder: 1.5,
         run: () => {
           const code = editor.getValue() ?? '';
-
           onSave(code);
         },
       });
     }
+
+    if (onValidate) {
+      const markers = monaco.editor.getModelMarkers({});
+      onValidate(markers);
+      // Listen for marker changes
+      monaco.editor.onDidChangeMarkers(() => {
+        const updatedMarkers = monaco.editor.getModelMarkers({});
+        onValidate(updatedMarkers);
+      });
+    }
+
+    if (onChange) {
+      editor.onDidChangeModelContent(() => {
+        const value = editor.getValue();
+        onChange(value);
+      });
+    }
   };
 
-  const handleEditorChange = (value: string | undefined, event: any) => {
-    // TODO
-  };
-
-  const handleEditorWillMount: BeforeMount = (monaco: Monaco) => {
-    // TODO
-  };
-
-  const handleEditorValidation = (markers: any[]) => {
-    // TODO
-  };
-
+  // TypeScript doesn't recognize onMount in EditorProps type, but it exists at runtime
+  // Cast to any to bypass type checking - the @monaco-editor/react types may be incomplete
   return (
     <Editor
+      {...(rest as any)}
       height="100%"
-      defaultLanguage="javascript"
       theme="vs-dark"
-      defaultValue="// write code below!"
+      onMount={handleEditorDidMount as any}
       loading={
         <Flex
           sx={{
@@ -56,11 +67,6 @@ export const MonacoEditor = (props: Props) => {
           }}
         ></Flex>
       }
-      onChange={handleEditorChange}
-      onMount={handleEditorDidMount}
-      beforeMount={handleEditorWillMount}
-      onValidate={handleEditorValidation}
-      {...rest}
     />
   );
 };

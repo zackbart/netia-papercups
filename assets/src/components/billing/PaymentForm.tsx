@@ -63,12 +63,12 @@ const PaymentForm = ({onSuccess, onCancel}: Props) => {
         }
 
         cardElement.clear();
-      } catch (err) {
+      } catch (err: unknown) {
         logger.error('Failed to create payment method:', err);
 
         setErrorMessage(
-          err?.response?.body?.error?.message ||
-            err?.message ||
+          (err as any)?.response?.body?.error?.message ||
+            (err as any)?.message ||
             'Failed to save card information.'
         );
       }

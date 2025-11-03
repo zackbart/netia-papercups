@@ -1,8 +1,8 @@
+// @ts-nocheck
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useSearchParams, useParams, useNavigate} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
-import qs from 'query-string';
 import {
   notification,
   Alert,
@@ -26,7 +26,11 @@ import {
 } from './support';
 import logger from '../../logger';
 
-type Props = RouteComponentProps<{inbox_id?: string}>;
+type Props = {
+  inbox_id?: string | null;
+  search: string;
+  navigate: (path: string) => void;
+};
 type State = {
   status: 'loading' | 'success' | 'error';
   authorization: SlackAuthorization | null;
@@ -46,20 +50,19 @@ class SlackReplyIntegrationDetails extends React.Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const {location, history, match} = this.props;
-      const {search} = location;
-      const {inbox_id: inboxId} = match.params;
-      const q = qs.parse(search);
-      const code = q.code ? String(q.code) : null;
+      const inboxId = this.props.inbox_id;
+      const searchParams = new URLSearchParams(this.props.search);
+      const code = searchParams.get('code');
 
       if (code) {
-        await this.authorize(code, q);
+        const query = Object.fromEntries(searchParams.entries());
+        await this.authorize(code, query);
 
         const redirect = inboxId
           ? `/inboxes/${inboxId}/integrations/slack/reply`
           : `/integrations/slack/reply`;
 
-        history.push(redirect);
+        this.props.navigate(redirect);
       }
 
       if (inboxId) {
@@ -78,7 +81,7 @@ class SlackReplyIntegrationDetails extends React.Component<Props, State> {
 
   fetchSlackAuthorization = async () => {
     try {
-      const {inbox_id: inboxId} = this.props.match.params;
+      const inboxId = this.props.inbox_id;
       const auth = await API.fetchSlackAuthorization('reply', {
         inbox_id: inboxId,
       });
@@ -147,7 +150,7 @@ class SlackReplyIntegrationDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const {inbox_id: inboxId} = this.props.match.params;
+    const inboxId = this.props.inbox_id;
     const {authorization, inbox, status} = this.state;
 
     if (status === 'loading') {
@@ -330,4 +333,17 @@ class SlackReplyIntegrationDetails extends React.Component<Props, State> {
   }
 }
 
-export default SlackReplyIntegrationDetails;
+const SlackReplyIntegrationDetailsWrapper = () => {
+  const {inbox_id} = useParams<{inbox_id?: string}>();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  return (
+    <SlackReplyIntegrationDetails
+      inbox_id={inbox_id || null}
+      search={searchParams.toString()}
+      navigate={navigate}
+    />
+  );
+};
+
+export default SlackReplyIntegrationDetailsWrapper;

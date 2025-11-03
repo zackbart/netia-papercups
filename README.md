@@ -34,12 +34,14 @@ The project uses `.tool-versions` to specify exact versions when using asdf.
 cp .env.example .env
 # Edit .env with your Railway Postgres DATABASE_URL and other config
 
-# 2) One-time setup (installs dependencies, sets up database)
+# 2) One-time setup (installs dependencies, patches Pow for OTP 24+, sets up database)
 ./dev.sh setup
 
 # 3) Start development servers
 ./dev.sh start
 ```
+
+> **Note**: The setup automatically patches Pow for OTP 24+ compatibility. If you run `mix deps.get` manually, run `mix patch_pow` afterwards. See [Development Guide](docs/development.md#pow-otp-24-compatibility-patch) for details.
 
 The app will be running at:
 - **Frontend**: http://localhost:3000 (CRA dev server)

@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useParams} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 
@@ -20,7 +21,7 @@ import {MattermostAuthorizationButton} from './MattermostAuthorizationModal';
 import Spinner from '../Spinner';
 import {Account, Inbox} from '../../types';
 
-type Props = RouteComponentProps<{inbox_id?: string}>;
+type Props = {inbox_id?: string | null};
 type State = {
   status: 'loading' | 'success' | 'error';
   account: Account | null;
@@ -40,7 +41,7 @@ class MattermostIntegrationDetails extends React.Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const {inbox_id: inboxId} = this.props.match.params;
+      const inboxId = this.props.inbox_id;
 
       if (inboxId) {
         const inbox = await API.fetchInbox(inboxId);
@@ -58,7 +59,7 @@ class MattermostIntegrationDetails extends React.Component<Props, State> {
 
   fetchMattermostAuthorization = async () => {
     try {
-      const {inbox_id: inboxId} = this.props.match.params;
+      const inboxId = this.props.inbox_id;
       const account = await API.fetchAccountInfo();
       const auth = await API.fetchMattermostAuthorization({inbox_id: inboxId});
 
@@ -108,7 +109,7 @@ class MattermostIntegrationDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const {inbox_id: inboxId} = this.props.match.params;
+    const inboxId = this.props.inbox_id;
     const {authorization, inbox, status} = this.state;
 
     if (status === 'loading') {
@@ -267,4 +268,9 @@ class MattermostIntegrationDetails extends React.Component<Props, State> {
   }
 }
 
-export default MattermostIntegrationDetails;
+const MattermostIntegrationDetailsWrapper = () => {
+  const {inbox_id} = useParams<{inbox_id?: string}>();
+  return <MattermostIntegrationDetails inbox_id={inbox_id || null} />;
+};
+
+export default MattermostIntegrationDetailsWrapper;

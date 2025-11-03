@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteComponentProps, Link} from 'react-router-dom';
+import {Link, useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {TwitterPicker} from 'react-color';
 import qs from 'query-string';
@@ -26,7 +26,7 @@ const {
   REACT_APP_ADMIN_INBOX_ID = '1c792b5e-4be9-4e51-98a9-5648311eb398',
 } = env;
 
-type Props = RouteComponentProps & {};
+type Props = {};
 type State = {
   color: string;
   title: string;
@@ -36,16 +36,23 @@ type State = {
   currentUser?: any;
 };
 
-class Demo extends React.Component<Props, State> {
+class Demo extends React.Component<Props & {search: string}, State> {
   storytime: Storytime | null = null;
 
-  constructor(props: Props) {
+  constructor(props: Props & {search: string}) {
     super(props);
 
-    const q = qs.parse(props.location.search) || {};
-    const defaultTitle = q.title ? String(q.title).trim() : null;
-    const defaultSubtitle = q.subtitle ? String(q.subtitle).trim() : null;
-    const defaultColor = q.color ? String(q.color).trim() : null;
+    const q = new URLSearchParams(props.search);
+    const queryParams = Object.fromEntries(q.entries());
+    const defaultTitle = queryParams.title
+      ? String(queryParams.title).trim()
+      : null;
+    const defaultSubtitle = queryParams.subtitle
+      ? String(queryParams.subtitle).trim()
+      : null;
+    const defaultColor = queryParams.color
+      ? String(queryParams.color).trim()
+      : null;
 
     this.state = {
       color: defaultColor || colors.primary,
@@ -213,4 +220,9 @@ class Demo extends React.Component<Props, State> {
   }
 }
 
-export default Demo;
+const DemoWrapper = () => {
+  const [searchParams] = useSearchParams();
+  return <Demo search={searchParams.toString()} />;
+};
+
+export default DemoWrapper;

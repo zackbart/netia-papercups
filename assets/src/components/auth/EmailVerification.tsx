@@ -1,16 +1,15 @@
 import React from 'react';
-import {useLocation} from 'react-router-dom';
-import qs from 'query-string';
+import {useSearchParams} from 'react-router-dom';
 import {Flex} from 'theme-ui';
 import * as API from '../../api';
 import {Result} from '../common';
 
 // Currently unused, but would like to introduce email verification for our users soon
 export const EmailVerification = () => {
-  const {search} = useLocation();
+  const [searchParams] = useSearchParams();
   const [isLoading, setLoading] = React.useState(true);
   const [isVerified, setVerified] = React.useState(false);
-  const {token = ''} = qs.parse(search);
+  const token = searchParams.get('token') || '';
 
   React.useEffect(() => {
     if (!token || typeof token !== 'string') {

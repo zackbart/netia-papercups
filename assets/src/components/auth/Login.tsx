@@ -1,140 +1,116 @@
-import React from 'react';
-import {RouteComponentProps, Link} from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {Link, useNavigate, useSearchParams} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
-import qs from 'query-string';
 import {Button, Input, Text, Title} from '../common';
 import {useAuth} from './AuthProvider';
 import logger from '../../logger';
 
-type Props = RouteComponentProps & {
-  onSubmit: (params: any) => Promise<void>;
-};
-type State = {
-  loading: boolean;
-  email: string;
-  password: string;
-  error: any;
-  redirect: string;
-};
+const Login = () => {
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<any>(null);
+  const [redirect, setRedirect] = useState('/getting-started');
 
-class Login extends React.Component<Props, State> {
-  state: State = {
-    loading: false,
-    email: '',
-    password: '',
-    error: null,
-    redirect: '/getting-started',
+  useEffect(() => {
+    const redirectParam = searchParams.get('redirect') || '/getting-started';
+    setRedirect(redirectParam);
+  }, [searchParams]);
+
+  const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
-  componentDidMount() {
-    const {redirect = '/getting-started'} = qs.parse(
-      this.props.location.search
-    );
-
-    this.setState({redirect: String(redirect)});
-  }
-
-  handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({email: e.target.value});
+  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
   };
 
-  handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({password: e.target.value});
-  };
-
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    this.setState({loading: true, error: null});
-    const {email, password, redirect} = this.state;
+    setLoading(true);
+    setError(null);
 
     // TODO: handle login through API
-    this.props
-      .onSubmit({email, password})
-      .then(() => this.props.history.push(redirect))
+    auth
+      .login({email, password})
+      .then(() => navigate(redirect))
       .catch((err) => {
         logger.error('Error!', err);
-        const error =
+        const errorMessage =
           err.response?.body?.error?.message || 'Invalid credentials';
 
-        this.setState({error, loading: false});
+        setError(errorMessage);
+        setLoading(false);
       });
   };
 
-  render() {
-    const {location} = this.props;
-    const {loading, email, password, error} = this.state;
+  return (
+    <Flex
+      px={[2, 5]}
+      py={5}
+      sx={{
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Box sx={{width: '100%', maxWidth: 320}}>
+        <Title level={1}>Welcome back</Title>
 
-    return (
-      <Flex
-        px={[2, 5]}
-        py={5}
-        sx={{
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Box sx={{width: '100%', maxWidth: 320}}>
-          <Title level={1}>Welcome back</Title>
+        <form onSubmit={handleSubmit}>
+          <Box mb={2}>
+            <label htmlFor="email">Email</label>
+            <Input
+              id="email"
+              size="large"
+              type="email"
+              autoComplete="username"
+              value={email}
+              onChange={handleChangeEmail}
+            />
+          </Box>
 
-          <form onSubmit={this.handleSubmit}>
-            <Box mb={2}>
-              <label htmlFor="email">Email</label>
-              <Input
-                id="email"
-                size="large"
-                type="email"
-                autoComplete="username"
-                value={email}
-                onChange={this.handleChangeEmail}
-              />
+          <Box mb={2}>
+            <label htmlFor="password">Password</label>
+            <Input
+              id="password"
+              size="large"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={handleChangePassword}
+            />
+          </Box>
+
+          <Box mt={3}>
+            <Button
+              block
+              size="large"
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+            >
+              Log in
+            </Button>
+          </Box>
+
+          {error && (
+            <Box mt={2}>
+              <Text type="danger">{error}</Text>
             </Box>
+          )}
 
-            <Box mb={2}>
-              <label htmlFor="password">Password</label>
-              <Input
-                id="password"
-                size="large"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={this.handleChangePassword}
-              />
-            </Box>
-
-            <Box mt={3}>
-              <Button
-                block
-                size="large"
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-              >
-                Log in
-              </Button>
-            </Box>
-
-            {error && (
-              <Box mt={2}>
-                <Text type="danger">{error}</Text>
-              </Box>
-            )}
-
-            <Box my={3}>
-              <Link to="/reset-password">Forgot your password?</Link>
-            </Box>
-          </form>
-        </Box>
-      </Flex>
-    );
-  }
-}
-
-const LoginPage = (props: RouteComponentProps) => {
-  const auth = useAuth();
-
-  return <Login {...props} onSubmit={auth.login} />;
+          <Box my={3}>
+            <Link to="/reset-password">Forgot your password?</Link>
+          </Box>
+        </form>
+      </Box>
+    </Flex>
+  );
 };
 
-export default LoginPage;
+export default Login;

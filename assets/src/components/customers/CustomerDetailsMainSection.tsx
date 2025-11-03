@@ -1,6 +1,5 @@
 import React from 'react';
-import {History} from 'history';
-import qs from 'query-string';
+import {useSearchParams} from 'react-router-dom';
 
 import {Card, Tabs} from '../common';
 import CustomerDetailsConversations from './CustomerDetailsConversations';
@@ -15,8 +14,8 @@ enum TabKey {
   Issues = 'Issues',
 }
 
-const getDefaultTab = (query: string): TabKey => {
-  const {tab = 'conversations'} = qs.parse(query);
+const getDefaultTab = (searchParams: URLSearchParams): TabKey => {
+  const tab = searchParams.get('tab') || 'conversations';
 
   switch (tab) {
     case 'notes':
@@ -29,10 +28,11 @@ const getDefaultTab = (query: string): TabKey => {
   }
 };
 
-type Props = {customerId: string; history: History};
+type Props = {customerId: string};
 
-const CustomerDetailsMainSection = ({customerId, history}: Props) => {
-  const defaultActiveKey = getDefaultTab(history.location.search);
+const CustomerDetailsMainSection = ({customerId}: Props) => {
+  const [searchParams] = useSearchParams();
+  const defaultActiveKey = getDefaultTab(searchParams);
 
   return (
     <Card>
@@ -41,10 +41,7 @@ const CustomerDetailsMainSection = ({customerId, history}: Props) => {
         tabBarStyle={{paddingLeft: '16px', marginBottom: '0'}}
       >
         <TabPane tab={TabKey.Conversations} key={TabKey.Conversations}>
-          <CustomerDetailsConversations
-            customerId={customerId}
-            history={history}
-          />
+          <CustomerDetailsConversations customerId={customerId} />
         </TabPane>
         <TabPane tab={TabKey.Notes} key={TabKey.Notes}>
           <CustomerDetailsNotes customerId={customerId} />

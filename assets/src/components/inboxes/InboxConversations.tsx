@@ -1,5 +1,5 @@
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
+import {useParams, useNavigate} from 'react-router-dom';
 import {Flex} from 'theme-ui';
 
 import * as API from '../../api';
@@ -9,13 +9,13 @@ import {formatServerError} from '../../utils';
 import {useAuth} from '../auth/AuthProvider';
 import {ConversationsDashboard} from '../conversations/ConversationsDashboard';
 
-const Wrapper = (
-  props: RouteComponentProps<{inbox_id: string; conversation_id?: string}>
-) => {
-  const {
-    inbox_id: inboxId,
-    conversation_id: conversationId = null,
-  } = props.match.params;
+const Wrapper = () => {
+  const {inbox_id: inboxId, conversation_id: conversationId = null} =
+    useParams<{
+      inbox_id: string;
+      conversation_id?: string;
+    }>();
+  const navigate = useNavigate();
   const [inbox, setSelectedInbox] = React.useState<Inbox | null>(null);
   const [status, setStatus] = React.useState<'loading' | 'success' | 'error'>(
     'loading'
@@ -24,6 +24,8 @@ const Wrapper = (
   const {currentUser, account} = useAuth();
 
   React.useEffect(() => {
+    if (!inboxId) return;
+
     setStatus('loading');
 
     API.fetchInbox(inboxId)
@@ -36,7 +38,7 @@ const Wrapper = (
   }, [inboxId]);
 
   const handleSelectConversation = (conversationId: string) =>
-    props.history.push(`/inboxes/${inboxId}/conversations/${conversationId}`);
+    navigate(`/inboxes/${inboxId}/conversations/${conversationId}`);
 
   if (error || status === 'error') {
     // TODO: render better error state?

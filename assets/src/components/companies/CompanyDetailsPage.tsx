@@ -1,5 +1,6 @@
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import {Button, Card, Popconfirm, Result, Text, Title} from '../common';
 import {ArrowLeftOutlined, DeleteOutlined} from '../icons';
@@ -19,7 +20,7 @@ const DetailsSectionCard = ({children}: {children: any}) => {
   return <Card sx={{p: 3, mb: 3}}>{children}</Card>;
 };
 
-type Props = RouteComponentProps<{id: string}>;
+type Props = {id: string; navigate: (path: string) => void};
 type State = {
   loading: boolean;
   deleting: boolean;
@@ -54,7 +55,7 @@ class CompanyDetailsPage extends React.Component<Props, State> {
   }
 
   getCompanyId = () => {
-    return this.props.match.params.id;
+    return this.props.id;
   };
 
   handleDeleteCompany = async () => {
@@ -65,7 +66,7 @@ class CompanyDetailsPage extends React.Component<Props, State> {
       await API.deleteCompany(companyId);
       await sleep(1000);
 
-      this.props.history.push('/companies');
+      this.props.navigate('/companies');
     } catch (err) {
       logger.error('Error deleting company!', err);
 
@@ -241,4 +242,11 @@ class CompanyDetailsPage extends React.Component<Props, State> {
   }
 }
 
-export default CompanyDetailsPage;
+const CompanyDetailsPageWrapper = () => {
+  const {id} = useParams<{id: string}>();
+  const navigate = useNavigate();
+  if (!id) return null;
+  return <CompanyDetailsPage id={id} navigate={navigate} />;
+};
+
+export default CompanyDetailsPageWrapper;

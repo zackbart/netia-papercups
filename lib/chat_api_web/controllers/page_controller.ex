@@ -17,10 +17,10 @@ defmodule ChatApiWeb.PageController do
       case File.read(index_path) do
         {:ok, file} ->
           content = file
-            |> String.replace(
-              "__SERVER_ENV_DATA__",
-              Jason.encode!(server_env_data(), escape: :html_safe)
-            )
+      |> String.replace(
+        "__SERVER_ENV_DATA__",
+        Jason.encode!(server_env_data(), escape: :html_safe)
+      )
           html(conn, content)
 
         {:error, reason} ->

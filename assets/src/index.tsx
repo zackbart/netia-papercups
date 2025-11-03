@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import './index.css';
 import App from './App';
 import analytics from './analytics';
@@ -8,11 +8,16 @@ import * as serviceWorker from './serviceWorker';
 
 analytics.init();
 
-ReactDOM.render(
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+const root = createRoot(rootElement);
+root.render(
   <AuthProvider>
     <App />
-  </AuthProvider>,
-  document.getElementById('root')
+  </AuthProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -40,7 +40,6 @@ config :chat_api, ChatApiWeb.Endpoint,
       cd: Path.expand("../assets", __DIR__),
       env: [
         {"PORT", "3000"},
-        {"NODE_OPTIONS", System.get_env("NODE_OPTIONS") || "--openssl-legacy-provider"},
         {"PATH", System.get_env("PATH")}
       ]
     ]

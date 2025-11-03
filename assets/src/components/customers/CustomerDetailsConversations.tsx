@@ -1,5 +1,5 @@
 import React from 'react';
-import {History} from 'history';
+import {useNavigate} from 'react-router-dom';
 import {Flex} from 'theme-ui';
 import {Empty} from '../common';
 import Spinner from '../Spinner';
@@ -11,7 +11,7 @@ import StartConversationButton from '../conversations/StartConversationButton';
 import ConversationModal from '../conversations/ConversationModal';
 import {sortConversationMessages} from '../../utils';
 
-type Props = {customerId: string; history: History};
+type Props = {customerId: string};
 type State = {
   conversations: Conversation[];
   selectedConversationId: string | null;
@@ -65,12 +65,8 @@ class CustomerDetailsConversations extends React.Component<Props, State> {
 
   render() {
     const {customerId} = this.props;
-    const {
-      isLoading,
-      isModalVisible,
-      conversations,
-      selectedConversationId,
-    } = this.state;
+    const {isLoading, isModalVisible, conversations, selectedConversationId} =
+      this.state;
 
     return (
       <>

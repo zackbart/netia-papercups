@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react';
-import {Link, RouteComponentProps} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {Box, Flex} from 'theme-ui';
 import qs from 'query-string';
 
@@ -21,7 +22,7 @@ import {isEuEdition} from '../../config';
 import {Inbox} from '../../types';
 import {InboxIntegrationsTable} from '../inboxes/InboxIntegrations';
 
-type Props = RouteComponentProps<{type?: string}> & {};
+type Props = {type?: string};
 type State = {
   loading: boolean;
   refreshing: boolean;

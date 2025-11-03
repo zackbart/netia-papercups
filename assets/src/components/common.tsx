@@ -94,6 +94,7 @@ export const shadows = {
 export const StandardSyntaxHighlighter: FunctionComponent<{
   language: string;
   style?: any;
+  children?: React.ReactNode;
 }> = ({language, children, style = {}}) => {
   return (
     <SyntaxHighlighter
