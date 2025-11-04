@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import sanitizeHtml from 'sanitize-html';
 
-import {MarkdownRenderer, Text} from '../common';
+import {colors, MarkdownRenderer, Text} from '../common';
 import {Attachment, Message, MessageSource} from '../../types';
 import {PaperClipOutlined} from '../icons';
 
@@ -80,8 +80,8 @@ const ChatMessageBox = ({
   const parsedSx = Object.assign(sx || {}, {
     px: 3,
     py: 2,
-    borderRadius: 4,
-    p: {mb: 0},
+    borderRadius: 12,
+    p: {mb: 0, fontSize: '14px', lineHeight: '1.5'},
     ul: {my: 2},
     ol: {my: 2},
     blockquote: {
@@ -94,8 +94,16 @@ const ChatMessageBox = ({
   return (
     <Box sx={parsedSx}>
       {subject && (
-        <Box pb={1} mb={2} sx={{borderBottom: '1px solid rgba(0,0,0,.06)'}}>
-          <Text className={className} type="secondary" style={{fontSize: 12}}>
+        <Box
+          pb={1}
+          mb={2}
+          sx={{borderBottom: `1px solid ${colors.borderLight}`}}
+        >
+          <Text
+            className={className}
+            type="secondary"
+            style={{fontSize: '12px', color: colors.textMuted, fontWeight: 500}}
+          >
             {subject}
           </Text>
         </Box>
@@ -127,7 +135,7 @@ const ChatMessageBox = ({
           pt={1}
           mt={2}
           sx={{
-            borderTop: '1px solid rgba(0,0,0,.06)',
+            borderTop: `1px solid ${colors.borderLight}`,
             justifyContent: 'space-between',
             alignItems: 'center',
           }}
@@ -135,7 +143,7 @@ const ChatMessageBox = ({
           <Text
             className={className}
             type="secondary"
-            style={{fontSize: 12, marginRight: 32}}
+            style={{fontSize: '12px', marginRight: 32, color: colors.textMuted}}
           >
             {createdAt}
           </Text>
@@ -148,7 +156,11 @@ const ChatMessageBox = ({
                 style={{height: 12, marginRight: 4}}
               />
             )}
-            <Text className={className} type="secondary" style={{fontSize: 12}}>
+            <Text
+              className={className}
+              type="secondary"
+              style={{fontSize: '12px', color: colors.textMuted}}
+            >
               Sent via {formattedSource}
             </Text>
           </Flex>

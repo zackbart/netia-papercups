@@ -342,40 +342,6 @@ class UserProfile extends React.Component<Props, State> {
           </Button>
         )}
 
-        <Divider />
-
-        <Title level={3}>Notification Settings</Title>
-
-        <Box mb={3} sx={{maxWidth: 480}}>
-          <Paragraph>
-            Choose how you would like to be alerted when your account receives
-            new messages from customers.
-          </Paragraph>
-        </Box>
-
-        <Box mb={3}>
-          <Checkbox
-            checked={shouldEmailOnNewConversations}
-            onChange={this.handleEmailAlertOnNewConversation}
-          >
-            <Text>
-              Send email alert on <Text strong>new conversations</Text> (initial
-              message only)
-            </Text>
-          </Checkbox>
-        </Box>
-
-        <Box mb={3}>
-          <Checkbox
-            checked={shouldEmailOnNewMessages}
-            onChange={this.handleEmailAlertOnNewMessage}
-          >
-            <Text>
-              Send email alert on <Text strong>all new messages</Text>
-            </Text>
-          </Checkbox>
-        </Box>
-
         {/* TODO: figure out how to handle personal Gmail accounts better */}
         {false && (
           <Box>

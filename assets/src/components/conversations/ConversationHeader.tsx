@@ -70,15 +70,17 @@ const ConversationHeader = ({
   return (
     <header
       style={{
-        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 2rem',
+        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         zIndex: 1,
         opacity: status === 'closed' ? 0.8 : 1,
+        borderBottom: `1px solid ${colors.borderLight}`,
+        background: colors.bgWhite,
       }}
     >
       <Flex
         py={3}
         px={4}
-        backgroundColor={colors.white}
+        backgroundColor={colors.bgWhite}
         sx={{justifyContent: 'space-between', alignItems: 'center'}}
       >
         <Box>
@@ -88,93 +90,95 @@ const ConversationHeader = ({
               style={{
                 marginBottom: hasBothNameAndEmail ? 0 : 4,
                 marginTop: hasBothNameAndEmail ? 0 : 4,
+                fontSize: '18px',
+                fontWeight: 600,
+                color: colors.textPrimary,
               }}
             >
               {name || email || 'Anonymous User'}
             </Title>
           </Flex>
           {hasBothNameAndEmail && (
-            <Box style={{marginLeft: 1, lineHeight: 1.2}}>
-              <Text type="secondary">{email}</Text>
+            <Box style={{marginLeft: 1, lineHeight: 1.4, marginTop: 2}}>
+              <Text
+                type="secondary"
+                style={{fontSize: '13px', color: colors.textMuted}}
+              >
+                {email}
+              </Text>
             </Box>
           )}
         </Box>
 
-        <Flex mx={-1}>
-          <Box mx={1}>
-            <Select
-              style={{minWidth: 240}}
-              placeholder="No assignee"
-              value={assigneeId ? String(assigneeId) : undefined}
-              onSelect={handleAssignUser}
-            >
-              <Select.Option key={UNASSIGNED} value={UNASSIGNED}>
-                No assignee
-              </Select.Option>
+        <Flex sx={{gap: '8px', alignItems: 'center'}}>
+          <Select
+            style={{minWidth: 200, height: 36}}
+            placeholder="No assignee"
+            value={assigneeId ? String(assigneeId) : undefined}
+            onSelect={handleAssignUser}
+          >
+            <Select.Option key={UNASSIGNED} value={UNASSIGNED}>
+              No assignee
+            </Select.Option>
 
-              {users.map((user: User) => {
-                const value = String(user.id);
+            {users.map((user: User) => {
+              const value = String(user.id);
 
-                return (
-                  <Select.Option key={value} value={value}>
-                    <Flex sx={{alignItems: 'center'}}>
-                      <UserOutlined style={{marginRight: 8, fontSize: 12}} />
-                      <Box>{user.full_name || user.email}</Box>
-                    </Flex>
-                  </Select.Option>
-                );
-              })}
-            </Select>
-          </Box>
-          <Box mx={1}>
-            {priority === 'priority' ? (
-              <Tooltip title="Remove priority" placement="bottomRight">
-                <Button
-                  icon={<StarFilled style={{color: colors.gold}} />}
-                  onClick={() => onRemovePriority(conversationId)}
-                />
-              </Tooltip>
-            ) : (
-              <Tooltip title="Mark as priority" placement="bottomRight">
-                <Button
-                  icon={<StarOutlined />}
-                  onClick={() => onMarkPriority(conversationId)}
-                />
-              </Tooltip>
-            )}
-          </Box>
-
-          {status === 'closed' ? (
-            <Box mx={1}>
-              <Tooltip title="Reopen conversation" placement="bottomRight">
-                <Button
-                  icon={<UploadOutlined />}
-                  onClick={() => onReopenConversation(conversationId)}
-                />
-              </Tooltip>
-            </Box>
+              return (
+                <Select.Option key={value} value={value}>
+                  <Flex sx={{alignItems: 'center', gap: '8px'}}>
+                    <UserOutlined style={{fontSize: 14}} />
+                    <Box>{user.full_name || user.email}</Box>
+                  </Flex>
+                </Select.Option>
+              );
+            })}
+          </Select>
+          {priority === 'priority' ? (
+            <Tooltip title="Remove priority" placement="bottomRight">
+              <Button
+                type="text"
+                icon={<StarFilled style={{color: colors.gold}} />}
+                onClick={() => onRemovePriority(conversationId)}
+              />
+            </Tooltip>
           ) : (
-            <Box mx={1}>
-              <Tooltip title="Close conversation" placement="bottomRight">
-                <Button
-                  icon={<CheckOutlined />}
-                  onClick={() => onCloseConversation(conversationId)}
-                />
-              </Tooltip>
-            </Box>
+            <Tooltip title="Mark as priority" placement="bottomRight">
+              <Button
+                type="text"
+                icon={<StarOutlined />}
+                onClick={() => onMarkPriority(conversationId)}
+              />
+            </Tooltip>
           )}
 
-          <Box mx={1}>
-            <Popconfirm
-              title="Are you sure you want to delete this conversation?"
-              okText="Yes"
-              cancelText="No"
-              placement="leftBottom"
-              onConfirm={() => onDeleteConversation(conversationId)}
-            >
-              <Button icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Box>
+          {status === 'closed' ? (
+            <Tooltip title="Reopen conversation" placement="bottomRight">
+              <Button
+                type="text"
+                icon={<UploadOutlined />}
+                onClick={() => onReopenConversation(conversationId)}
+              />
+            </Tooltip>
+          ) : (
+            <Tooltip title="Close conversation" placement="bottomRight">
+              <Button
+                type="text"
+                icon={<CheckOutlined />}
+                onClick={() => onCloseConversation(conversationId)}
+              />
+            </Tooltip>
+          )}
+
+          <Popconfirm
+            title="Are you sure you want to delete this conversation?"
+            okText="Yes"
+            cancelText="No"
+            placement="leftBottom"
+            onConfirm={() => onDeleteConversation(conversationId)}
+          >
+            <Button type="text" icon={<DeleteOutlined />} />
+          </Popconfirm>
         </Flex>
       </Flex>
     </header>

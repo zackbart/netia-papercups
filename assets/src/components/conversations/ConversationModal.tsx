@@ -75,7 +75,7 @@ class ConversationModal extends React.Component<Props> {
             width: '100%',
             height: '64vh',
             flexDirection: 'column',
-            bg: colors.white,
+            bg: colors.bgWhite,
             flex: 1,
           }}
         >
@@ -106,11 +106,8 @@ const ConversationModalWrapper = ({
   onClose: () => void;
 }) => {
   const {currentUser} = useAuth();
-  const {
-    loading,
-    fetchConversationById,
-    getConversationById,
-  } = useConversations();
+  const {loading, fetchConversationById, getConversationById} =
+    useConversations();
 
   React.useEffect(() => {
     fetchConversationById(conversationId);

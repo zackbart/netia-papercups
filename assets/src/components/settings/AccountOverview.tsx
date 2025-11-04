@@ -1,20 +1,9 @@
 import React from 'react';
 import {Box, Flex} from 'theme-ui';
-import {
-  Button,
-  Container,
-  Divider,
-  Input,
-  Paragraph,
-  Text,
-  Title,
-} from '../common';
+import {Button, Container, Input, Paragraph, Text, Title} from '../common';
 import Spinner from '../Spinner';
-import WorkingHoursSelector from './WorkingHoursSelector';
-import ConversationRemindersSettings from './ConversationRemindersSettings';
-import {WorkingHours} from './support';
 import * as API from '../../api';
-import {Account, AccountSettings, User} from '../../types';
+import {Account, User} from '../../types';
 import logger from '../../logger';
 
 type Props = {};
@@ -50,10 +39,8 @@ class AccountOverview extends React.Component<Props, State> {
 
   fetchLatestAccountInfo = async () => {
     const account = await API.fetchAccountInfo();
-    const {
-      company_name: companyName,
-      company_logo_url: companyLogoUrl,
-    } = account;
+    const {company_name: companyName, company_logo_url: companyLogoUrl} =
+      account;
     logger.debug('Account info:', account);
 
     this.setState({account, companyName, companyLogoUrl});
@@ -80,9 +67,6 @@ class AccountOverview extends React.Component<Props, State> {
   handleUpdate = async (updates: {
     company_name?: string;
     company_logo_url?: string;
-    time_zone?: string;
-    working_hours?: Array<WorkingHours>;
-    settings?: Partial<AccountSettings>;
   }) => {
     return API.updateAccountInfo(updates)
       .then((account) => {
@@ -134,12 +118,7 @@ class AccountOverview extends React.Component<Props, State> {
       return null;
     }
 
-    const {
-      id: token,
-      time_zone: timezone,
-      working_hours: workingHours = [],
-    } = account;
-    const settings = account.settings || {};
+    const {id: token} = account;
 
     return (
       <Container sx={{maxWidth: 640}}>
@@ -206,44 +185,6 @@ class AccountOverview extends React.Component<Props, State> {
               Edit
             </Button>
           )}
-        </Box>
-
-        <Divider />
-
-        <Box mb={4}>
-          <Title level={4}>Working hours</Title>
-
-          <Paragraph>
-            <Text type="secondary">
-              Set your working hours so your users know when you're available to
-              chat.
-            </Text>
-          </Paragraph>
-
-          <WorkingHoursSelector
-            timezone={timezone}
-            workingHours={workingHours}
-            onSave={this.handleUpdate}
-          />
-        </Box>
-
-        <Divider />
-
-        <Box mb={4} sx={{maxWidth: 480}}>
-          <Title level={4}>Conversation reminders</Title>
-
-          <Paragraph>
-            <Text type="secondary">
-              Configure reminder messages to nudge you when your team hasn't
-              replied to an open conversation within the number of hours
-              specified below.
-            </Text>
-          </Paragraph>
-
-          <ConversationRemindersSettings
-            settings={settings}
-            onSave={this.handleUpdate}
-          />
         </Box>
       </Container>
     );

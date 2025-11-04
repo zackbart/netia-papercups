@@ -69,7 +69,7 @@ class SharedConversationContainer extends React.Component<
           sx={{
             width: '100%',
             maxWidth: 640,
-            bg: colors.white,
+            bg: colors.bgWhite,
           }}
         >
           <ConversationMessages

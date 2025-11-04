@@ -280,10 +280,11 @@ const ConversationFooter = ({
     <Box style={{flex: '0 0 auto'}}>
       <Box
         sx={{
-          bg: colors.white,
+          bg: colors.bgWhite,
           px: 4,
           pt: 0,
           pb: 4,
+          borderTop: `1px solid ${colors.borderLight}`,
           ...sx,
         }}
       >
@@ -292,10 +293,15 @@ const ConversationFooter = ({
           pb={2}
           pt={1}
           sx={{
-            background: isPrivateNote ? colors.noteSecondary : colors.white,
-            border: '1px solid #f5f5f5',
-            borderRadius: 4,
-            boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 8px',
+            background: isPrivateNote ? colors.noteSecondary : colors.bgWhite,
+            border: `1px solid ${colors.border}`,
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:focus-within': {
+              borderColor: colors.primary,
+              boxShadow: '0 0 0 3px rgba(22, 119, 255, 0.1)',
+            },
           }}
         >
           <form onSubmit={handleSendMessage}>
@@ -307,7 +313,7 @@ const ConversationFooter = ({
                   lineHeight: '36px',
                   fontWeight: 500,
                   background: 'transparent',
-                  color: colors.secondary,
+                  color: colors.textMuted,
                 }}
                 defaultSelectedKeys={['reply']}
                 selectedKeys={[messageType]}

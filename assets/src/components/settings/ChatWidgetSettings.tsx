@@ -11,16 +11,14 @@ import {
   Alert,
   Button,
   Paragraph,
-  Popover,
   Input,
   Select,
   StandardSyntaxHighlighter,
-  Switch,
   Text,
   Title,
   Tabs,
 } from '../common';
-import {ArrowLeftOutlined, InfoCircleTwoTone} from '../icons';
+import {ArrowLeftOutlined} from '../icons';
 import {BASE_URL, FRONTEND_BASE_URL} from '../../config';
 import logger from '../../logger';
 import {formatUserExternalId} from '../../utils';
@@ -36,16 +34,10 @@ type State = {
   color: string;
   title: string;
   subtitle: string;
-  greeting?: string;
   awayMessage?: string;
   newMessagePlaceholder?: string;
   currentUser: User | null;
-  showAgentAvailability: boolean;
-  agentAvailableText?: string;
-  agentUnavailableText?: string;
-  requireEmailUpfront: boolean;
   iconVariant: WidgetIconVariant;
-  isBrandingHidden: boolean;
 };
 
 class ChatWidgetSettings extends React.Component<Props, State> {
@@ -57,15 +49,9 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     color: colors.primary,
     title: 'Welcome!',
     subtitle: 'Ask us anything in the chat window below 😊',
-    greeting: '',
     awayMessage: '',
     newMessagePlaceholder: 'Start typing...',
-    showAgentAvailability: false,
-    agentAvailableText: `We're online right now!`,
-    agentUnavailableText: `We're away at the moment.`,
-    requireEmailUpfront: false,
     iconVariant: 'outlined',
-    isBrandingHidden: false,
   };
 
   async componentDidMount() {
@@ -89,36 +75,21 @@ class ChatWidgetSettings extends React.Component<Props, State> {
         color,
         title,
         subtitle,
-        greeting,
         new_message_placeholder: newMessagePlaceholder,
-        show_agent_availability: showAgentAvailability,
-        agent_available_text: agentAvailableText,
-        agent_unavailable_text: agentUnavailableText,
-        require_email_upfront: requireEmailUpfront,
         icon_variant: iconVariant,
         away_message: awayMessage,
-        is_branding_hidden: isBrandingHidden,
       } = widgetSettings;
 
       this.setState({
         accountId,
         account,
         currentUser,
-        greeting,
         awayMessage,
         color: color || this.state.color,
         subtitle: subtitle || this.state.subtitle,
         title: title || `Welcome to ${company}`,
         newMessagePlaceholder: newMessagePlaceholder || 'Start typing...',
-        showAgentAvailability:
-          showAgentAvailability || this.state.showAgentAvailability,
-        agentAvailableText: agentAvailableText || this.state.agentAvailableText,
-        agentUnavailableText:
-          agentUnavailableText || this.state.agentUnavailableText,
-        requireEmailUpfront:
-          requireEmailUpfront || this.state.requireEmailUpfront,
         iconVariant: iconVariant || this.state.iconVariant,
-        isBrandingHidden: isBrandingHidden || this.state.isBrandingHidden,
       });
     } else {
       this.setState({
@@ -146,13 +117,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     );
   };
 
-  handleChangeGreeting = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState(
-      {greeting: e.target.value},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
   handleChangeAwayMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(
       {awayMessage: e.target.value},
@@ -169,36 +133,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     );
   };
 
-  handleChangeRequireEmailUpfront = (isChecked: boolean) => {
-    this.setState(
-      {requireEmailUpfront: isChecked},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
-  handleChangeShowingAgentAvailability = (isChecked: boolean) => {
-    this.setState(
-      {showAgentAvailability: isChecked},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
-  handleChangeAgentAvailableText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState(
-      {agentAvailableText: e.target.value},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
-  handleChangeAgentUnavailableText = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    this.setState(
-      {agentUnavailableText: e.target.value},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
   handleChangeIconVariant = (variant: 'outlined' | 'filled') => {
     // Icon variant changed - no need to close anything since we're using iframe
     this.setState({iconVariant: variant}, this.debouncedUpdateWidgetSettings);
@@ -208,43 +142,24 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     this.setState({color: color.hex}, this.debouncedUpdateWidgetSettings);
   };
 
-  handleChangeBrandingVisibility = (isChecked: boolean) => {
-    this.setState(
-      {isBrandingHidden: isChecked},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
   updateWidgetSettings = async () => {
     const {inbox_id: inboxId} = this.props;
     const {
       color,
       title,
       subtitle,
-      greeting,
       awayMessage,
       newMessagePlaceholder,
-      showAgentAvailability,
-      agentAvailableText,
-      agentUnavailableText,
-      requireEmailUpfront,
       iconVariant,
-      isBrandingHidden,
     } = this.state;
 
     return API.updateWidgetSettings({
       color,
       title,
       subtitle,
-      greeting,
       away_message: awayMessage,
       new_message_placeholder: newMessagePlaceholder,
-      show_agent_availability: showAgentAvailability,
-      agent_available_text: agentAvailableText,
-      agent_unavailable_text: agentUnavailableText,
-      require_email_upfront: requireEmailUpfront,
       icon_variant: iconVariant,
-      is_branding_hidden: isBrandingHidden,
       inbox_id: inboxId,
     } as any)
       .then((res) => logger.debug('Updated widget settings:', res))
@@ -350,20 +265,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
           </Box>
 
           <Box mb={3}>
-            <label htmlFor="greeting">
-              Set a greeting (requires page refresh to view):
-            </label>
-            <Input
-              id="greeting"
-              type="text"
-              placeholder="Hello! Any questions?"
-              value={greeting}
-              onChange={this.handleChangeGreeting}
-              onBlur={this.updateWidgetSettings}
-            />
-          </Box>
-
-          <Box mb={3}>
             <label htmlFor="away_message">
               Set an away message (will replace greeting message outside working
               hours):
@@ -418,89 +319,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
             </Box>
           </Box>
 
-          <Box mb={1}>
-            <label htmlFor="require_email_upfront">
-              Require unidentified customers to provide their email upfront?{' '}
-              <Popover
-                content={
-                  <Box sx={{maxWidth: 200}}>
-                    This will only show up for anonymous users. To see an
-                    example of what this looks like, visit{' '}
-                    <a
-                      href="https://app.netia.ai"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      https://app.netia.ai
-                    </a>{' '}
-                    and open the chat.
-                  </Box>
-                }
-                title={null}
-              >
-                <InfoCircleTwoTone twoToneColor={colors.primary} />
-              </Popover>
-            </label>
-          </Box>
-          <Box mb={3}>
-            <Switch
-              checked={requireEmailUpfront}
-              onChange={this.handleChangeRequireEmailUpfront}
-            />
-          </Box>
-
-          <Box mb={1}>
-            <label htmlFor="show_agent_availability">
-              Show agent availability?
-            </label>
-          </Box>
-          <Box mb={3}>
-            <Switch
-              checked={showAgentAvailability}
-              onChange={this.handleChangeShowingAgentAvailability}
-            />
-          </Box>
-
-          <Box mb={3}>
-            <label htmlFor="agent_available_text">
-              Set the text displayed when agents are available:
-            </label>
-            <Input
-              id="agent_available_text"
-              type="text"
-              placeholder="We're online right now!"
-              value={agentAvailableText}
-              onChange={this.handleChangeAgentAvailableText}
-              onBlur={this.updateWidgetSettings}
-            />
-          </Box>
-
-          <Box mb={3}>
-            <label htmlFor="agent_unavailable_text">
-              Set the text displayed when agents are unavailable:
-            </label>
-            <Input
-              id="agent_unavailable_text"
-              type="text"
-              placeholder="We're away at the moment."
-              value={agentUnavailableText}
-              onChange={this.handleChangeAgentUnavailableText}
-              onBlur={this.updateWidgetSettings}
-            />
-          </Box>
-
-          <Box mb={1}>
-            <label htmlFor="hide_branding">
-              Hide "Powered by Netia" branding
-            </label>
-          </Box>
-          <Box mb={3}>
-            <Switch
-              checked={isBrandingHidden}
-              onChange={this.handleChangeBrandingVisibility}
-            />
-          </Box>
-
           <Box mb={4}>
             <Title level={4}>Widget Preview</Title>
             <Paragraph>
@@ -513,17 +331,11 @@ class ChatWidgetSettings extends React.Component<Props, State> {
                 subtitle
               )}&primaryColor=${encodeURIComponent(
                 color
-              )}&greeting=${encodeURIComponent(
-                greeting || ''
               )}&awayMessage=${encodeURIComponent(
                 awayMessage || ''
-              )}&showAgentAvailability=${showAgentAvailability}&agentAvailableText=${encodeURIComponent(
-                agentAvailableText || ''
-              )}&agentUnavailableText=${encodeURIComponent(
-                agentUnavailableText || ''
-              )}&requireEmailUpfront=${requireEmailUpfront}&newMessagePlaceholder=${encodeURIComponent(
+              )}&newMessagePlaceholder=${encodeURIComponent(
                 newMessagePlaceholder || ''
-              )}&iconVariant=${iconVariant}&isBrandingHidden=${isBrandingHidden}`}
+              )}&iconVariant=${iconVariant}`}
               style={{
                 width: '100%',
                 height: '500px',
@@ -550,15 +362,9 @@ class ChatWidgetSettings extends React.Component<Props, State> {
             title={title}
             subtitle={subtitle}
             color={color}
-            greeting={greeting}
             awayMessage={awayMessage}
             newMessagePlaceholder={newMessagePlaceholder}
-            showAgentAvailability={showAgentAvailability}
-            agentAvailableText={agentAvailableText}
-            agentUnavailableText={agentUnavailableText}
-            requireEmailUpfront={requireEmailUpfront}
             iconVariant={iconVariant}
-            isBrandingHidden={isBrandingHidden}
           />
         </Box>
 

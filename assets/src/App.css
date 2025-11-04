@@ -1,31 +1,166 @@
 @import '~antd/dist/antd.css';
 
-/* Netia Design System Colors */
+/* Netia Design System - Modern UI inspired by Notion, Linear, Intercom */
 :root {
+  /* Colors - Black, White, Blue palette */
   --netia-primary: #1677ff;
   --netia-primary-dark: #0b63d1;
   --netia-primary-light: #eaf3ff;
-  --netia-fg: #0a0a0a;
-  --netia-muted: #6f7278;
-  --netia-surface: #f5f5f5;
-  --netia-border: #e6e6e6;
+  --netia-primary-hover: #0958d9;
+
+  /* Text Colors */
+  --netia-text-primary: #000000;
+  --netia-text-secondary: #1a1a1a;
+  --netia-text-muted: #6b6b6b;
+  --netia-fg: #1a1a1a;
+  --netia-muted: #6b6b6b;
+
+  /* Background Colors */
+  --netia-bg-white: #ffffff;
+  --netia-bg-surface: #fafafa;
+  --netia-bg-hover: #f5f5f5;
+
+  /* Border Colors */
+  --netia-border: #e5e5e5;
+  --netia-border-light: #f0f0f0;
+  --netia-border-dark: #d9d9d9;
+
+  /* Sidebar */
+  --netia-sidebar-bg: #000000;
+  --netia-sidebar-text: #ffffff;
+  --netia-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --netia-sidebar-active: rgba(255, 255, 255, 0.12);
+
+  /* Spacing - 4px grid system */
+  --netia-space-xs: 4px;
+  --netia-space-sm: 8px;
+  --netia-space-md: 12px;
+  --netia-space-lg: 16px;
+  --netia-space-xl: 20px;
+  --netia-space-2xl: 24px;
+  --netia-space-3xl: 32px;
+
+  /* Border Radius */
+  --netia-radius-sm: 6px;
+  --netia-radius-md: 8px;
+  --netia-radius-lg: 12px;
+
+  /* Shadows - Subtle, modern shadows */
+  --netia-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --netia-shadow-md: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --netia-shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --netia-shadow-xl: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --netia-font-size-xs: 12px;
+  --netia-font-size-sm: 14px;
+  --netia-font-size-base: 16px;
+  --netia-font-size-lg: 18px;
+  --netia-font-size-xl: 20px;
+  --netia-font-size-2xl: 24px;
+  --netia-font-size-3xl: 32px;
+
+  --netia-line-height-tight: 1.4;
+  --netia-line-height-normal: 1.5;
+  --netia-line-height-relaxed: 1.6;
+
+  /* Transitions */
+  --netia-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --netia-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --netia-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Override Ant Design primary color */
-.ant-btn-primary,
-.ant-menu-item-selected,
-.ant-menu-item-active,
+/* Modern Button System - Inspired by Notion, Linear, Intercom */
+.ant-btn {
+  border-radius: var(--netia-radius-md) !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  height: 36px !important;
+  padding: 0 16px !important;
+  transition: all var(--netia-transition-base) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+.ant-btn-primary {
+  background-color: var(--netia-primary) !important;
+  border-color: var(--netia-primary) !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: var(--netia-primary-hover) !important;
+  border-color: var(--netia-primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(22, 119, 255, 0.2) !important;
+}
+
+.ant-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(22, 119, 255, 0.15) !important;
+}
+
+.ant-btn-default {
+  background-color: var(--netia-bg-white) !important;
+  border-color: var(--netia-border) !important;
+  color: var(--netia-text-secondary) !important;
+}
+
+.ant-btn-default:hover,
+.ant-btn-default:focus {
+  background-color: var(--netia-bg-hover) !important;
+  border-color: var(--netia-border-dark) !important;
+  color: var(--netia-text-primary) !important;
+}
+
+.ant-btn-text {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: var(--netia-text-secondary) !important;
+}
+
+.ant-btn-text:hover,
+.ant-btn-text:focus {
+  background-color: var(--netia-bg-hover) !important;
+  color: var(--netia-text-primary) !important;
+}
+
+.ant-btn-sm {
+  height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+}
+
+.ant-btn-lg {
+  height: 40px !important;
+  padding: 0 20px !important;
+  font-size: 15px !important;
+}
+
+/* Menu System - Modern sidebar (only for non-sidebar menus) */
+.ant-menu:not(.ant-menu-dark)
+  .ant-menu-item-selected:not(.Dashboard-Sider .ant-menu-item),
+.ant-menu:not(.ant-menu-dark)
+  .ant-menu-item-active:not(.Dashboard-Sider .ant-menu-item) {
+  background-color: var(--netia-primary) !important;
+  border-color: var(--netia-primary) !important;
+  transition: all var(--netia-transition-base) !important;
+}
+
 .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
 .ant-checkbox-checked .ant-checkbox-inner,
 .ant-switch-checked {
   background-color: var(--netia-primary) !important;
   border-color: var(--netia-primary) !important;
-}
-
-.ant-btn-primary:hover,
-.ant-btn-primary:focus {
-  background-color: var(--netia-primary-dark) !important;
-  border-color: var(--netia-primary-dark) !important;
 }
 
 .ant-link,
@@ -38,16 +173,79 @@
   color: var(--netia-primary-dark) !important;
 }
 
+/* Modern Input System - Clean, minimal */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-picker {
+  border-color: var(--netia-border) !important;
+  border-radius: var(--netia-radius-md) !important;
+  transition: all var(--netia-transition-base) !important;
+  font-size: 14px !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+  background-color: var(--netia-bg-white) !important;
+  color: var(--netia-text-secondary) !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select:hover .ant-select-selector,
+.ant-picker:hover {
+  border-color: var(--netia-border-dark) !important;
+}
+
 .ant-input:focus,
 .ant-input-affix-wrapper:focus,
 .ant-input-affix-wrapper-focused,
 .ant-select-focused .ant-select-selector,
 .ant-picker-focused {
   border-color: var(--netia-primary) !important;
-  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2) !important;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1) !important;
+  outline: none !important;
 }
 
-/* Apply Sora font to headings */
+.ant-input::placeholder,
+.ant-input-affix-wrapper input::placeholder {
+  color: var(--netia-text-muted) !important;
+  opacity: 0.7 !important;
+}
+
+/* Textarea */
+.ant-input[type='textarea'],
+.ant-input-affix-wrapper textarea {
+  min-height: 80px !important;
+  padding: 12px !important;
+  line-height: 1.5 !important;
+}
+
+/* Select Dropdown - Modern styling */
+.ant-select-dropdown {
+  border-radius: var(--netia-radius-md) !important;
+  box-shadow: var(--netia-shadow-lg) !important;
+  border: 1px solid var(--netia-border) !important;
+  padding: 4px !important;
+}
+
+.ant-select-item {
+  border-radius: var(--netia-radius-sm) !important;
+  padding: 8px 12px !important;
+  margin: 2px 0 !important;
+  transition: all var(--netia-transition-base) !important;
+  font-size: 14px !important;
+}
+
+.ant-select-item:hover {
+  background-color: var(--netia-bg-hover) !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: var(--netia-primary-light) !important;
+  color: var(--netia-primary) !important;
+  font-weight: 500 !important;
+}
+
+/* Modern Typography - Sora for headings */
 .ant-typography h1,
 .ant-typography h2,
 .ant-typography h3,
@@ -62,20 +260,227 @@ h5.ant-typography,
 h6.ant-typography {
   font-family: 'Sora', 'Inter', system-ui, sans-serif;
   font-weight: 600;
-  color: var(--netia-fg);
+  color: var(--netia-text-primary);
+  line-height: var(--netia-line-height-tight);
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
 }
 
-/* Update text colors to match Netia design */
+/* Typography colors - Modern, clean */
 .ant-typography {
-  color: var(--netia-fg);
+  color: var(--netia-text-secondary);
+  line-height: var(--netia-line-height-normal);
+  font-size: 14px;
 }
 
 .ant-typography-secondary {
-  color: var(--netia-muted) !important;
+  color: var(--netia-text-muted) !important;
+  font-size: 13px;
+}
+
+/* Divider - Modern, subtle */
+.ant-divider {
+  margin: 16px 0 !important;
+  border-color: var(--netia-border-light) !important;
+}
+
+.ant-divider-horizontal {
+  margin: 20px 0 !important;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Modern Card System */
+.ant-card {
+  border-radius: var(--netia-radius-lg) !important;
+  border: 1px solid var(--netia-border) !important;
+  box-shadow: var(--netia-shadow-sm) !important;
+  transition: all var(--netia-transition-base) !important;
+}
+
+.ant-card:hover {
+  box-shadow: var(--netia-shadow-md) !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--netia-border-light) !important;
+  padding: 16px 20px !important;
+}
+
+.ant-card-body {
+  padding: 20px !important;
+}
+
+/* Modern Table System */
+.ant-table {
+  border-radius: var(--netia-radius-md) !important;
+  overflow: hidden !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: var(--netia-bg-surface) !important;
+  border-bottom: 2px solid var(--netia-border) !important;
+  font-weight: 600 !important;
+  color: var(--netia-text-primary) !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.02em !important;
+  padding: 12px 16px !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--netia-border-light) !important;
+  padding: 16px !important;
+  font-size: 14px !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: var(--netia-bg-hover) !important;
+}
+
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background-color: var(--netia-primary-light) !important;
+}
+
+/* Modern Modal System */
+.ant-modal {
+  border-radius: var(--netia-radius-lg) !important;
+  overflow: hidden !important;
+}
+
+.ant-modal-content {
+  border-radius: var(--netia-radius-lg) !important;
+  box-shadow: var(--netia-shadow-xl) !important;
+  border: 1px solid var(--netia-border) !important;
+}
+
+.ant-modal-header {
+  border-bottom: 1px solid var(--netia-border-light) !important;
+  padding: 20px 24px !important;
+  background-color: var(--netia-bg-white) !important;
+}
+
+.ant-modal-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--netia-text-primary) !important;
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+}
+
+.ant-modal-body {
+  padding: 24px !important;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid var(--netia-border-light) !important;
+  padding: 16px 24px !important;
+  background-color: var(--netia-bg-surface) !important;
+}
+
+/* Modern Tag System */
+.ant-tag {
+  border-radius: var(--netia-radius-sm) !important;
+  border: 1px solid var(--netia-border) !important;
+  padding: 2px 8px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  height: 24px !important;
+  line-height: 20px !important;
+  background-color: var(--netia-bg-white) !important;
+  color: var(--netia-text-secondary) !important;
+}
+
+/* Modern Badge System */
+.ant-badge-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Modern Tooltip */
+.ant-tooltip-inner {
+  border-radius: var(--netia-radius-sm) !important;
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Modern Popover */
+.ant-popover-inner {
+  border-radius: var(--netia-radius-md) !important;
+  box-shadow: var(--netia-shadow-lg) !important;
+  border: 1px solid var(--netia-border) !important;
+}
+
+/* Modern Dropdown */
+.ant-dropdown {
+  border-radius: var(--netia-radius-md) !important;
+  box-shadow: var(--netia-shadow-lg) !important;
+  border: 1px solid var(--netia-border) !important;
+  padding: 4px !important;
+}
+
+.ant-dropdown-menu-item {
+  border-radius: var(--netia-radius-sm) !important;
+  padding: 8px 12px !important;
+  margin: 2px 0 !important;
+  transition: all var(--netia-transition-base) !important;
+  font-size: 14px !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: var(--netia-bg-hover) !important;
+}
+
+/* Modern Tabs */
+.ant-tabs {
+  color: var(--netia-text-secondary) !important;
+}
+
+.ant-tabs-tab {
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all var(--netia-transition-base) !important;
+  border-radius: var(--netia-radius-sm) var(--netia-radius-sm) 0 0 !important;
+}
+
+.ant-tabs-tab:hover {
+  color: var(--netia-primary) !important;
+}
+
+.ant-tabs-tab-active {
+  color: var(--netia-primary) !important;
+  font-weight: 600 !important;
+}
+
+.ant-tabs-ink-bar {
+  background-color: var(--netia-primary) !important;
+  height: 2px !important;
+}
+
+/* Modern List */
+.ant-list-item {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid var(--netia-border-light) !important;
+}
+
+.ant-list-item:last-child {
+  border-bottom: none !important;
+}
+
+.ant-list-item-meta-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--netia-text-primary) !important;
+  margin-bottom: 4px !important;
+}
+
+.ant-list-item-meta-description {
+  font-size: 13px !important;
+  color: var(--netia-text-muted) !important;
 }
 
 html,
@@ -84,9 +489,13 @@ body {
     'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   font-weight: 400;
+  font-size: var(--netia-font-size-sm);
+  line-height: var(--netia-line-height-normal);
+  color: var(--netia-text-secondary);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--netia-bg-white);
 }
 
 h1,
@@ -98,6 +507,9 @@ h6 {
   font-family: 'Sora', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Roboto', sans-serif;
   font-weight: 600;
+  color: var(--netia-text-primary);
+  line-height: var(--netia-line-height-tight);
+  letter-spacing: -0.01em;
 }
 
 #root {
@@ -209,33 +621,242 @@ a.RelatedCustomerConversation--link:hover {
   border-color: #d9d9d9;
 }
 
+/* Modern Search Input - Clean, minimal */
 .ConversationsSearchInput {
-  border-top: 1px solid rgb(240, 240, 240);
+  border-top: 1px solid var(--netia-border-light);
   border-right: none;
   border-bottom: none;
   border-left: none;
+  border-radius: 0;
+  transition: all var(--netia-transition-base);
+  background-color: var(--netia-bg-white) !important;
 }
 
 .ConversationsSearchInput:hover,
 .ConversationsSearchInput:active,
 .ConversationsSearchInput:focus {
-  border-color: rgb(240, 240, 240);
+  border-color: var(--netia-border-light);
+  background-color: var(--netia-bg-white) !important;
 }
 
 .ConversationsSearchInput.ant-input-affix-wrapper:focus,
 .ant-input-affix-wrapper-focused {
-  box-shadow: rgb(0 0 0 / 10%) 0px 0px 4px;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.05);
 }
 
 .ConversationsSearchInput .ant-input-search-icon::before {
-  border-left: 1px solid rgb(240, 240, 240);
+  border-left: 1px solid var(--netia-border-light);
 }
 
+.ConversationsSearchInput .ant-input {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.ConversationsSearchInput .ant-input:focus {
+  box-shadow: none !important;
+}
+
+/* Modern Sidebar - Dark, clean, inspired by Notion/Linear/Intercom */
 .Dashboard-Sider {
-  background: #000c17;
+  background: var(--netia-sidebar-bg) !important;
+  border-right: none !important;
+  box-shadow: 1px 0 0 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 .Dashboard-Sider ul.ant-menu.ant-menu-dark,
 .Dashboard-Sider ul.ant-menu.ant-menu-dark .ant-menu-sub {
-  background: transparent;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Modern Sidebar Menu Items - Clean, minimal, generous spacing */
+.Dashboard-Sider .ant-menu-item {
+  border-radius: var(--netia-radius-md) !important;
+  margin: 4px 0 !important;
+  padding: 0 14px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  transition: all var(--netia-transition-base) !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.Dashboard-Sider .ant-menu-item:hover {
+  background-color: var(--netia-sidebar-hover) !important;
+  transform: translateX(2px);
+}
+
+.Dashboard-Sider .ant-menu-item-selected {
+  background-color: var(--netia-sidebar-active) !important;
+  font-weight: 500 !important;
+  position: relative !important;
+}
+
+.Dashboard-Sider .ant-menu-item-selected::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 3px !important;
+  height: 20px !important;
+  background-color: var(--netia-primary) !important;
+  border-radius: 0 2px 2px 0 !important;
+}
+
+.Dashboard-Sider .ant-menu-item-selected::after {
+  display: none !important;
+}
+
+.Dashboard-Sider .ant-menu-item a {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  transition: all var(--netia-transition-base) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  line-height: 1.5 !important;
+}
+
+.Dashboard-Sider .ant-menu-item-selected a {
+  font-weight: 500 !important;
+  color: var(--netia-sidebar-text) !important;
+}
+
+.Dashboard-Sider .ant-menu-item:hover a {
+  color: var(--netia-sidebar-text) !important;
+}
+
+.Dashboard-Sider .ant-menu-item-icon {
+  font-size: 18px !important;
+  width: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  opacity: 0.85 !important;
+  transition: all var(--netia-transition-base) !important;
+}
+
+.Dashboard-Sider .ant-menu-item-selected .ant-menu-item-icon {
+  opacity: 1 !important;
+}
+
+.Dashboard-Sider .ant-menu-item:hover .ant-menu-item-icon {
+  opacity: 1 !important;
+}
+
+/* Modern SubMenu */
+.Dashboard-Sider .ant-menu-submenu {
+  margin: 4px 0 !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu-title {
+  border-radius: var(--netia-radius-md) !important;
+  padding: 0 14px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  transition: all var(--netia-transition-base) !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu-title:hover {
+  background-color: var(--netia-sidebar-hover) !important;
+  color: var(--netia-sidebar-text) !important;
+  transform: translateX(2px);
+}
+
+.Dashboard-Sider .ant-menu-submenu-open > .ant-menu-submenu-title {
+  background-color: var(--netia-sidebar-active) !important;
+  color: var(--netia-sidebar-text) !important;
+  font-weight: 500 !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-size: 12px !important;
+  transition: all var(--netia-transition-base) !important;
+  margin-left: auto !important;
+}
+
+.Dashboard-Sider
+  .ant-menu-submenu-open
+  > .ant-menu-submenu-title
+  .ant-menu-submenu-arrow {
+  color: var(--netia-sidebar-text) !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu {
+  background: transparent !important;
+  padding-left: 20px !important;
+  margin-top: 4px !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item {
+  margin-left: 0 !important;
+  padding-left: 46px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 13px !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item a {
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item {
+  background-color: transparent !important;
+  border: none !important;
+  border-color: transparent !important;
+}
+
+.Dashboard-Sider .ant-menu-dark .ant-menu-submenu .ant-menu-item-selected,
+.Dashboard-Sider
+  .ant-menu-dark
+  .ant-menu-submenu
+  .ant-menu-item.ant-menu-item-selected {
+  background-color: var(--netia-sidebar-active) !important;
+  border: none !important;
+  border-color: transparent !important;
+  font-weight: 500 !important;
+}
+
+/* Override any blue color from global menu styles */
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item-selected,
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item.ant-menu-item-selected {
+  background-color: var(--netia-sidebar-active) !important;
+  border: none !important;
+  border-color: transparent !important;
+  font-weight: 500 !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item-selected a,
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item.ant-menu-item-selected a {
+  color: var(--netia-sidebar-text) !important;
+  font-weight: 500 !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item:hover {
+  background-color: var(--netia-sidebar-hover) !important;
+  border: none !important;
+  border-color: transparent !important;
+}
+
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item-active,
+.Dashboard-Sider .ant-menu-submenu .ant-menu-item.ant-menu-item-active {
+  background-color: var(--netia-sidebar-hover) !important;
+  border: none !important;
+  border-color: transparent !important;
 }

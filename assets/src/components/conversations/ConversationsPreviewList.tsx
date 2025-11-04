@@ -93,7 +93,10 @@ const ConversationsPreviewList = ({
         })
       ) : (
         <Box p={3}>
-          <Text type="secondary">
+          <Text
+            type="secondary"
+            style={{fontSize: '14px', color: colors.textMuted}}
+          >
             {loading ? 'Loading...' : 'No conversations'}
           </Text>
         </Box>

@@ -19,6 +19,11 @@ import LinkOutlined from '@ant-design/icons/LinkOutlined';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import MailOutlined from '@ant-design/icons/MailOutlined';
+import RocketOutlined from '@ant-design/icons/RocketOutlined';
+import MessageOutlined from '@ant-design/icons/MessageOutlined';
+import FileTextOutlined from '@ant-design/icons/FileTextOutlined';
+import BarChartOutlined from '@ant-design/icons/BarChartOutlined';
+import PoweroffOutlined from '@ant-design/icons/PoweroffOutlined';
 import PaperClipOutlined from '@ant-design/icons/PaperClipOutlined';
 import PhoneOutlined from '@ant-design/icons/PhoneOutlined';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
@@ -59,6 +64,11 @@ export {
   LoadingOutlined,
   LogoutOutlined,
   MailOutlined,
+  RocketOutlined,
+  MessageOutlined,
+  FileTextOutlined,
+  BarChartOutlined,
+  PoweroffOutlined,
   PaperClipOutlined,
   PhoneOutlined,
   PlusOutlined,

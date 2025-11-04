@@ -91,7 +91,7 @@ const InboxesDashboard = () => {
   }, []);
 
   return (
-    <Layout style={{background: colors.white}}>
+    <Layout style={{background: colors.bgWhite}}>
       <Sider
         className="Dashboard-Sider"
         width={INBOXES_DASHBOARD_SIDER_WIDTH}
@@ -129,7 +129,7 @@ const InboxesDashboard = () => {
 
       <Layout
         style={{
-          background: colors.white,
+          background: colors.bgWhite,
           marginLeft: INBOXES_DASHBOARD_SIDER_WIDTH,
         }}
       >

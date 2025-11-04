@@ -110,22 +110,27 @@ type StepProps = {
 };
 
 const Step = ({completed, ctaHref, ctaText, text, value}: StepProps) => {
-  const opacity = completed ? 0.6 : 1;
+  const opacity = completed ? 0.7 : 1;
 
   return (
     <>
-      <Box p={3} sx={{display: 'flex', alignItems: 'center'}}>
+      <Box
+        p={4}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+          borderRadius: '12px',
+          '&:hover': {
+            backgroundColor: colors.bgHover,
+          },
+        }}
+      >
         <StepIcon value={value} completed={completed} />
-        <Box mx={3} mr={4} sx={{flexGrow: 1, opacity}}>
-          {text}
-        </Box>
-        <Link
-          to={ctaHref}
-          style={{
-            alignContent: 'flex-end',
-          }}
-        >
-          <Button type="default">{ctaText}</Button>
+        <Box sx={{flexGrow: 1, opacity, minWidth: 0}}>{text}</Box>
+        <Link to={ctaHref}>
+          <Button type={completed ? 'default' : 'primary'}>{ctaText}</Button>
         </Link>
       </Box>
       <Divider />
@@ -139,35 +144,40 @@ type StepIconProps = {
 };
 
 const StepIcon = ({completed, value}: StepIconProps) => {
-  const styles = {
+  const baseStyles = {
     alignItems: 'center',
     borderRadius: '50%',
     display: 'flex',
-    height: '32px',
+    height: '36px',
     justifyContent: 'center',
-    minWidth: '32px',
-    width: '32px',
+    minWidth: '36px',
+    width: '36px',
+    fontSize: '14px',
+    fontWeight: 600,
+    flexShrink: 0,
   };
 
   if (completed) {
     return (
       <Box
         sx={{
-          ...styles,
+          ...baseStyles,
           backgroundColor: colors.primary,
           color: colors.white,
+          boxShadow: '0 1px 2px 0 rgba(22, 119, 255, 0.2)',
         }}
       >
-        <CheckOutlined />
+        <CheckOutlined style={{fontSize: 16}} />
       </Box>
     );
   } else {
     return (
       <Box
         sx={{
-          ...styles,
-          border: `1px solid ${colors.primary}`,
+          ...baseStyles,
+          border: `2px solid ${colors.primary}`,
           color: colors.primary,
+          backgroundColor: colors.primaryLight,
         }}
       >
         {value}

@@ -58,11 +58,12 @@ const {Header, Content, Footer, Sider} = Layout;
 const {RangePicker} = DatePicker;
 
 export const colors = {
-  white: '#fff',
-  black: '#000',
+  white: '#ffffff',
+  black: '#000000',
   primary: '#1677ff', // Netia primary blue
   primaryLight: '#eaf3ff', // primary-50
   primaryDark: '#0b63d1', // primary-600
+  primaryHover: '#0958d9',
   green: green[5],
   red: red[5],
   gold: gold[5],
@@ -72,23 +73,40 @@ export const colors = {
   magenta: magenta[5],
   blue: blue, // expose all blues
   gray: grey, // expose all grays
-  text: '#0a0a0a', // Netia foreground color
-  secondary: '#6f7278', // Netia muted color
-  muted: '#6f7278',
-  surface: '#f5f5f5',
-  border: '#e6e6e6',
+  // Modern text colors
+  textPrimary: '#000000',
+  textSecondary: '#1a1a1a',
+  textMuted: '#6b6b6b',
+  text: '#1a1a1a', // Modern foreground color
+  secondary: '#6b6b6b', // Modern muted color
+  muted: '#6b6b6b',
+  // Modern background colors
+  bgWhite: '#ffffff',
+  bgSurface: '#fafafa',
+  bgHover: '#f5f5f5',
+  surface: '#fafafa',
+  // Modern border colors
+  border: '#e5e5e5',
+  borderLight: '#f0f0f0',
+  borderDark: '#d9d9d9',
+  // Sidebar colors
+  sidebarBg: '#000000',
+  sidebarText: '#ffffff',
+  sidebarHover: 'rgba(255, 255, 255, 0.08)',
+  sidebarActive: 'rgba(255, 255, 255, 0.12)',
+  // Legacy colors (for backward compatibility)
   note: '#fff1b8',
   noteSecondary: 'rgba(254,237,175,.4)',
 };
 
 export const shadows = {
-  primary:
-    '0 0 #0000, 0 0 #0000, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-  small: '0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  // Modern, subtle shadows inspired by Notion, Linear, Intercom
+  small: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  primary: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
   medium:
-    '0 0 #0000, 0 0 #0000, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
   large:
-    '0 0 #0000, 0 0 #0000, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
 };
 
 export const StandardSyntaxHighlighter: FunctionComponent<{
@@ -123,10 +141,11 @@ export const Card = ({
   return (
     <Box
       sx={{
-        bg: colors.white,
-        border: '1px solid rgba(0, 0, 0, .06)',
-        borderRadius: 4,
+        bg: colors.bgWhite,
+        border: `1px solid ${colors.border}`,
+        borderRadius: 8, // Modern border radius
         boxShadow,
+        transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
         ...sx,
       }}
       {...props}
@@ -150,9 +169,15 @@ export const Container = ({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
+        minHeight: '100%',
+        position: 'relative',
+        zIndex: 1,
       }}
     >
-      <Box p={4} sx={{flex: 1, width: '100%', maxWidth: 1080, ...sx}}>
+      <Box
+        p={4}
+        sx={{flex: 1, width: '100%', maxWidth: 1080, ...sx, textAlign: 'left'}}
+      >
         {children}
       </Box>
     </Flex>

@@ -537,18 +537,24 @@ export const ConversationsDashboard = ({
   }
 
   return (
-    <Layout style={{background: colors.white}}>
+    <Layout style={{background: colors.bgWhite}}>
       <Sider
         theme="light"
         width={CONVERSATIONS_DASHBOARD_SIDER_WIDTH}
         style={{
-          borderRight: '1px solid #f0f0f0',
+          borderRight: `1px solid ${colors.borderLight}`,
           overflow: 'auto',
           height: '100vh',
           position: 'fixed',
+          background: colors.bgWhite,
         }}
       >
-        <Box sx={{position: 'relative', borderBottom: '1px solid #f0f0f0'}}>
+        <Box
+          sx={{
+            position: 'relative',
+            borderBottom: `1px solid ${colors.borderLight}`,
+          }}
+        >
           {!!inbox?.id && (
             <Box sx={{position: 'absolute', top: '6px', right: '6px'}}>
               <Tooltip title="Configure inbox">
@@ -565,7 +571,16 @@ export const ConversationsDashboard = ({
             </Box>
           )}
           <Box px={3} py={3}>
-            <Title level={3} style={{marginBottom: 0, marginTop: 8}}>
+            <Title
+              level={3}
+              style={{
+                marginBottom: 0,
+                marginTop: 8,
+                fontSize: '18px',
+                fontWeight: 600,
+                color: colors.textPrimary,
+              }}
+            >
               {title}
             </Title>
           </Box>
@@ -598,7 +613,7 @@ export const ConversationsDashboard = ({
       <Layout
         style={{
           marginLeft: CONVERSATIONS_DASHBOARD_SIDER_WIDTH,
-          background: colors.white,
+          background: colors.bgWhite,
         }}
       >
         {conversation && (

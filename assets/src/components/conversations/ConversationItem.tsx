@@ -63,17 +63,34 @@ const ConversationItem = ({
       id={`ConversationItem--${id}`}
       p={3}
       sx={{
-        opacity: isClosed ? 0.8 : 1,
-        borderBottom: '1px solid #f0f0f0',
-        borderLeft: isHighlighted ? `2px solid ${colors.primary}` : null,
-        background: isHighlighted ? colors.blue[0] : null,
+        opacity: isClosed ? 0.7 : 1,
+        borderBottom: `1px solid ${colors.borderLight}`,
+        borderLeft: isHighlighted
+          ? `3px solid ${colors.primary}`
+          : '3px solid transparent',
+        background: isHighlighted ? colors.primaryLight : colors.bgWhite,
         cursor: 'pointer',
+        transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+        borderRadius: isHighlighted ? '0 8px 8px 0' : '0',
+        '&:hover': {
+          background: isHighlighted ? colors.primaryLight : colors.bgHover,
+          borderLeft: `3px solid ${
+            isHighlighted ? colors.primary : colors.borderDark
+          }`,
+        },
       }}
       onClick={() => onSelectConversation(id)}
     >
-      <Flex mb={3} sx={{justifyContent: 'space-between', alignItems: 'center'}}>
-        <Flex sx={{alignItems: 'center'}}>
-          <Box mr={2}>
+      <Flex
+        mb={2}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '12px',
+        }}
+      >
+        <Flex sx={{alignItems: 'center', gap: '12px', flex: 1, minWidth: 0}}>
+          <Box>
             <Flex
               sx={{
                 bg:
@@ -104,6 +121,9 @@ const ConversationItem = ({
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
+              fontSize: '14px',
+              fontWeight: isRead ? 500 : 600,
+              color: colors.textSecondary,
             }}
           >
             {name || email || 'Anonymous User'}
@@ -141,9 +161,23 @@ const ConversationItem = ({
           }}
         >
           {isRead ? (
-            <Text type="secondary">{preview}</Text>
+            <Text
+              type="secondary"
+              style={{fontSize: '13px', color: colors.textMuted}}
+            >
+              {preview}
+            </Text>
           ) : (
-            <Text strong>{preview}</Text>
+            <Text
+              strong
+              style={{
+                fontSize: '13px',
+                color: colors.textSecondary,
+                fontWeight: 500,
+              }}
+            >
+              {preview}
+            </Text>
           )}
         </Box>
       </Flex>

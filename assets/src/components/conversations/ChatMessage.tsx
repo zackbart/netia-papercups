@@ -124,6 +124,8 @@ const ChatMessage = ({
             sx={{
               background: isPrivate ? colors.note : colors.primary,
               maxWidth: '80%',
+              borderRadius: '12px',
+              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
             }}
             attachmentTextColor={isPrivate ? colors.text : colors.white}
             attachments={attachments}
@@ -132,9 +134,19 @@ const ChatMessage = ({
         {shouldDisplayTimestamp && (
           <Flex m={1} sx={{justifyContent: 'flex-end'}}>
             {formattedSeenAt ? (
-              <Text type="secondary">Seen {formattedSeenAt}</Text>
+              <Text
+                type="secondary"
+                style={{fontSize: '12px', color: colors.textMuted}}
+              >
+                Seen {formattedSeenAt}
+              </Text>
             ) : (
-              <Text type="secondary">Sent {formattedSentAt}</Text>
+              <Text
+                type="secondary"
+                style={{fontSize: '12px', color: colors.textMuted}}
+              >
+                Sent {formattedSentAt}
+              </Text>
             )}
           </Flex>
         )}
@@ -168,15 +180,22 @@ const ChatMessage = ({
         <ChatMessageBox
           message={message}
           sx={{
-            background: isPrivate ? colors.note : 'rgb(245, 245, 245)',
+            background: isPrivate ? colors.note : colors.bgSurface,
             maxWidth: '80%',
+            borderRadius: '12px',
+            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
           }}
           attachments={attachments}
         />
       </Flex>
       {shouldDisplayTimestamp && (
         <Flex my={1} mx={2} pl={4} sx={{justifyContent: 'flex-start'}}>
-          <Text type="secondary">Sent {formattedSentAt}</Text>
+          <Text
+            type="secondary"
+            style={{fontSize: '12px', color: colors.textMuted}}
+          >
+            Sent {formattedSentAt}
+          </Text>
         </Flex>
       )}
     </Box>

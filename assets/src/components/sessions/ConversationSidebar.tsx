@@ -43,9 +43,9 @@ class ConversationSidebar extends React.Component<Props, any> {
           width: '100%',
           height: '100%',
           flexDirection: 'column',
-          bg: colors.white,
-          border: `1px solid rgba(0,0,0,.06)`,
-          boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 4px',
+          bg: colors.bgWhite,
+          border: `1px solid ${colors.border}`,
+          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
           flex: 1,
         }}
       >
@@ -72,11 +72,8 @@ const ConversationSidebarWrapper = ({
   conversationId: string;
 }) => {
   const {currentUser} = useAuth();
-  const {
-    loading,
-    fetchConversationById,
-    getConversationById,
-  } = useConversations();
+  const {loading, fetchConversationById, getConversationById} =
+    useConversations();
 
   React.useEffect(() => {
     Promise.all([fetchConversationById(conversationId)]);

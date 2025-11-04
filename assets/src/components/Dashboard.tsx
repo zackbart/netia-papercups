@@ -21,6 +21,11 @@ import {
   SettingOutlined,
   SmileOutlined,
   VideoCameraOutlined,
+  RocketOutlined,
+  MessageOutlined,
+  FileTextOutlined,
+  BarChartOutlined,
+  PoweroffOutlined,
 } from './icons';
 import {
   BASE_URL,
@@ -285,21 +290,35 @@ const Dashboard = () => {
       <Sider
         width={DASHBOARD_COLLAPSED_SIDER_WIDTH}
         collapsed={true}
+        className="Dashboard-Sider"
         style={{
           overflow: 'auto',
           height: '100vh',
           position: 'fixed',
           left: 0,
-          color: colors.white,
+          color: colors.sidebarText,
+          background: colors.sidebarBg,
         }}
       >
-        <Flex sx={{flexDirection: 'column', height: '100%'}}>
-          <Box py={3} sx={{flex: 1}}>
-            <Menu selectedKeys={[section, key]} mode="inline" theme="dark">
+        <Flex
+          sx={{flexDirection: 'column', height: '100%', padding: '20px 12px'}}
+        >
+          {/* Main Navigation */}
+          <Box sx={{flex: 1, marginBottom: '24px'}}>
+            <Menu
+              selectedKeys={[section, key]}
+              mode="inline"
+              theme="dark"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+              }}
+            >
               {isAdminUser && (
                 <Menu.Item
                   key="getting-started"
-                  icon={<GlobalOutlined />}
+                  icon={<RocketOutlined style={{fontSize: 18}} />}
                   title="Getting started"
                 >
                   <Link to="/getting-started">Getting started</Link>
@@ -309,12 +328,14 @@ const Dashboard = () => {
               <Menu.Item
                 danger={shouldHighlightInbox}
                 key="conversations"
-                icon={<MailOutlined />}
+                icon={<MessageOutlined style={{fontSize: 18}} />}
                 title="Configure AI Assistant"
               >
                 <Link
                   to={
-                    primaryInboxId ? `/inboxes/${primaryInboxId}` : '/inboxes'
+                    primaryInboxId
+                      ? `/inboxes/${primaryInboxId}/chat-widget`
+                      : '/settings/chat-widget'
                   }
                 >
                   Configure AI Assistant
@@ -326,7 +347,7 @@ const Dashboard = () => {
               {isAdminUser && (
                 <Menu.Item
                   title="Business Context"
-                  icon={<SmileOutlined />}
+                  icon={<FileTextOutlined style={{fontSize: 18}} />}
                   key="business-context"
                 >
                   <Link to="/settings/business-context">Business Context</Link>
@@ -335,7 +356,7 @@ const Dashboard = () => {
 
               <Menu.Item
                 title="Reporting"
-                icon={<LineChartOutlined />}
+                icon={<BarChartOutlined style={{fontSize: 18}} />}
                 key="reporting"
               >
                 <Link to="/reporting">Reporting</Link>
@@ -346,7 +367,7 @@ const Dashboard = () => {
               {isAdminUser ? (
                 <Menu.SubMenu
                   key="settings"
-                  icon={<SettingOutlined />}
+                  icon={<SettingOutlined style={{fontSize: 18}} />}
                   title="Settings"
                 >
                   <Menu.Item key="account">
@@ -358,12 +379,6 @@ const Dashboard = () => {
                   <Menu.Item key="profile">
                     <Link to="/settings/profile">My profile</Link>
                   </Menu.Item>
-                  <Menu.Item key="inboxes" title="Inboxes">
-                    <Link to="/inboxes">Inboxes</Link>
-                  </Menu.Item>
-                  <Menu.Item key="saved-replies">
-                    <Link to="/settings/saved-replies">Saved replies</Link>
-                  </Menu.Item>
                   {shouldDisplayBilling && (
                     <Menu.Item key="billing">
                       <Link to="/settings/billing">Billing</Link>
@@ -373,26 +388,38 @@ const Dashboard = () => {
               ) : (
                 <Menu.SubMenu
                   key="settings"
-                  icon={<SettingOutlined />}
+                  icon={<SettingOutlined style={{fontSize: 18}} />}
                   title="Settings"
                 >
                   <Menu.Item key="profile">
                     <Link to="/settings/profile">My profile</Link>
-                  </Menu.Item>
-                  <Menu.Item key="saved-replies">
-                    <Link to="/settings/saved-replies">Saved replies</Link>
                   </Menu.Item>
                 </Menu.SubMenu>
               )}
             </Menu>
           </Box>
 
-          <Box py={3}>
-            <Menu mode="inline" theme="dark" selectable={false}>
+          {/* Bottom Actions */}
+          <Box
+            sx={{
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            }}
+          >
+            <Menu
+              mode="inline"
+              theme="dark"
+              selectable={false}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+              }}
+            >
               {shouldDisplayChat(pathname) && (
                 <Menu.Item
                   title="Chat with us!"
-                  icon={<SmileOutlined />}
+                  icon={<MessageOutlined style={{fontSize: 18}} />}
                   key="chat"
                   onClick={() => window.open(`${BASE_URL}/chat`, '_blank')}
                 >
@@ -401,7 +428,7 @@ const Dashboard = () => {
               )}
               <Menu.Item
                 title="Log out"
-                icon={<LogoutOutlined />}
+                icon={<PoweroffOutlined style={{fontSize: 18}} />}
                 key="logout"
                 onClick={logout}
               >
@@ -415,7 +442,7 @@ const Dashboard = () => {
       <Layout
         style={{
           marginLeft: DASHBOARD_COLLAPSED_SIDER_WIDTH,
-          background: colors.white,
+          background: colors.bgWhite,
         }}
       >
         <Routes>
