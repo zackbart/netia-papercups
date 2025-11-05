@@ -2,9 +2,12 @@ defmodule ChatApiWeb.WidgetController do
   use ChatApiWeb, :controller
 
   def chat(conn, _params) do
-    html(conn, chat_html())
+    conn
+    |> put_layout(false)
+    |> render("chat.html")
   end
 
+  # Keep old method for reference, but using template now
   defp chat_html do
     """
     <!DOCTYPE html>

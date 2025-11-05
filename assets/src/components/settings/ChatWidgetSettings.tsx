@@ -25,6 +25,7 @@ import {formatUserExternalId} from '../../utils';
 import {Link} from 'react-router-dom';
 import UniversalEmbedCode from './UniversalEmbedCode';
 import PlatformInstructions from './PlatformInstructions';
+import Spinner from '../Spinner';
 
 type Props = {inbox_id?: string};
 type State = {
@@ -186,7 +187,18 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     } = this.state;
 
     if (!accountId) {
-      return null; // TODO: better loading state
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
+          <Spinner size={40} />
+        </Box>
+      );
     }
 
     const customer = this.getUserMetadata();
@@ -305,6 +317,7 @@ class ChatWidgetSettings extends React.Component<Props, State> {
                 height: '500px',
                 border: '1px solid #ddd',
                 borderRadius: '8px',
+                pointerEvents: 'auto',
               }}
               title="Chat Widget Preview"
             />

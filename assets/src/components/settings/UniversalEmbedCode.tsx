@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import {Box} from 'theme-ui';
 import {StandardSyntaxHighlighter} from '../common';
-import {FRONTEND_BASE_URL} from '../../config';
+import {BASE_URL} from '../../config';
 
 type UniversalEmbedCodeProps = {
   accountId: string;
@@ -80,7 +80,7 @@ const UniversalEmbedCode: FunctionComponent<UniversalEmbedCodeProps> = ({
   button.addEventListener('click', function() {
     if (!iframe) {
       iframe = document.createElement('iframe');
-      iframe.src = '${FRONTEND_BASE_URL}/chat?${params.toString()}';
+      iframe.src = '${BASE_URL}/chat?${params.toString()}';
       iframe.style.cssText = \`
         position: fixed;
         bottom: 90px;

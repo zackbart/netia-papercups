@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netia Chat Widget Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Netia Chat Widget Test Page</h1>
+        <p>This is a test page to demonstrate the Netia chat widget. Click the chat button in the bottom right corner to open the chat widget.</p>
+        <p>The widget is embedded using the Universal Embed Code and will connect to your Netia chat instance.</p>
+    </div>
+
+    <!-- Netia Chat Widget -->
+    <div id="netia-chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+      <button id="netia-chat-button" style="
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #1677ff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 24px;
+        transition: transform 0.2s;
+      ">💬</button>
+    </div>
+
+    <script>
+    (function() {
+      const button = document.getElementById('netia-chat-button');
+      const widget = document.getElementById('netia-chat-widget');
+      let iframe = null;
+      
+      button.addEventListener('click', function() {
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.src = 'http://localhost:4000/chat?token=c1acb4ad-84e2-467a-933a-3826c6eb553f&inbox=977b6fcd-9416-4714-aaf7-51dbe8c7f67b&title=Welcome+to+Test+Company&subtitle=Ask+us+anything+in+the+chat+window+below+%F0%9F%98%8A&primaryColor=%231677ff&newMessagePlaceholder=Start+typing...&showAgentAvailability=0&requireEmailUpfront=0&iconVariant=outlined&isBrandingHidden=false';
+          iframe.style.cssText = `
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 120px);
+          `;
+          document.body.appendChild(iframe);
+          button.innerHTML = '✕';
+        } else {
+          const isVisible = iframe.style.display !== 'none';
+          iframe.style.display = isVisible ? 'none' : 'block';
+          button.innerHTML = isVisible ? '💬' : '✕';
+        }
+      });
+      
+      button.addEventListener('mouseenter', function() {
+        button.style.transform = 'scale(1.1)';
+      });
+      
+      button.addEventListener('mouseleave', function() {
+        button.style.transform = 'scale(1)';
+      });
+    })();
+    </script>
+</body>
+</html>
+

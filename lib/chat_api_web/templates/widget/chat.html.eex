@@ -13,14 +13,251 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #fff;
+            background: #f5f5f5;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #chat-widget-root {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .chat-header {
+            background: var(--primary-color, #1677ff);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .chat-header .bot-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .chat-header .bot-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .chat-header .bot-label {
+            font-size: 12px;
+            opacity: 0.85;
+            margin: 6px 0 0 0;
+            line-height: 1;
+        }
+        
+        /* Messages Area */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            max-width: 80%;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .message.user .message-avatar {
+            display: none;
+        }
+        
+        .message .message-avatar-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: center;
+        }
+        
+        .message .message-avatar-icon span {
+            width: 100%;
+            height: 1.5px;
+            background: #000;
+            border-radius: 1px;
+        }
+        
+        .message .message-avatar-icon span:nth-child(1) {
+            width: 60%;
+        }
+        
+        .message .message-avatar-icon span:nth-child(2) {
+            width: 80%;
+        }
+        
+        .message .message-avatar-icon span:nth-child(3) {
+            width: 100%;
+        }
+        
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #000;
+        }
+        
+        .message.bot .message-bubble {
+            background: #e8e8e8;
+            color: #000;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.user .message-bubble {
+            background: var(--primary-color, #1677ff);
+            color: white;
+            border-bottom-right-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        
+        /* Input Area */
+        .input-container {
+            background: #f5f5f5;
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        
+        .input-wrapper {
+            flex: 1;
+        }
+        
+        #message-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+        }
+        
+        #message-input:focus {
+            border-color: var(--primary-color, #1677ff);
+        }
+        
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: fit-content;
+            padding: 10px 14px;
+            background: #e8e8e8;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typingPulse 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingPulse {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            #message-input {
+                font-size: 16px !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="chat-widget-root"></div>
+    <div id="chat-widget-root">
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-name" id="bot-name"></div>
+                <div class="bot-label" id="bot-subtitle"></div>
+            </div>
+        </div>
+        
+        <div class="messages-container" id="messages-container">
+            <!-- Messages will be added here -->
+        </div>
+        
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    placeholder="Type your message..."
+                    autocomplete="off"
+                />
+            </div>
+        </div>
+    </div>
+    
     <script>
         // Extract config from URL params
         const params = new URLSearchParams(window.location.search);
@@ -55,55 +292,76 @@
             conversationId: null
         };
 
+        // Set CSS variable for primary color
+        document.documentElement.style.setProperty('--primary-color', config.primaryColor);
+        
+        // Set bot name and subtitle in header
+        document.getElementById('bot-name').textContent = config.title;
+        document.getElementById('bot-subtitle').textContent = config.subtitle || '';
+
         console.log('Chat widget initialized with config:', config);
 
-        // This will be replaced with the actual chat widget component
-        // For now, just render a simple placeholder
-        const rootEl = document.getElementById('chat-widget-root');
-        rootEl.innerHTML = 
-            '<div style="padding: 20px; height: 100vh; display: flex; flex-direction: column;">' +
-                '<div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">' +
-                    '<h2 style="color: ' + config.primaryColor + '; margin: 0;">' + config.title + '</h2>' +
-                    '<p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">' + config.subtitle + '</p>' +
-                '</div>' +
-                '<div id="messages" style="flex: 1; overflow-y: auto; padding: 10px 0;"></div>' +
-                '<div style="display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid #eee;">' +
-                    '<input type="text" id="message-input" placeholder="' + config.newMessagePlaceholder + '" ' +
-                        'style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" />' +
-                    '<button id="send-btn" ' +
-                        'style="padding: 10px 20px; background: ' + config.primaryColor + '; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">' +
-                        'Send' +
-                    '</button>' +
-                '</div>' +
-            '</div>';
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
 
-        const messagesEl = document.getElementById('messages');
-        const inputEl = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
+        // Set placeholder text from config
+        if (config.newMessagePlaceholder) {
+            messageInput.placeholder = config.newMessagePlaceholder;
+        }
 
         function addMessage(text, isCustomer = false) {
-            const msgDiv = document.createElement('div');
-            msgDiv.style.cssText = `
-                margin: 10px 0;
-                padding: 10px;
-                border-radius: 8px;
-                max-width: 80%;
-                ${isCustomer ? 
-                    `background: ${config.primaryColor}; color: white; margin-left: auto;` : 
-                    'background: #f0f0f0; color: #333; margin-right: auto;'
-                }
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isCustomer ? 'user' : 'bot'}`;
+            
+            // No avatar for bot messages
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+            messageDiv.appendChild(bubble);
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            // Don't show if already showing
+            const existing = document.getElementById('typing-indicator');
+            if (existing) {
+                return;
+            }
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
             `;
-            msgDiv.textContent = text;
-            messagesEl.appendChild(msgDiv);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
+            messagesContainer.appendChild(typingDiv);
+            // Use requestAnimationFrame to prevent layout thrashing
+            requestAnimationFrame(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        function hideTypingIndicator() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) {
+                typing.remove();
+            }
         }
 
         async function sendMessage() {
-            const text = inputEl.value.trim();
+            const text = messageInput.value.trim();
             if (!text) return;
 
+            messageInput.value = '';
             addMessage(text, true);
-            inputEl.value = '';
+            
+            // Don't show typing indicator manually - let backend control it via typing event
+            // This prevents flicker/refresh issues
 
             try {
                 // Create customer if needed
@@ -122,31 +380,41 @@
                     config.customerId = customerData.data.id;
                 }
 
-                // Create conversation with message
-                const convResp = await fetch(`${config.baseUrl}/api/conversations`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        conversation: {
-                            account_id: config.token,
-                            inbox_id: config.inbox,
-                            customer_id: config.customerId,
-                            status: 'open'
-                        },
-                        message: {
-                            body: text,
-                            sent_at: new Date().toISOString()
-                        }
-                    }
-                });
-                const convData = await convResp.json();
-                config.conversationId = convData.data.id;
+                // If conversation exists, send via WebSocket
+                if (config.conversationId && channel && channel.state === 'joined') {
+                    channel.push('shout', {
+                        body: text,
+                        customer_id: config.customerId,
+                        sent_at: new Date().toISOString()
+                    });
+                } else {
+                    // Create conversation with first message
+                    const convResp = await fetch(`${config.baseUrl}/api/conversations`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            conversation: {
+                                account_id: config.token,
+                                inbox_id: config.inbox,
+                                customer_id: config.customerId,
+                                status: 'open'
+                            },
+                            message: {
+                                body: text,
+                                sent_at: new Date().toISOString()
+                            }
+                        })
+                    });
+                    const convData = await convResp.json();
+                    config.conversationId = convData.data.id;
 
-                // Connect to Phoenix channel for real-time updates
-                connectToConversation(config.conversationId);
+                    // Connect to Phoenix channel for real-time updates
+                    connectToConversation(config.conversationId);
+                }
 
             } catch (error) {
                 console.error('Error sending message:', error);
+                hideTypingIndicator();
                 addMessage('Sorry, there was an error sending your message. Please try again.');
             }
         }
@@ -155,7 +423,20 @@
         let channel = null;
 
         function connectToConversation(conversationId) {
-            if (channel) return; // Already connected
+            // Don't reconnect if already connected to the same conversation
+            if (channel && channel.state === 'joined' && channel.topic === `conversation:${conversationId}`) {
+                return;
+            }
+            
+            // Clean up existing connection if different conversation
+            if (channel) {
+                channel.leave();
+                channel = null;
+            }
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
 
             const socketUrl = '/socket';
             socket = new Phoenix.Socket(socketUrl, {params: {}});
@@ -171,8 +452,37 @@
 
             channel.on('shout', (payload) => {
                 console.log('Message received:', payload);
-                if (!payload.user_id && payload.body && payload.type === 'bot') {
-                    addMessage(payload.body);
+                
+                // Always hide typing indicator when receiving any message
+                hideTypingIndicator();
+                
+                // Only process messages with a body
+                if (!payload.body) {
+                    return;
+                }
+                
+                // Skip customer messages - we already display them when sending
+                // Only show bot messages (type === 'bot' or no user_id) or agent messages (has user_id)
+                if (payload.customer_id && payload.customer_id === config.customerId && !payload.user_id && payload.type !== 'bot') {
+                    return;
+                }
+                
+                // Determine if this is a bot message or user/agent message
+                const isBotMessage = payload.type === 'bot' || !payload.user_id;
+                
+                // Add the message (false = bot message, true = user/agent message)
+                addMessage(payload.body, !isBotMessage);
+            });
+
+            channel.on('typing', (payload) => {
+                console.log('Typing event:', payload);
+                if (payload.type === 'ai') {
+                    // Use setTimeout to debounce rapid typing events
+                    if (payload.typing) {
+                        setTimeout(() => showTypingIndicator(), 50);
+                    } else {
+                        hideTypingIndicator();
+                    }
                 }
             });
 
@@ -181,32 +491,30 @@
                 .receive('error', (err) => console.error('Failed to join:', err));
         }
 
-        sendBtn.addEventListener('click', sendMessage);
-        inputEl.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
         });
 
-        // Show greeting and availability status
+        // Ensure typing indicator is hidden on initial load
+        hideTypingIndicator();
+        
+        // Show greeting
         if (config.greeting) {
-            addMessage(config.greeting);
+            setTimeout(() => {
+                addMessage(config.greeting);
+            }, 500);
         }
         
+        // Show availability status if enabled
         if (config.showAgentAvailability) {
             const availabilityText = config.agentAvailableText || 'We\'re online and ready to help!';
             const statusDiv = document.createElement('div');
-            statusDiv.style.cssText = 'text-align: center; padding: 10px; color: #666; font-size: 12px;';
+            statusDiv.style.cssText = 'text-align: center; padding: 8px; color: #666; font-size: 12px;';
             statusDiv.innerHTML = `<span style="color: #52c41a;">●</span> ${availabilityText}`;
-            messagesEl.insertBefore(statusDiv, messagesEl.firstChild);
-        }
-        
-        // Show branding (if not hidden)
-        if (!config.isBrandingHidden) {
-            const brandDiv = document.createElement('div');
-            brandDiv.style.cssText = 'text-align: center; padding: 10px; margin-top: 10px; border-top: 1px solid #eee;';
-            brandDiv.innerHTML = `<a href="https://netia.ai" target="_blank" style="color: #999; font-size: 11px; text-decoration: none;">Powered by ${config.companyName || 'Netia'}</a>`;
-            document.body.appendChild(brandDiv);
+            messagesContainer.insertBefore(statusDiv, messagesContainer.firstChild);
         }
     </script>
 </body>
 </html>
-
