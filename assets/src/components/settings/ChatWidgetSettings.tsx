@@ -176,14 +176,8 @@ class ChatWidgetSettings extends React.Component<Props, State> {
       color,
       title,
       subtitle,
-      greeting,
       newMessagePlaceholder,
-      showAgentAvailability,
-      agentAvailableText,
-      agentUnavailableText,
-      requireEmailUpfront,
       iconVariant,
-      isBrandingHidden,
     } = this.state;
 
     if (!accountId) {
