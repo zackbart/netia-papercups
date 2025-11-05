@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, Flex} from 'theme-ui';
-import {Button, Text} from '../common';
+import {Button, Text, colors} from '../common';
 import ConversationItem from './ConversationItem';
 import ConversationClosing from './ConversationClosing';
 import {getColorByUuid} from './support';

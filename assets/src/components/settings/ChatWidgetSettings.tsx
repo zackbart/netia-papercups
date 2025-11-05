@@ -34,7 +34,6 @@ type State = {
   color: string;
   title: string;
   subtitle: string;
-  awayMessage?: string;
   newMessagePlaceholder?: string;
   currentUser: User | null;
   iconVariant: WidgetIconVariant;
@@ -49,7 +48,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     color: colors.primary,
     title: 'Welcome!',
     subtitle: 'Ask us anything in the chat window below 😊',
-    awayMessage: '',
     newMessagePlaceholder: 'Start typing...',
     iconVariant: 'outlined',
   };
@@ -77,14 +75,12 @@ class ChatWidgetSettings extends React.Component<Props, State> {
         subtitle,
         new_message_placeholder: newMessagePlaceholder,
         icon_variant: iconVariant,
-        away_message: awayMessage,
       } = widgetSettings;
 
       this.setState({
         accountId,
         account,
         currentUser,
-        awayMessage,
         color: color || this.state.color,
         subtitle: subtitle || this.state.subtitle,
         title: title || `Welcome to ${company}`,
@@ -117,13 +113,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
     );
   };
 
-  handleChangeAwayMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState(
-      {awayMessage: e.target.value},
-      this.debouncedUpdateWidgetSettings
-    );
-  };
-
   handleChangeNewMessagePlaceholder = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -144,20 +133,13 @@ class ChatWidgetSettings extends React.Component<Props, State> {
 
   updateWidgetSettings = async () => {
     const {inbox_id: inboxId} = this.props;
-    const {
-      color,
-      title,
-      subtitle,
-      awayMessage,
-      newMessagePlaceholder,
-      iconVariant,
-    } = this.state;
+    const {color, title, subtitle, newMessagePlaceholder, iconVariant} =
+      this.state;
 
     return API.updateWidgetSettings({
       color,
       title,
       subtitle,
-      away_message: awayMessage,
       new_message_placeholder: newMessagePlaceholder,
       icon_variant: iconVariant,
       inbox_id: inboxId,
@@ -194,7 +176,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
       title,
       subtitle,
       greeting,
-      awayMessage,
       newMessagePlaceholder,
       showAgentAvailability,
       agentAvailableText,
@@ -265,21 +246,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
           </Box>
 
           <Box mb={3}>
-            <label htmlFor="away_message">
-              Set an away message (will replace greeting message outside working
-              hours):
-            </label>
-            <Input
-              id="away_message"
-              type="text"
-              placeholder="Sorry, we're away at the moment!"
-              value={awayMessage}
-              onChange={this.handleChangeAwayMessage}
-              onBlur={this.updateWidgetSettings}
-            />
-          </Box>
-
-          <Box mb={3}>
             <label htmlFor="new_message_placeholder">
               Update the new message placeholder text:
             </label>
@@ -331,8 +297,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
                 subtitle
               )}&primaryColor=${encodeURIComponent(
                 color
-              )}&awayMessage=${encodeURIComponent(
-                awayMessage || ''
               )}&newMessagePlaceholder=${encodeURIComponent(
                 newMessagePlaceholder || ''
               )}&iconVariant=${iconVariant}`}
@@ -362,7 +326,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
             title={title}
             subtitle={subtitle}
             color={color}
-            awayMessage={awayMessage}
             newMessagePlaceholder={newMessagePlaceholder}
             iconVariant={iconVariant}
           />
@@ -380,15 +343,6 @@ class ChatWidgetSettings extends React.Component<Props, State> {
             </Text>
           </Paragraph>
         </Box>
-
-        <Title level={4}>Learn more</Title>
-        <Paragraph>
-          <Text>
-            This chat widget is powered by your custom implementation at{' '}
-            <Text code>/chat</Text>. All settings are applied in real-time to
-            the widget preview above.
-          </Text>
-        </Paragraph>
       </Box>
     );
   }
