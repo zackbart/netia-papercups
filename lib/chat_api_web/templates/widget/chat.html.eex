@@ -209,6 +209,25 @@
             cursor: not-allowed;
         }
         
+        #send-button.sending {
+            animation: sendPulse 0.6s ease-out;
+            --pulse-color: var(--primary-color, #1677ff);
+        }
+        
+        @keyframes sendPulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(22, 119, 255, 0.2);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(22, 119, 255, 0);
+            }
+        }
+        
         /* Typing indicator */
         .typing-indicator {
             display: flex;
@@ -257,6 +276,21 @@
         @media (max-width: 480px) {
             #message-input {
                 font-size: 16px !important;
+                padding: 10px 14px;
+            }
+            
+            #send-button {
+                padding: 10px 16px;
+                font-size: 13px;
+                min-width: 60px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            #send-button {
+                padding: 10px 12px;
+                font-size: 12px;
+                min-width: 50px;
             }
         }
     </style>
@@ -385,6 +419,15 @@
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text) return;
+
+            // Add visual feedback animation
+            const sendBtn = document.getElementById('send-button');
+            if (sendBtn) {
+                sendBtn.classList.add('sending');
+                setTimeout(() => {
+                    sendBtn.classList.remove('sending');
+                }, 600);
+            }
 
             messageInput.value = '';
             addMessage(text, true);
