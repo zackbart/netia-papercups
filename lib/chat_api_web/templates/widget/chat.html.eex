@@ -181,6 +181,34 @@
             border-color: var(--primary-color, #1677ff);
         }
         
+        #send-button {
+            padding: 12px 20px;
+            background: var(--primary-color, #1677ff);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        
+        #send-button:hover {
+            background: var(--primary-color-hover, #0958d9);
+            opacity: 0.9;
+        }
+        
+        #send-button:active {
+            transform: scale(0.98);
+        }
+        
+        #send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         /* Typing indicator */
         .typing-indicator {
             display: flex;
@@ -255,6 +283,7 @@
                     autocomplete="off"
                 />
             </div>
+            <button id="send-button">Send</button>
         </div>
     </div>
     
@@ -491,10 +520,16 @@
                 .receive('error', (err) => console.error('Failed to join:', err));
         }
 
+        const sendButton = document.getElementById('send-button');
+        
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendMessage();
             }
+        });
+        
+        sendButton.addEventListener('click', () => {
+            sendMessage();
         });
 
         // Ensure typing indicator is hidden on initial load
