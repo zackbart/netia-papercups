@@ -31,12 +31,30 @@
         
         /* Header */
         .chat-header {
-            background: var(--primary-color, #1677ff);
+            background: linear-gradient(135deg, var(--primary-color, #1677ff) 0%, #000000 100%);
             color: white;
             padding: 16px 20px;
             display: flex;
             align-items: center;
+            gap: 12px;
             flex-shrink: 0;
+        }
+        
+        .chat-header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4A90E2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .chat-header-icon svg {
+            width: 24px;
+            height: 24px;
         }
         
         .chat-header .bot-info {
@@ -46,7 +64,7 @@
         
         .chat-header .bot-name {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             margin: 0;
             line-height: 1.2;
             white-space: nowrap;
@@ -56,9 +74,29 @@
         
         .chat-header .bot-label {
             font-size: 12px;
-            opacity: 0.85;
-            margin: 6px 0 0 0;
-            line-height: 1;
+            opacity: 0.9;
+            margin: 4px 0 0 0;
+            line-height: 1.2;
+        }
+        
+        .chat-header-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        
+        .chat-header-close:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         /* Messages Area */
@@ -66,7 +104,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 16px 20px;
-            background: #f5f5f5;
+            background: white;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -88,43 +126,21 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: white;
+            background: #4A90E2;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .message .message-avatar svg {
+            width: 18px;
+            height: 18px;
         }
         
         .message.user .message-avatar {
             display: none;
-        }
-        
-        .message .message-avatar-icon {
-            width: 16px;
-            height: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: center;
-        }
-        
-        .message .message-avatar-icon span {
-            width: 100%;
-            height: 1.5px;
-            background: #000;
-            border-radius: 1px;
-        }
-        
-        .message .message-avatar-icon span:nth-child(1) {
-            width: 60%;
-        }
-        
-        .message .message-avatar-icon span:nth-child(2) {
-            width: 80%;
-        }
-        
-        .message .message-avatar-icon span:nth-child(3) {
-            width: 100%;
         }
         
         .message-bubble {
@@ -154,54 +170,92 @@
         
         /* Input Area */
         .input-container {
-            background: #f5f5f5;
-            padding: 16px 20px;
+            background: white;
+            padding: 12px 16px;
             border-top: 1px solid #e0e0e0;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             flex-shrink: 0;
+            border-radius: 0 0 12px 12px;
+            position: relative;
+        }
+        
+        .input-icon-button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .input-icon-button:hover {
+            background: #f5f5f5;
         }
         
         .input-wrapper {
             flex: 1;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 2px;
         }
         
         #message-input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 24px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 18px;
             font-size: 14px;
-            background: white;
+            background: transparent;
             outline: none;
+            color: #333;
         }
         
         #message-input:focus {
-            border-color: var(--primary-color, #1677ff);
+            background: white;
+        }
+        
+        #message-input::placeholder {
+            color: #999;
         }
         
         #send-button {
-            padding: 12px 20px;
-            background: var(--primary-color, #1677ff);
+            width: 36px;
+            height: 36px;
+            background: #e0e0e0;
             color: white;
             border: none;
-            border-radius: 24px;
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
             outline: none;
-            transition: background 0.2s;
+            transition: all 0.2s;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        #send-button svg {
+            width: 20px;
+            height: 20px;
         }
         
         #send-button:hover {
-            background: var(--primary-color-hover, #0958d9);
-            opacity: 0.9;
+            background: #d0d0d0;
         }
         
         #send-button:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
         }
         
         #send-button:disabled {
@@ -211,7 +265,6 @@
         
         #send-button.sending {
             animation: sendPulse 0.6s ease-out;
-            --pulse-color: var(--primary-color, #1677ff);
         }
         
         @keyframes sendPulse {
@@ -220,11 +273,9 @@
             }
             50% {
                 transform: scale(1.1);
-                box-shadow: 0 0 0 8px rgba(22, 119, 255, 0.2);
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(22, 119, 255, 0);
             }
         }
         
@@ -232,23 +283,25 @@
         .typing-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             max-width: fit-content;
-            padding: 10px 14px;
-            background: #e8e8e8;
+            padding: 12px 16px;
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
             border-radius: 18px;
             border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
         .typing-dots {
             display: flex;
-            gap: 4px;
+            gap: 5px;
         }
         
         .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #999;
+            width: 10px;
+            height: 10px;
+            background: #666;
             border-radius: 50%;
             animation: typingPulse 1.4s infinite;
         }
@@ -272,25 +325,99 @@
             }
         }
         
+        /* Emoji picker */
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            right: 16px;
+            width: 280px;
+            max-height: 300px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 12px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .emoji-picker.visible {
+            display: flex;
+        }
+        
+        .emoji-picker-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .emoji-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        
+        .emoji-search:focus {
+            border-color: var(--primary-color, #1677ff);
+        }
+        
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 240px;
+            padding-right: 4px;
+        }
+        
+        .emoji-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .emoji-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .emoji-item.hidden {
+            display: none;
+        }
+        
         /* Mobile responsiveness */
         @media (max-width: 480px) {
             #message-input {
                 font-size: 16px !important;
-                padding: 10px 14px;
             }
             
+            .input-icon-button,
             #send-button {
-                padding: 10px 16px;
-                font-size: 13px;
-                min-width: 60px;
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
             }
-        }
-        
-        @media (max-width: 360px) {
-            #send-button {
-                padding: 10px 12px;
-                font-size: 12px;
-                min-width: 50px;
+            
+            .emoji-picker {
+                width: 260px;
+                right: 8px;
             }
         }
     </style>
@@ -298,6 +425,19 @@
 <body>
     <div id="chat-widget-root">
         <div class="chat-header">
+            <div class="chat-header-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="6" stroke="white" stroke-width="2.5" fill="none"/>
+                    <line x1="12" y1="2" x2="12" y2="4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="12" y1="20" x2="12" y2="22" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="2" y1="12" x2="4" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="20" y1="12" x2="22" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="5.66" y1="5.66" x2="6.88" y2="6.88" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="17.12" y1="17.12" x2="18.34" y2="18.34" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="18.34" y1="5.66" x2="17.12" y2="6.88" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="6.88" y1="17.12" x2="5.66" y2="18.34" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </div>
             <div class="bot-info">
                 <div class="bot-name" id="bot-name"></div>
                 <div class="bot-label" id="bot-subtitle"></div>
@@ -309,6 +449,11 @@
         </div>
         
         <div class="input-container">
+            <div class="emoji-picker" id="emoji-picker">
+                <div class="emoji-picker-header">Emojis</div>
+                <input type="text" class="emoji-search" id="emoji-search" placeholder="Search emojis..." autocomplete="off" />
+                <div class="emoji-grid" id="emoji-grid"></div>
+            </div>
             <div class="input-wrapper">
                 <input 
                     type="text" 
@@ -317,7 +462,13 @@
                     autocomplete="off"
                 />
             </div>
-            <button id="send-button">Send</button>
+            <button class="input-icon-button" id="emoji-button" aria-label="Add emoji">😊</button>
+            <button id="send-button" aria-label="Send message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
     </div>
     
@@ -376,7 +527,6 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isCustomer ? 'user' : 'bot'}`;
             
-            // No avatar for bot messages
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
             bubble.textContent = text;
@@ -564,6 +714,447 @@
         }
 
         const sendButton = document.getElementById('send-button');
+        const emojiButton = document.getElementById('emoji-button');
+        const emojiPicker = document.getElementById('emoji-picker');
+        const emojiGrid = document.getElementById('emoji-grid');
+        const emojiSearch = document.getElementById('emoji-search');
+        
+        // Emoji data with searchable keywords
+        const emojiData = [
+            {emoji: '😀', keywords: 'grinning face happy smile'},
+            {emoji: '😃', keywords: 'smiling eyes happy joy'},
+            {emoji: '😄', keywords: 'smiling eyes happy joy laugh'},
+            {emoji: '😁', keywords: 'beaming eyes happy grin'},
+            {emoji: '😆', keywords: 'squinting laugh happy'},
+            {emoji: '😅', keywords: 'sweat nervous smile'},
+            {emoji: '😂', keywords: 'tears joy laughing'},
+            {emoji: '🤣', keywords: 'rolling laughing floor'},
+            {emoji: '😊', keywords: 'smiling eyes happy'},
+            {emoji: '😇', keywords: 'halo angel innocent'},
+            {emoji: '🙂', keywords: 'slight smile'},
+            {emoji: '🙃', keywords: 'upside down'},
+            {emoji: '😉', keywords: 'wink'},
+            {emoji: '😌', keywords: 'relieved calm'},
+            {emoji: '😍', keywords: 'heart eyes love'},
+            {emoji: '🥰', keywords: 'smiling hearts love'},
+            {emoji: '😘', keywords: 'kiss blowing'},
+            {emoji: '😗', keywords: 'kissing'},
+            {emoji: '😙', keywords: 'kissing smiling eyes'},
+            {emoji: '😚', keywords: 'kissing closed eyes'},
+            {emoji: '😋', keywords: 'savoring food yummy'},
+            {emoji: '😛', keywords: 'tongue playful'},
+            {emoji: '😝', keywords: 'squinting tongue'},
+            {emoji: '😜', keywords: 'wink tongue'},
+            {emoji: '🤪', keywords: 'zany crazy'},
+            {emoji: '🤨', keywords: 'raised eyebrow suspicious'},
+            {emoji: '🧐', keywords: 'monocle detective'},
+            {emoji: '🤓', keywords: 'nerd glasses'},
+            {emoji: '😎', keywords: 'sunglasses cool'},
+            {emoji: '🤩', keywords: 'star eyes'},
+            {emoji: '🥳', keywords: 'party celebration'},
+            {emoji: '😏', keywords: 'smirk'},
+            {emoji: '😒', keywords: 'unamused'},
+            {emoji: '😞', keywords: 'disappointed sad'},
+            {emoji: '😔', keywords: 'pensive sad'},
+            {emoji: '😟', keywords: 'worried'},
+            {emoji: '😕', keywords: 'confused'},
+            {emoji: '🙁', keywords: 'slight frown'},
+            {emoji: '☹️', keywords: 'frown sad'},
+            {emoji: '😣', keywords: 'persevere'},
+            {emoji: '😖', keywords: 'confounded'},
+            {emoji: '😫', keywords: 'tired weary'},
+            {emoji: '😩', keywords: 'weary tired'},
+            {emoji: '🥺', keywords: 'pleading puppy'},
+            {emoji: '😢', keywords: 'cry tears sad'},
+            {emoji: '😭', keywords: 'loudly crying tears'},
+            {emoji: '😤', keywords: 'triumph huff'},
+            {emoji: '😠', keywords: 'angry mad'},
+            {emoji: '😡', keywords: 'pouting angry'},
+            {emoji: '🤬', keywords: 'swearing cursing'},
+            {emoji: '🤯', keywords: 'exploding mind'},
+            {emoji: '😳', keywords: 'flushed embarrassed'},
+            {emoji: '🥵', keywords: 'hot fever'},
+            {emoji: '🥶', keywords: 'cold freezing'},
+            {emoji: '😱', keywords: 'scream fear'},
+            {emoji: '😨', keywords: 'fearful scared'},
+            {emoji: '😰', keywords: 'anxious sweat'},
+            {emoji: '😥', keywords: 'sad relieved'},
+            {emoji: '😓', keywords: 'sweat nervous'},
+            {emoji: '🤗', keywords: 'hugging'},
+            {emoji: '🤔', keywords: 'thinking'},
+            {emoji: '🤭', keywords: 'hand over mouth'},
+            {emoji: '🤫', keywords: 'shushing quiet'},
+            {emoji: '🤥', keywords: 'lying pinocchio'},
+            {emoji: '😶', keywords: 'no mouth'},
+            {emoji: '😐', keywords: 'neutral'},
+            {emoji: '😑', keywords: 'expressionless'},
+            {emoji: '😬', keywords: 'grimacing'},
+            {emoji: '🙄', keywords: 'rolling eyes'},
+            {emoji: '😯', keywords: 'hushed surprised'},
+            {emoji: '😦', keywords: 'frown open mouth'},
+            {emoji: '😧', keywords: 'anguished'},
+            {emoji: '😮', keywords: 'open mouth'},
+            {emoji: '😲', keywords: 'astonished surprised'},
+            {emoji: '🥱', keywords: 'yawning tired'},
+            {emoji: '😴', keywords: 'sleeping zzz'},
+            {emoji: '🤤', keywords: 'drooling'},
+            {emoji: '😪', keywords: 'sleepy tired'},
+            {emoji: '😵', keywords: 'dizzy'},
+            {emoji: '🤐', keywords: 'zipper mouth'},
+            {emoji: '👍', keywords: 'thumbs up like'},
+            {emoji: '👎', keywords: 'thumbs down dislike'},
+            {emoji: '👌', keywords: 'ok hand'},
+            {emoji: '✌️', keywords: 'peace victory'},
+            {emoji: '🤞', keywords: 'crossed fingers luck'},
+            {emoji: '🤟', keywords: 'love you rock'},
+            {emoji: '🤘', keywords: 'rock horns metal'},
+            {emoji: '🤙', keywords: 'call me phone'},
+            {emoji: '👏', keywords: 'clapping applause'},
+            {emoji: '🙌', keywords: 'raising hands celebration'},
+            {emoji: '👐', keywords: 'open hands'},
+            {emoji: '🤲', keywords: 'palms up together'},
+            {emoji: '🤝', keywords: 'handshake deal'},
+            {emoji: '🙏', keywords: 'praying please'},
+            {emoji: '✍️', keywords: 'writing hand'},
+            {emoji: '💪', keywords: 'muscle flex strong'},
+            {emoji: '❤️', keywords: 'red heart love'},
+            {emoji: '🧡', keywords: 'orange heart'},
+            {emoji: '💛', keywords: 'yellow heart'},
+            {emoji: '💚', keywords: 'green heart'},
+            {emoji: '💙', keywords: 'blue heart'},
+            {emoji: '💜', keywords: 'purple heart'},
+            {emoji: '🖤', keywords: 'black heart'},
+            {emoji: '🤍', keywords: 'white heart'},
+            {emoji: '💔', keywords: 'broken heart'},
+            {emoji: '❣️', keywords: 'heart exclamation'},
+            {emoji: '💕', keywords: 'two hearts love'},
+            {emoji: '💞', keywords: 'revolving hearts'},
+            {emoji: '💓', keywords: 'beating heart'},
+            {emoji: '💗', keywords: 'growing heart'},
+            {emoji: '💖', keywords: 'sparkling heart'},
+            {emoji: '💘', keywords: 'cupid arrow love'},
+            {emoji: '💝', keywords: 'gift heart'},
+            {emoji: '💟', keywords: 'heart decoration'},
+            {emoji: '☮️', keywords: 'peace symbol'},
+            {emoji: '✝️', keywords: 'cross christian'},
+            {emoji: '☪️', keywords: 'star crescent islam'},
+            {emoji: '🕉', keywords: 'om hindu'},
+            {emoji: '☸️', keywords: 'wheel dharma buddhist'},
+            {emoji: '✡️', keywords: 'star david jewish'},
+            {emoji: '🔯', keywords: 'dotted six pointed star'},
+            {emoji: '🕎', keywords: 'menorah candelabra'},
+            {emoji: '☯️', keywords: 'yin yang tao'},
+            {emoji: '☦️', keywords: 'orthodox cross'},
+            {emoji: '🛐', keywords: 'place worship'},
+            {emoji: '⛎', keywords: 'ophiuchus'},
+            {emoji: '♈', keywords: 'aries ram'},
+            {emoji: '♉', keywords: 'taurus bull'},
+            {emoji: '♊', keywords: 'gemini twins'},
+            {emoji: '♋', keywords: 'cancer crab'},
+            {emoji: '♌', keywords: 'leo lion'},
+            {emoji: '♍', keywords: 'virgo'},
+            {emoji: '♎', keywords: 'libra scales'},
+            {emoji: '♏', keywords: 'scorpio scorpion'},
+            {emoji: '♐', keywords: 'sagittarius archer'},
+            {emoji: '♑', keywords: 'capricorn goat'},
+            {emoji: '♒', keywords: 'aquarius water'},
+            {emoji: '♓', keywords: 'pisces fish'},
+            {emoji: '🆔', keywords: 'id identity'},
+            {emoji: '⚛️', keywords: 'atom symbol'},
+            {emoji: '🉑', keywords: 'acceptable'},
+            {emoji: '☢️', keywords: 'radioactive'},
+            {emoji: '☣️', keywords: 'biohazard'},
+            {emoji: '📴', keywords: 'mobile phone off'},
+            {emoji: '📳', keywords: 'vibration mode'},
+            {emoji: '🈶', keywords: 'japanese not free charge'},
+            {emoji: '🈚', keywords: 'japanese free charge'},
+            {emoji: '🈸', keywords: 'japanese application'},
+            {emoji: '🈺', keywords: 'japanese open business'},
+            {emoji: '🈷️', keywords: 'japanese monthly amount'},
+            {emoji: '✴️', keywords: 'eight pointed star'},
+            {emoji: '🆚', keywords: 'versus vs'},
+            {emoji: '💮', keywords: 'white flower'},
+            {emoji: '🉐', keywords: 'japanese bargain'},
+            {emoji: '㊙️', keywords: 'japanese secret'},
+            {emoji: '㊗️', keywords: 'japanese congratulations'},
+            {emoji: '🈴', keywords: 'japanese passing grade'},
+            {emoji: '🈵', keywords: 'japanese no vacancy'},
+            {emoji: '🈹', keywords: 'japanese discount'},
+            {emoji: '🈲', keywords: 'japanese prohibited'},
+            {emoji: '🅰️', keywords: 'a button'},
+            {emoji: '🅱️', keywords: 'b button'},
+            {emoji: '🆎', keywords: 'ab button'},
+            {emoji: '🆑', keywords: 'cl button'},
+            {emoji: '🅾️', keywords: 'o button'},
+            {emoji: '🆘', keywords: 'sos help'},
+            {emoji: '❌', keywords: 'cross mark wrong'},
+            {emoji: '⭕', keywords: 'heavy large circle'},
+            {emoji: '🛑', keywords: 'stop sign'},
+            {emoji: '⛔', keywords: 'no entry'},
+            {emoji: '📛', keywords: 'name badge'},
+            {emoji: '🚫', keywords: 'prohibited forbidden'},
+            {emoji: '💯', keywords: 'hundred points perfect'},
+            {emoji: '💢', keywords: 'anger symbol'},
+            {emoji: '♨️', keywords: 'hot springs'},
+            {emoji: '🚷', keywords: 'no pedestrians'},
+            {emoji: '🚯', keywords: 'no littering'},
+            {emoji: '🚳', keywords: 'no bicycles'},
+            {emoji: '🚱', keywords: 'non potable water'},
+            {emoji: '🔞', keywords: 'no one under eighteen'},
+            {emoji: '📵', keywords: 'no mobile phones'},
+            {emoji: '🚭', keywords: 'no smoking'},
+            {emoji: '❗', keywords: 'exclamation mark'},
+            {emoji: '❕', keywords: 'white exclamation mark'},
+            {emoji: '❓', keywords: 'question mark'},
+            {emoji: '❔', keywords: 'white question mark'},
+            {emoji: '‼️', keywords: 'double exclamation'},
+            {emoji: '⁉️', keywords: 'exclamation question'},
+            {emoji: '🔅', keywords: 'low brightness dim'},
+            {emoji: '🔆', keywords: 'high brightness bright'},
+            {emoji: '〽️', keywords: 'part alternation mark'},
+            {emoji: '⚠️', keywords: 'warning caution'},
+            {emoji: '🚸', keywords: 'children crossing'},
+            {emoji: '🔱', keywords: 'trident emblem'},
+            {emoji: '⚜️', keywords: 'fleur de lis'},
+            {emoji: '🔰', keywords: 'japanese symbol beginner'},
+            {emoji: '♻️', keywords: 'recycling'},
+            {emoji: '✅', keywords: 'check mark button'},
+            {emoji: '🈯', keywords: 'japanese reserved'},
+            {emoji: '💹', keywords: 'chart increasing yen'},
+            {emoji: '❇️', keywords: 'sparkle'},
+            {emoji: '✳️', keywords: 'eight spoked asterisk'},
+            {emoji: '❎', keywords: 'cross mark button'},
+            {emoji: '🌐', keywords: 'globe meridians world'},
+            {emoji: '💠', keywords: 'diamond shape dot'},
+            {emoji: 'Ⓜ️', keywords: 'circled m'},
+            {emoji: '🌀', keywords: 'cyclone hurricane'},
+            {emoji: '💤', keywords: 'zzz sleep'},
+            {emoji: '🏧', keywords: 'atm sign'},
+            {emoji: '🚾', keywords: 'water closet toilet'},
+            {emoji: '♿', keywords: 'wheelchair symbol'},
+            {emoji: '🅿️', keywords: 'p button parking'},
+            {emoji: '🈳', keywords: 'japanese vacancy'},
+            {emoji: '🈂️', keywords: 'japanese service charge'},
+            {emoji: '🛂', keywords: 'passport control'},
+            {emoji: '🛃', keywords: 'customs'},
+            {emoji: '🛄', keywords: 'baggage claim'},
+            {emoji: '🛅', keywords: 'left luggage'},
+            {emoji: '🚹', keywords: 'mens room'},
+            {emoji: '🚺', keywords: 'womens room'},
+            {emoji: '🚼', keywords: 'baby symbol'},
+            {emoji: '🚻', keywords: 'restroom'},
+            {emoji: '🚮', keywords: 'litter bin'},
+            {emoji: '🎦', keywords: 'cinema movie'},
+            {emoji: '📶', keywords: 'antenna bars signal'},
+            {emoji: '🈁', keywords: 'japanese here'},
+            {emoji: '🔣', keywords: 'input symbols'},
+            {emoji: 'ℹ️', keywords: 'information'},
+            {emoji: '🔤', keywords: 'input latin letters'},
+            {emoji: '🔡', keywords: 'input latin lowercase'},
+            {emoji: '🔠', keywords: 'input latin uppercase'},
+            {emoji: '🆖', keywords: 'ng button'},
+            {emoji: '🆗', keywords: 'ok button'},
+            {emoji: '🆙', keywords: 'up button'},
+            {emoji: '🆒', keywords: 'cool button'},
+            {emoji: '🆕', keywords: 'new button'},
+            {emoji: '🆓', keywords: 'free button'},
+            {emoji: '0️⃣', keywords: 'zero'},
+            {emoji: '1️⃣', keywords: 'one'},
+            {emoji: '2️⃣', keywords: 'two'},
+            {emoji: '3️⃣', keywords: 'three'},
+            {emoji: '4️⃣', keywords: 'four'},
+            {emoji: '5️⃣', keywords: 'five'},
+            {emoji: '6️⃣', keywords: 'six'},
+            {emoji: '7️⃣', keywords: 'seven'},
+            {emoji: '8️⃣', keywords: 'eight'},
+            {emoji: '9️⃣', keywords: 'nine'},
+            {emoji: '🔟', keywords: 'keycap ten'},
+            {emoji: '🔢', keywords: 'input numbers'},
+            {emoji: '#️⃣', keywords: 'hash number'},
+            {emoji: '*️⃣', keywords: 'asterisk'},
+            {emoji: '▶️', keywords: 'play button'},
+            {emoji: '⏸', keywords: 'pause button'},
+            {emoji: '⏯', keywords: 'play pause'},
+            {emoji: '⏹', keywords: 'stop button'},
+            {emoji: '⏺', keywords: 'record button'},
+            {emoji: '⏭', keywords: 'next track'},
+            {emoji: '⏮', keywords: 'last track'},
+            {emoji: '⏩', keywords: 'fast forward'},
+            {emoji: '⏪', keywords: 'fast reverse'},
+            {emoji: '⏫', keywords: 'fast up button'},
+            {emoji: '⏬', keywords: 'fast down button'},
+            {emoji: '◀️', keywords: 'reverse button'},
+            {emoji: '🔼', keywords: 'up button'},
+            {emoji: '🔽', keywords: 'down button'},
+            {emoji: '➡️', keywords: 'right arrow'},
+            {emoji: '⬅️', keywords: 'left arrow'},
+            {emoji: '⬆️', keywords: 'up arrow'},
+            {emoji: '⬇️', keywords: 'down arrow'},
+            {emoji: '↗️', keywords: 'up right arrow'},
+            {emoji: '↖️', keywords: 'up left arrow'},
+            {emoji: '↘️', keywords: 'down right arrow'},
+            {emoji: '↙️', keywords: 'down left arrow'},
+            {emoji: '↔️', keywords: 'left right arrow'},
+            {emoji: '↕️', keywords: 'up down arrow'},
+            {emoji: '🔄', keywords: 'counterclockwise arrows'},
+            {emoji: '↪️', keywords: 'right arrow curving left'},
+            {emoji: '⤴️', keywords: 'right arrow curving up'},
+            {emoji: '⤵️', keywords: 'right arrow curving down'},
+            {emoji: '🔀', keywords: 'shuffle tracks'},
+            {emoji: '🔁', keywords: 'repeat button'},
+            {emoji: '🔂', keywords: 'repeat single button'},
+            {emoji: '🔃', keywords: 'clockwise arrows'},
+            {emoji: '🎵', keywords: 'musical note'},
+            {emoji: '🎶', keywords: 'musical notes'},
+            {emoji: '➕', keywords: 'plus add'},
+            {emoji: '➖', keywords: 'minus subtract'},
+            {emoji: '➗', keywords: 'divide'},
+            {emoji: '✖️', keywords: 'multiply times'},
+            {emoji: '💲', keywords: 'heavy dollar sign'},
+            {emoji: '💱', keywords: 'currency exchange'},
+            {emoji: '™️', keywords: 'trade mark'},
+            {emoji: '©️', keywords: 'copyright'},
+            {emoji: '®️', keywords: 'registered'},
+            {emoji: '〰️', keywords: 'wavy dash'},
+            {emoji: '➰', keywords: 'curly loop'},
+            {emoji: '➿', keywords: 'double curly loop'},
+            {emoji: '🔚', keywords: 'end arrow'},
+            {emoji: '🔙', keywords: 'back arrow'},
+            {emoji: '🔛', keywords: 'on arrow'},
+            {emoji: '🔜', keywords: 'soon arrow'},
+            {emoji: '🔝', keywords: 'top arrow'},
+            {emoji: '✔️', keywords: 'check mark'},
+            {emoji: '☑️', keywords: 'check box'},
+            {emoji: '🔘', keywords: 'radio button'},
+            {emoji: '⚪', keywords: 'white circle'},
+            {emoji: '⚫', keywords: 'black circle'},
+            {emoji: '🔴', keywords: 'red circle'},
+            {emoji: '🔵', keywords: 'blue circle'},
+            {emoji: '🔺', keywords: 'red triangle up'},
+            {emoji: '🔻', keywords: 'red triangle down'},
+            {emoji: '🔸', keywords: 'small orange diamond'},
+            {emoji: '🔹', keywords: 'small blue diamond'},
+            {emoji: '🔶', keywords: 'large orange diamond'},
+            {emoji: '🔷', keywords: 'large blue diamond'},
+            {emoji: '🔳', keywords: 'white square button'},
+            {emoji: '🔲', keywords: 'black square button'},
+            {emoji: '▪️', keywords: 'black small square'},
+            {emoji: '▫️', keywords: 'white small square'},
+            {emoji: '◾', keywords: 'black medium small square'},
+            {emoji: '◽', keywords: 'white medium small square'},
+            {emoji: '◼️', keywords: 'black medium square'},
+            {emoji: '◻️', keywords: 'white medium square'},
+            {emoji: '🟥', keywords: 'red square'},
+            {emoji: '🟧', keywords: 'orange square'},
+            {emoji: '🟨', keywords: 'yellow square'},
+            {emoji: '🟩', keywords: 'green square'},
+            {emoji: '🟦', keywords: 'blue square'},
+            {emoji: '🟪', keywords: 'purple square'},
+            {emoji: '🟫', keywords: 'brown square'},
+            {emoji: '⬛', keywords: 'black large square'},
+            {emoji: '⬜', keywords: 'white large square'},
+            {emoji: '🔈', keywords: 'speaker low volume'},
+            {emoji: '🔇', keywords: 'muted speaker'},
+            {emoji: '🔉', keywords: 'speaker medium volume'},
+            {emoji: '🔊', keywords: 'speaker high volume'},
+            {emoji: '🔔', keywords: 'bell notification'},
+            {emoji: '🔕', keywords: 'bell with slash'},
+            {emoji: '📣', keywords: 'megaphone'},
+            {emoji: '📢', keywords: 'loudspeaker'},
+            {emoji: '👁‍🗨', keywords: 'eye speech bubble'},
+            {emoji: '💬', keywords: 'speech balloon'},
+            {emoji: '💭', keywords: 'thought balloon'},
+            {emoji: '🗯', keywords: 'right anger bubble'},
+            {emoji: '♠️', keywords: 'spade suit card'},
+            {emoji: '♣️', keywords: 'club suit card'},
+            {emoji: '♥️', keywords: 'heart suit card'},
+            {emoji: '♦️', keywords: 'diamond suit card'},
+            {emoji: '🃏', keywords: 'joker card'},
+            {emoji: '🎴', keywords: 'flower playing cards'},
+            {emoji: '🀄', keywords: 'mahjong red dragon'},
+            {emoji: '🕐', keywords: 'one oclock'},
+            {emoji: '🕑', keywords: 'two oclock'},
+            {emoji: '🕒', keywords: 'three oclock'},
+            {emoji: '🕓', keywords: 'four oclock'},
+            {emoji: '🕔', keywords: 'five oclock'},
+            {emoji: '🕕', keywords: 'six oclock'},
+            {emoji: '🕖', keywords: 'seven oclock'},
+            {emoji: '🕗', keywords: 'eight oclock'},
+            {emoji: '🕘', keywords: 'nine oclock'},
+            {emoji: '🕙', keywords: 'ten oclock'},
+            {emoji: '🕚', keywords: 'eleven oclock'},
+            {emoji: '🕛', keywords: 'twelve oclock'},
+            {emoji: '🕜', keywords: 'one thirty'},
+            {emoji: '🕝', keywords: 'two thirty'},
+            {emoji: '🕞', keywords: 'three thirty'},
+            {emoji: '🕟', keywords: 'four thirty'},
+            {emoji: '🕠', keywords: 'five thirty'},
+            {emoji: '🕡', keywords: 'six thirty'},
+            {emoji: '🕢', keywords: 'seven thirty'},
+            {emoji: '🕣', keywords: 'eight thirty'},
+            {emoji: '🕤', keywords: 'nine thirty'},
+            {emoji: '🕥', keywords: 'ten thirty'},
+            {emoji: '🕦', keywords: 'eleven thirty'},
+            {emoji: '🕧', keywords: 'twelve thirty'}
+        ];
+        
+        // Populate emoji grid
+        emojiData.forEach(data => {
+            const emojiItem = document.createElement('div');
+            emojiItem.className = 'emoji-item';
+            emojiItem.textContent = data.emoji;
+            emojiItem.dataset.keywords = data.keywords;
+            emojiItem.addEventListener('click', () => {
+                const cursorPos = messageInput.selectionStart || messageInput.value.length;
+                const textBefore = messageInput.value.substring(0, cursorPos);
+                const textAfter = messageInput.value.substring(cursorPos);
+                messageInput.value = textBefore + data.emoji + textAfter;
+                messageInput.focus();
+                messageInput.setSelectionRange(cursorPos + data.emoji.length, cursorPos + data.emoji.length);
+                emojiPicker.classList.remove('visible');
+                emojiSearch.value = '';
+                filterEmojis('');
+            });
+            emojiGrid.appendChild(emojiItem);
+        });
+        
+        // Filter emojis based on search
+        function filterEmojis(searchTerm) {
+            const term = searchTerm.toLowerCase().trim();
+            const items = emojiGrid.querySelectorAll('.emoji-item');
+            
+            items.forEach(item => {
+                const keywords = item.dataset.keywords || '';
+                if (term === '' || keywords.includes(term)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Search input handler
+        emojiSearch.addEventListener('input', (e) => {
+            filterEmojis(e.target.value);
+        });
+        
+        // Prevent search input from closing picker
+        emojiSearch.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Toggle emoji picker
+        emojiButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            emojiPicker.classList.toggle('visible');
+        });
+        
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiButton) {
+                emojiPicker.classList.remove('visible');
+            }
+        });
         
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
