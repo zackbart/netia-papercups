@@ -141,28 +141,36 @@ defmodule ChatApiWeb.SessionController do
     end
   end
 
+  defp subscription_checks_enabled? do
+    Application.get_env(:chat_api, :subscription_checks_enabled, true)
+  end
+
   @spec validate_has_customer_id(ChatApi.Accounts.Account.t(), Conn.t()) :: Conn.t()
   defp validate_has_customer_id(%{subscription_exempt: true}, conn), do: conn
 
   defp validate_has_customer_id(%{stripe_customer_id: nil}, conn) do
-    conn
-    |> put_status(403)
-    |> json(%{
-      error: %{
-        status: 403,
-        message: "No active subscription. Please complete your account setup.",
-        action_required: "setup_account"
-      }
-    })
-    |> halt()
+    if subscription_checks_enabled?() do
+      conn
+      |> put_status(403)
+      |> json(%{
+        error: %{
+          status: 403,
+          message: "No active subscription. Please complete your account setup.",
+          action_required: "setup_account"
+        }
+      })
+      |> halt()
+    else
+      conn
+    end
   end
 
   defp validate_has_customer_id(_account, conn), do: conn
 
   @spec check_subscription_status(ChatApi.Accounts.Account.t(), Conn.t(), function()) :: Conn.t()
   defp check_subscription_status(account, conn, on_success) do
-    # Bypass all subscription checks if account is exempt
-    if Map.get(account, :subscription_exempt) do
+    # Bypass all subscription checks if globally disabled or account is exempt
+    if !subscription_checks_enabled?() || Map.get(account, :subscription_exempt) do
       on_success.(nil)
     else
       case Subscriptions.check_subscription_status(account) do

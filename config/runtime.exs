@@ -195,3 +195,7 @@ case System.get_env("PAPERCUPS_STRIPE_SECRET") do
   _ ->
     nil
 end
+
+# Subscription checks - set to "false" to allow all users without subscription validation
+config :chat_api, :subscription_checks_enabled,
+  System.get_env("SUBSCRIPTION_CHECKS_ENABLED", "true") == "true"
